@@ -2,10 +2,12 @@
   "version": 2,
   "builds": [
     { "src": "index.html", "use": "@vercel/static" },
+    { "src": "logo.webp", "use": "@vercel/static" },
     { "src": "api/claude.js", "use": "@vercel/node" }
   ],
   "routes": [
     { "src": "/api/claude", "dest": "/api/claude.js" },
+    { "src": "/logo.webp", "dest": "/logo.webp" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
