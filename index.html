@@ -1694,7 +1694,7 @@ function SchoolCard({school, category, profile, onAnalyze, compareNames, onToggl
   const inCompare        = compareNames.includes(school.name);
 
   return (
-    <div style={{background:cfg.bg,border:"1px solid "+(inCompare?"rgba(201,168,76,0.65)":cfg.border),borderRadius:"16px",padding:"18px 20px",marginBottom:"12px",transition:"border-color 0.2s",overflow:"hidden",minWidth:0}}>
+    <div style={{background:cfg.bg,border:"1px solid "+(inCompare?"rgba(201,168,76,0.65)":cfg.border),borderRadius:"16px",padding:"14px 16px",marginBottom:"12px",transition:"border-color 0.2s",overflow:"hidden",minWidth:0}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"8px"}}>
         <div style={{flex:1,cursor:"pointer",minWidth:0,overflow:"hidden"}} onClick={()=>setOpen(!open)}>
           <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"4px"}}>
