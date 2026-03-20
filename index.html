@@ -1717,7 +1717,7 @@ function SchoolCard({school, category, profile, onAnalyze, compareNames, onToggl
             )}
           </div>
         </div>
-        <div style={{display:"flex",gap:"5px",alignItems:"center",flexWrap:"wrap",justifyContent:"center"}}>
+        <div style={{display:"flex",gap:"5px",alignItems:"center",flexShrink:0,flexWrap:"wrap",justifyContent:"flex-end"}}>
           <button onClick={()=>onToggleCompare(school,category)} style={{background:inCompare?"rgba(192,48,42,0.35)":"rgba(255,255,255,0.04)",border:"1px solid "+(inCompare?"rgba(201,168,76,0.55)":"rgba(139,26,26,0.12)"),color:inCompare?"#f15177":"#9898a8",borderRadius:"7px",padding:"5px 9px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"'Montserrat',sans-serif",whiteSpace:"nowrap"}}>
             {inCompare ? "COMPARING" : "+ COMPARE"}
           </button>
