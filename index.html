@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FYPU — Find Your Perfect University</title>
-  <meta name="description" content="AI-powered US university advisor for Canadian students."/>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <style>* { box-sizing: border-box; margin: 0; padding: 0; }</style>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="text/babel" data-presets="react">
-    const { useState, useEffect } = React;
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>FYPU - Find Your Perfect University</title>
+    <meta name="description" content="AI-powered US university advisor for Canadian students"/>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>* { box-sizing: border-box; margin: 0; padding: 0; }</style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel" data-presets="react">
+      const { useState, useEffect } = React;
 
 // Find Your Perfect University (FYPU) - Canadian University Advisor
 // Built with Claude AI
@@ -534,8 +534,8 @@ function AnalysisPage({school, category, profile, onBack}) {
     async function callAPI(promptText, maxTok) {
       for (let t = 1; t <= 2; t++) {
         try {
-          const r = await fetch("/api/claude", {
-            method:"POST", headers:{"Content-Type":"application/json"},
+          const r = await fetch("https://api.anthropic.com/v1/messages", {
+            method:"POST", headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
             body: JSON.stringify({model:"claude-sonnet-4-20250514", max_tokens:maxTok,
               messages:[{role:"user",content:promptText}]})
           });
@@ -646,8 +646,8 @@ function AnalysisPage({school, category, profile, onBack}) {
       '{"schoolName":"' + schoolName + '","program":"' + program + '","forumQuestions":[{"question":"Exact question applicants ask","source":"Reddit r/ApplyingToCollege","insight":"1-2 sentence answer based on forum consensus","frequency":"Very Common"},{"question":"q2","source":"College Confidential","insight":"i2","frequency":"Common"},{"question":"q3","source":"Reddit","insight":"i3","frequency":"Common"},{"question":"q4","source":"Forum","insight":"i4","frequency":"Occasional"},{"question":"q5","source":"Forum","insight":"i5","frequency":"Occasional"}],"topTip":"The single most repeated piece of advice from successful applicants"}';
 
     try {
-      const res = await fetch("/api/claude", {
-        method:"POST", headers:{"Content-Type":"application/json"},
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method:"POST", headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
         body: JSON.stringify({
           model:"claude-sonnet-4-20250514", max_tokens:1500,
           messages:[{role:"user",content:prompt}]
@@ -1290,9 +1290,9 @@ function ComparePage({schoolA, schoolB, catA, catB, profile, onBack}) {
       '"overallVerdict":{"winner":"school name","winnerFor":"best scenario","summary":"3 sentence comparison","caveat":"important caveat"}}';
 
     async function fetchCompare(prompt, attempt) {
-      const res = await fetch("/api/claude", {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
         method:"POST",
-        headers:{"Content-Type":"application/json"},
+        headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
         body: JSON.stringify({model:"claude-sonnet-4-20250514", max_tokens:3000, messages:[{role:"user", content:prompt}]})
       });
       const json = await res.json();
@@ -1695,38 +1695,40 @@ function SchoolCard({school, category, profile, onAnalyze, compareNames, onToggl
 
   return (
     <div style={{background:cfg.bg,border:"1px solid "+(inCompare?"rgba(201,168,76,0.65)":cfg.border),borderRadius:"16px",padding:"14px 16px",marginBottom:"12px",transition:"border-color 0.2s",overflow:"hidden",minWidth:0}}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"8px"}}>
-        <div style={{flex:1,cursor:"pointer",minWidth:0,overflow:"hidden"}} onClick={()=>setOpen(!open)}>
-          <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"4px"}}>
-            <span style={{color:cfg.color,fontSize:"16px",flexShrink:0}}>{cfg.icon}</span>
-            <span style={{color:"#f0f0f0",fontFamily:"'DM Serif Display',serif",fontSize:"16px",fontWeight:"700",lineHeight:"1.2"}}>{school.name}</span>
-          </div>
-          {school.targetProgram && (
-            <div style={{marginBottom:"4px"}}>
-              <span style={{color:"#c9a84c",fontSize:"12px",fontFamily:"'Montserrat',sans-serif",fontWeight:"600"}}>{school.targetProgram.name}</span>
-              <span style={{color:"#9898a8",fontSize:"12px",fontFamily:"'Montserrat',sans-serif"}}>- {school.targetProgram.admRate} admit</span>
+      <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"8px"}}>
+          <div style={{flex:1,cursor:"pointer",minWidth:0,overflow:"hidden"}} onClick={()=>setOpen(!open)}>
+            <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"4px"}}>
+              <span style={{color:cfg.color,fontSize:"16px",flexShrink:0}}>{cfg.icon}</span>
+              <span style={{color:"#f0f0f0",fontFamily:"'DM Serif Display',serif",fontSize:"16px",fontWeight:"700",lineHeight:"1.2"}}>{school.name}</span>
             </div>
-          )}
-          <div style={{display:"flex",gap:"12px",flexWrap:"wrap",marginLeft:"24px"}}>
-            <span style={{color:"#705858",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>{school.location}</span>
-            <span style={{color:"#705858",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>Overall: {school.acceptRate}</span>
-            <span style={{color:"#705858",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>Intl: {school.intlFriendly}</span>
-            {school.creditPolicy && (profile.programs&&(profile.programs.ib||profile.programs.ap)) && (
-              <span style={{background:"rgba(139,26,26,0.12)",border:"1px solid rgba(167,139,250,0.28)",color:"#c9a84c",borderRadius:"5px",padding:"1px 7px",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700"}}>&#127891; CREDITS</span>
+            {school.targetProgram && (
+              <div style={{marginLeft:"24px",marginBottom:"4px"}}>
+                <span style={{color:"#c9a84c",fontSize:"12px",fontFamily:"'Montserrat',sans-serif",fontWeight:"600"}}>{school.targetProgram.name}</span>
+                <span style={{color:"#9898a8",fontSize:"12px",fontFamily:"'Montserrat',sans-serif"}}> · {school.targetProgram.admRate} admit</span>
+              </div>
             )}
+            <div style={{display:"flex",gap:"10px",flexWrap:"wrap",marginLeft:"24px"}}>
+              <span style={{color:"#705858",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>{school.location}</span>
+              <span style={{color:"#705858",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>Overall: {school.acceptRate}</span>
+              <span style={{color:"#705858",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>Intl: {school.intlFriendly}</span>
+              {school.creditPolicy && (profile.programs&&(profile.programs.ib||profile.programs.ap)) && (
+                <span style={{background:"rgba(139,26,26,0.12)",border:"1px solid rgba(167,139,250,0.28)",color:"#c9a84c",borderRadius:"5px",padding:"1px 7px",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700"}}>&#127891; CREDITS</span>
+              )}
+            </div>
           </div>
+          <span onClick={()=>setOpen(!open)} style={{color:"#d0d0d8",fontSize:"20px",cursor:"pointer",display:"inline-block",transition:"transform 0.2s",transform:open?"rotate(180deg)":"rotate(0)",flexShrink:0}}>▾</span>
         </div>
-        <div style={{display:"flex",gap:"5px",alignItems:"center",flexShrink:0,flexWrap:"wrap",justifyContent:"flex-end"}}>
-          <button onClick={()=>onToggleCompare(school,category)} style={{background:inCompare?"rgba(192,48,42,0.35)":"rgba(255,255,255,0.04)",border:"1px solid "+(inCompare?"rgba(201,168,76,0.55)":"rgba(139,26,26,0.12)"),color:inCompare?"#f15177":"#9898a8",borderRadius:"7px",padding:"5px 9px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"'Montserrat',sans-serif",whiteSpace:"nowrap"}}>
+        <div style={{display:"flex",gap:"6px",alignItems:"center",flexWrap:"wrap"}}>
+          <button onClick={()=>onToggleCompare(school,category)} style={{background:inCompare?"rgba(192,48,42,0.35)":"rgba(255,255,255,0.04)",border:"1px solid "+(inCompare?"rgba(201,168,76,0.55)":"rgba(139,26,26,0.12)"),color:inCompare?"#f15177":"#9898a8",borderRadius:"7px",padding:"6px 12px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"'Montserrat',sans-serif",whiteSpace:"nowrap"}}>
             {inCompare ? "COMPARING" : "+ COMPARE"}
           </button>
-          <button onClick={()=>onAnalyze(school,category)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(107,159,228,0.22)",color:"#705858",borderRadius:"7px",padding:"5px 9px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"'Montserrat',sans-serif",whiteSpace:"nowrap"}}>
+          <button onClick={()=>onAnalyze(school,category)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(107,159,228,0.22)",color:"#705858",borderRadius:"7px",padding:"6px 12px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"'Montserrat',sans-serif",whiteSpace:"nowrap"}}>
             ANALYZE
           </button>
-          <a href={getLink(school.name)} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()} style={{background:cfg.color,color:"#080808",borderRadius:"7px",padding:"5px 12px",fontSize:"11px",fontWeight:"700",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",whiteSpace:"nowrap"}}>
+          <a href={getLink(school.name)} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()} style={{background:cfg.color,color:"#080808",borderRadius:"7px",padding:"6px 14px",fontSize:"11px",fontWeight:"700",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",whiteSpace:"nowrap"}}>
             APPLY
           </a>
-          <span onClick={()=>setOpen(!open)} style={{color:"#d0d0d8",fontSize:"20px",cursor:"pointer",display:"inline-block",transition:"transform 0.2s",transform:open?"rotate(180deg)":"rotate(0)"}}>▾</span>
         </div>
       </div>
 
@@ -1875,9 +1877,9 @@ function SchoolCard({school, category, profile, onAnalyze, compareNames, onToggl
 // ========================================
 // MAIN APP
 // ========================================
-const LOGO_URI = "./logo.webp"; "";
+const LOGO_URI = "./logo.webp";
 
-function App() {
+export default function App() {
   const [province,setProvince]           = useState("");
   const [cumAvg,setCumAvg]               = useState("");
   const [actScore,setActScore]           = useState("");
@@ -1962,9 +1964,9 @@ function App() {
         '{"name":"","location":"","acceptRate":"","intlFriendly":"","tuition":"","note":"","targetProgram":{"name":"","admRate":"","degree":"","notes":""}}' +
         ']}' ;
 
-      const r = await fetch("/api/claude", {
+      const r = await fetch("https://api.anthropic.com/v1/messages", {
         method:"POST",
-        headers:{"Content-Type":"application/json"},
+        headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
         body: JSON.stringify({
           model:"claude-sonnet-4-20250514",
           max_tokens:2500,
@@ -2023,31 +2025,28 @@ function App() {
       <div style={{minHeight:"100vh",background:"#080808",backgroundImage:"radial-gradient(ellipse at 8% 5%,rgba(139,26,26,0.08) 0%,transparent 40%),radial-gradient(ellipse at 92% 95%,rgba(201,168,76,0.04) 0%,transparent 60%)",fontFamily:"sans-serif",color:"#d0d0d8"}}>
 
         <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,900;1,6..96,400;1,6..96,900&family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-        <div style={{borderBottom:"1px solid rgba(201,168,76,0.20)",padding:"12px 16px",display:"flex",flexDirection:"column",gap:"10px",gap:"12px"}}>
-          <div style={{display:"flex",alignItems:"center",gap:"14px",minWidth:0}}>
-            <button onClick={resetToForm} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.13)",color:"#d0d0d8",borderRadius:"9px",padding:"7px 14px",cursor:"pointer",fontSize:"12px",fontFamily:"'Montserrat',sans-serif",flexShrink:0,display:"flex",alignItems:"center",gap:"6px"}}>
-              &#8592; Edit Profile
-            </button>
-            <button onClick={()=>{setResults(null);setCompareList([]);setCompareTarget(null);setAnalysisTarget(null);generate();}} disabled={loading} style={{background:loading?"rgba(139,26,26,0.30)":"linear-gradient(135deg,#8b1a1a,#c0302a)",border:"1px solid rgba(201,168,76,0.50)",color:loading?"#888":"#f0f0f0",borderRadius:"9px",padding:"9px 20px",boxShadow:loading?"none":"0 0 12px rgba(192,48,42,0.30)",cursor:loading?"not-allowed":"pointer",fontSize:"12px",fontFamily:"'Montserrat',sans-serif",fontWeight:"600",letterSpacing:"0.08em",flexShrink:0,display:"flex",alignItems:"center",gap:"6px",transition:"opacity 0.2s"}}>
-              {loading ? "⟳  Regenerating..." : "↻  Regenerate"}
-            </button>
-            <div style={{minWidth:0}}>
-              <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-                <span style={{fontSize:"18px"}}></span>
-                <div style={{background:"#080808",display:"inline-flex"}}><img src={LOGO_URI} alt="FYPU" style={{height:"52px",width:"auto",mixBlendMode:"screen"}} /></div><span style={{fontFamily:"'Great Vibes',cursive",fontSize:"22px",fontWeight:"400",background:"linear-gradient(135deg,#c0302a 0%,#c9a84c 25%,#f0e090 50%,#c9a84c 75%,#c0302a 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",overflow:"hidden",whiteSpace:"nowrap",maxWidth:"180px",textOverflow:"ellipsis"}}>Find Your Perfect University</span>
+        <div style={{borderBottom:"1px solid rgba(201,168,76,0.20)",padding:"12px 16px",display:"flex",flexDirection:"column",gap:"10px"}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"8px"}}>
+            <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
+              <div style={{background:"#080808",display:"inline-flex"}}><img src={LOGO_URI} alt="FYPU" style={{height:"36px",width:"auto",mixBlendMode:"screen"}} /></div>
+              <div>
+                <span style={{fontFamily:"'Great Vibes',cursive",fontSize:"18px",fontWeight:"400",background:"linear-gradient(135deg,#c0302a 0%,#c9a84c 25%,#f0e090 50%,#c9a84c 75%,#c0302a 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Find Your Perfect University</span>
+                <div style={{color:"#9898a8",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em"}}>YOUR UNIVERSITY LIST</div>
               </div>
-              <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginTop:"1px"}}>YOUR UNIVERSITY LIST</div>
+            </div>
+            <div style={{display:"flex",alignItems:"center",gap:"6px",flexShrink:0}}>
+              {hasIBAP && profile.programs.ib && <span style={{background:"rgba(139,26,26,0.12)",border:"1px solid rgba(167,139,250,0.35)",color:"#c9a84c",borderRadius:"6px",padding:"3px 7px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700"}}>IB</span>}
+              {hasIBAP && profile.programs.ap && <span style={{background:"rgba(201,168,76,0.07)",border:"1px solid rgba(96,165,250,0.35)",color:"#c9a84c",borderRadius:"6px",padding:"3px 7px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700"}}>AP</span>}
+              <div style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>{intendedMajor}</div>
             </div>
           </div>
-          <div style={{display:"flex",alignItems:"center",gap:"8px",flexShrink:0,flexWrap:"wrap",justifyContent:"flex-end"}}>
-            {hasIBAP && (
-              <div style={{display:"flex",gap:"4px"}}>
-                {profile.programs.ib && <span style={{background:"rgba(139,26,26,0.12)",border:"1px solid rgba(167,139,250,0.35)",color:"#c9a84c",borderRadius:"6px",padding:"4px 9px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700"}}>IB</span>}
-                {profile.programs.ap && <span style={{background:"rgba(201,168,76,0.07)",border:"1px solid rgba(96,165,250,0.35)",color:"#c9a84c",borderRadius:"6px",padding:"4px 9px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700"}}>AP</span>}
-              </div>
-            )}
-            <div style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>{intendedMajor}</div>
-            
+          <div style={{display:"flex",gap:"8px"}}>
+            <button onClick={resetToForm} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.13)",color:"#d0d0d8",borderRadius:"9px",padding:"7px 14px",cursor:"pointer",fontSize:"12px",fontFamily:"'Montserrat',sans-serif",flex:1}}>
+              &#8592; Edit Profile
+            </button>
+            <button onClick={()=>{setResults(null);setCompareList([]);setCompareTarget(null);setAnalysisTarget(null);generate();}} disabled={loading} style={{background:loading?"rgba(139,26,26,0.30)":"linear-gradient(135deg,#8b1a1a,#c0302a)",border:"1px solid rgba(201,168,76,0.50)",color:loading?"#888":"#f0f0f0",borderRadius:"9px",padding:"9px 20px",boxShadow:loading?"none":"0 0 12px rgba(192,48,42,0.30)",cursor:loading?"not-allowed":"pointer",fontSize:"12px",fontFamily:"'Montserrat',sans-serif",fontWeight:"600",letterSpacing:"0.08em",flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",transition:"opacity 0.2s"}}>
+              {loading ? "⟳  Regenerating..." : "↻  Regenerate"}
+            </button>
           </div>
         </div>
         {compareList.length > 0 && (
@@ -2338,9 +2337,6 @@ function App() {
   );
 }
 
-
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(React.createElement(App));
-  </script>
-</body>
+    </script>
+  </body>
 </html>
