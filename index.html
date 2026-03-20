@@ -1951,7 +1951,7 @@ function App() {
         "Student profile: " + province + " student, cumulative average " + cumAvg +
         " (" + (gs.scale||"percentage") + "), major: " + intendedMajor + "." +
         extras_tests + extras_ib + extras_ap +
-        " ECs: " + (extras||"none") + ". Awards: " + (awards||"none") + "." +
+        " ECs: " + (extras||"none") + ". Awards: " + (awards||"none") + "." +         (prevSchools.length > 0 ? " IMPORTANT: Do NOT recommend any of these schools that were already shown: " + prevSchools.join(", ") + ". Suggest completely different schools." : "") +
         (isSr ? " Applying this cycle." : " " + hsInfo.yearsOut + " years before applying.") +
         extras_pg + "\n\n" +
         "Recommend 4 " + tierDef + ".\n\n" +
@@ -1985,7 +1985,7 @@ function App() {
     }
 
     // Show results page immediately with loading skeleton, populate tiers as they arrive
-    setResults({reach:[], target:[], safety:[], _loading:true});
+    const prevSchools = results ? [...(results.reach||[]), ...(results.target||[]), ...(results.safety||[])].map(s=>s.name) : []; setResults({reach:[], target:[], safety:[], _loading:true});
     setActiveTab("reach");
     setPage("results");
 
