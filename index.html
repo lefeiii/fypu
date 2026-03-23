@@ -524,7 +524,7 @@ function AnalysisPage({school, category, profile, onBack}) {
   async function runAnalysis() {
     const gs = GRADE_SYSTEMS[profile.province] || {};
     const ctx =
-      "Student: province=" + profile.province + ", avg=" + profile.cumAvg + " (" + (gs.scale||"") + "), " +
+      "Current date: " + new Date().toLocaleDateString('en-US', {month:'long', year:'numeric'}) + ". Student: province=" + profile.province + ", avg=" + profile.cumAvg + " (" + (gs.scale||"") + "), " +
       "SAT=" + (profile.satScore||"N/A") + ", ACT=" + (profile.actScore||"N/A") + ", " +
       "major=" + profile.intendedMajor + ", year=" + hsYear +
       (profile.programs&&profile.programs.ib ? ", IB predicted="+profile.ibScore+"/45" : "") +
