@@ -6,7 +6,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FYPU — Find Your Perfect University</title>
-  <meta name="description" content="AI-powered US university advisor for Canadian students."/>
+  <meta name="description" content="AI-powered US university advisor for high school students worldwide."/>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -25,7 +25,18 @@
 
 const PROVINCES = ["Alberta","British Columbia","Manitoba","New Brunswick","Newfoundland & Labrador","Nova Scotia","Ontario","PEI","Quebec","Saskatchewan"];
 
+const US_STATES = ["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming","Washington D.C."];
+
+const OTHER_COUNTRIES = [
+  "United Kingdom","India","China","South Korea","Germany","France","Australia",
+  "Brazil","Nigeria","Mexico","Japan","Singapore","UAE","Pakistan","Bangladesh",
+  "Indonesia","Philippines","Vietnam","Turkey","Italy","Spain","Netherlands",
+  "Sweden","Norway","Denmark","Switzerland","Poland","Egypt","Kenya","Ghana",
+  "Sri Lanka","Nepal","Malaysia","Thailand","Hong Kong","Taiwan","New Zealand","Other"
+];
+
 const GRADE_SYSTEMS = {
+  // Canadian provinces
   "Alberta":{scale:"Percentage (0-100%)",example:"e.g. 92%"},
   "British Columbia":{scale:"Percentage (0-100%)",example:"e.g. 89%"},
   "Manitoba":{scale:"Percentage (0-100%)",example:"e.g. 85%"},
@@ -36,6 +47,47 @@ const GRADE_SYSTEMS = {
   "PEI":{scale:"Percentage (0-100%)",example:"e.g. 86%"},
   "Quebec":{scale:"R-Score or Percentage",example:"e.g. R-Score 32 or 88%"},
   "Saskatchewan":{scale:"Percentage (0-100%)",example:"e.g. 93%"},
+  // US States — GPA
+  ...Object.fromEntries(US_STATES.map(s=>[s,{scale:"GPA (0-4.0 unweighted / 0-5.0 weighted)",example:"e.g. 3.8 unweighted, 4.3 weighted"}])),
+  // Other countries
+  "United Kingdom":{scale:"A-Level grades or GCSE (A*-E)",example:"e.g. A*A*A or 3 A-Levels"},
+  "India":{scale:"Percentage (0-100%) — CBSE/ICSE/State Board",example:"e.g. 92% (CBSE Class 12)"},
+  "China":{scale:"GaoKao score (300-750) or percentage",example:"e.g. 650/750 GaoKao or 88%"},
+  "South Korea":{scale:"Suneung grade (1-9) or percentage",example:"e.g. Grade 1-2 Suneung or 95%"},
+  "Germany":{scale:"German grade (1.0-4.0, lower is better) or Abitur",example:"e.g. 1.5 Abitur or GPA 1.8"},
+  "France":{scale:"French Baccalauréat (0-20)",example:"e.g. 17/20 Baccalauréat"},
+  "Australia":{scale:"ATAR (0-99.95) or percentage",example:"e.g. ATAR 95 or 90%"},
+  "Brazil":{scale:"ENEM score (0-1000) or percentage (0-10)",example:"e.g. ENEM 850 or 8.5/10"},
+  "Nigeria":{scale:"WAEC/NECO percentage or grade (A1-F9)",example:"e.g. 5 A1s WAEC or 85%"},
+  "Mexico":{scale:"Percentage (0-100) or GPA (0-10)",example:"e.g. 9.2/10 or 92%"},
+  "Japan":{scale:"Percentage (0-100) or GPA equivalent",example:"e.g. 90% or GPA 3.8"},
+  "Singapore":{scale:"GPA (0-4.0) or A-Level (A-E)",example:"e.g. 3.9 GPA or AAA A-Levels"},
+  "UAE":{scale:"Percentage (0-100%)",example:"e.g. 95%"},
+  "Pakistan":{scale:"Percentage (0-100%) — FSc/HSSC",example:"e.g. 88% FSc"},
+  "Bangladesh":{scale:"GPA (0-5.0) — HSC",example:"e.g. 5.0 GPA HSC"},
+  "Indonesia":{scale:"GPA (0-4.0) or percentage",example:"e.g. 3.7 or 88%"},
+  "Philippines":{scale:"GWA (1.0-5.0, lower is better) or percentage",example:"e.g. 1.5 GWA or 92%"},
+  "Vietnam":{scale:"GPA (0-10) or percentage",example:"e.g. 8.5/10"},
+  "Turkey":{scale:"GPA (0-100) or YKS score",example:"e.g. 90/100 or YKS 450"},
+  "Italy":{scale:"Grade (0-10) or Maturità (60-100)",example:"e.g. 9/10 or 95/100 Maturità"},
+  "Spain":{scale:"GPA (0-10) or Selectividad score",example:"e.g. 8.5/10 or 12/14 EBAU"},
+  "Netherlands":{scale:"GPA (1-10, higher is better)",example:"e.g. 8.2/10"},
+  "Sweden":{scale:"Grades (F, E, D, C, B, A) or GPA (0-20)",example:"e.g. 19.5/20 merit score"},
+  "Norway":{scale:"Grades (1-6, higher is better)",example:"e.g. 5.5/6"},
+  "Denmark":{scale:"Danish 7-point scale (-3 to 12)",example:"e.g. 10/12"},
+  "Switzerland":{scale:"GPA (1-6, higher is better)",example:"e.g. 5.5/6 Matura"},
+  "Poland":{scale:"GPA (1-6) or Matura percentage",example:"e.g. 5.5/6 or 85% Matura"},
+  "Egypt":{scale:"Percentage (0-100%) — Thanaweya Amma",example:"e.g. 92%"},
+  "Kenya":{scale:"KCSE Grade (A-E) or points (0-84)",example:"e.g. A (80 points) KCSE"},
+  "Ghana":{scale:"WASSCE grade (A1-F9) or aggregate",example:"e.g. Aggregate 6 WASSCE"},
+  "Sri Lanka":{scale:"A-Level grades (A-S) or percentage",example:"e.g. AAB A-Levels"},
+  "Nepal":{scale:"Percentage (0-100%) — NEB/+2",example:"e.g. 88% NEB"},
+  "Malaysia":{scale:"CGPA (0-4.0) or SPM grade",example:"e.g. 3.8 CGPA or 9A SPM"},
+  "Thailand":{scale:"GPA (0-4.0) or percentage",example:"e.g. 3.7 GPA"},
+  "Hong Kong":{scale:"HKDSE score (Level 1-5**)",example:"e.g. 5**5**5* HKDSE"},
+  "Taiwan":{scale:"GPA (0-4.3) or percentage",example:"e.g. 3.9 GPA or 92%"},
+  "New Zealand":{scale:"NCEA credits or GPA (0-9)",example:"e.g. Excellence endorsement or 8/9"},
+  "Other":{scale:"Enter your grading system and score",example:"e.g. 90% or GPA 3.8 — specify system"},
 };
 
 const HS_YEARS = [
@@ -523,15 +575,25 @@ function AnalysisPage({school, category, profile, onBack}) {
 
   async function runAnalysis() {
     const gs = GRADE_SYSTEMS[profile.province] || {};
+    const isUSStudent = profile.studentOrigin === "us";
+    const visaNote = isUSStudent ? "Domestic US student, no visa required." :
+      profile.studentOrigin==="canada" ? "Canadian student, F-1 visa required, no English test needed." :
+      profile.province==="United Kingdom" || profile.province==="Australia" || profile.province==="New Zealand" || profile.province==="Singapore" || profile.province==="Hong Kong"
+        ? "English-speaking country, TOEFL/IELTS may be waived. F-1 visa required." :
+      "IELTS 6.5+ or TOEFL 90+ required. F-1 visa required. Financial proof needed.";
     const ctx =
-      "Current date: " + new Date().toLocaleDateString('en-US', {month:'long', year:'numeric'}) + ". Student: province=" + profile.province + ", avg=" + profile.cumAvg + " (" + (gs.scale||"") + "), " +
+      "Current date: " + new Date().toLocaleDateString('en-US', {month:'long', year:'numeric'}) + ". " +
+      (isUSStudent ? "Domestic US student" : "International student from " + profile.province) +
+      ": location=" + profile.province + ", avg=" + profile.cumAvg + " (" + (gs.scale||"") + "), " +
       "SAT=" + (profile.satScore||"N/A") + ", ACT=" + (profile.actScore||"N/A") + ", " +
       "major=" + profile.intendedMajor + ", year=" + hsYear +
       (profile.programs&&profile.programs.ib ? ", IB predicted="+profile.ibScore+"/45" : "") +
       (profile.programs&&profile.programs.ap ? ", AP: "+profile.apCourses : "") +
       ", ECs=" + (profile.extras||"none") + ", awards=" + (profile.awards||"none") + ". " +
+      visaNote + " " +
       "School: " + school.name + " (" + category + ", accept=" + school.acceptRate + "). " +
-      "Program: " + ((school.targetProgram||{}).name||profile.intendedMajor) + " (" + ((school.targetProgram||{}).admRate||"?") + "). ";
+      "Program: " + ((school.targetProgram||{}).name||profile.intendedMajor) + " (" + ((school.targetProgram||{}).admRate||"?") + "). " +
+      "Tailor ALL advice specifically for a student from " + profile.province + " including visa steps, English test requirements, financial aid eligibility, and credential evaluation if needed.";
 
     async function callAPI(promptText, maxTok) {
       for (let t = 1; t <= 2; t++) {
@@ -792,17 +854,30 @@ function AnalysisPage({school, category, profile, onBack}) {
               </DCard>
 
               <DCard>
-                <CLabel>INTERNATIONAL PENALTY<InfoTip text="Most US universities admit international students at a much lower rate than domestic students, and offer little or no financial aid. This section quantifies exactly how much harder it is for you as a Canadian applicant."/></CLabel>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"10px",marginBottom:"12px"}}>
-                  <SBox label="Domestic" value={data.riskAnalysis.internationalPenalty.domesticRate} color="#5aba6a"/>
-                  <SBox label="Intl Rate" value={data.riskAnalysis.internationalPenalty.internationalRate} color="#c0302a"/>
-                  <SBox label="x Harder" value={data.riskAnalysis.internationalPenalty.penaltyFactor} color="#e8c96a"/>
-                </div>
-                <div style={{background:"rgba(139,156,244,0.08)",border:"1px solid rgba(139,156,244,0.25)",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px"}}>
-                  <div style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"3px"}}>CANADIAN NOTE</div>
-                  <div style={{color:"#d0d0d8",fontSize:"12px",overflowWrap:"break-word"}}>{data.riskAnalysis.internationalPenalty.canadianSpecific}</div>
-                </div>
-                <p style={{color:"#9898a8",fontSize:"12px",margin:0}}><strong style={{color:"#d0d0d8"}}>Financial Aid: </strong>{data.riskAnalysis.internationalPenalty.financialAidRisk}</p>
+                {profile.studentOrigin==="us" ? (
+                  <>
+                    <CLabel>FINANCIAL AID OPPORTUNITY<InfoTip text="As a domestic US student, you have full access to federal financial aid, merit scholarships, and need-based aid that international students cannot access."/></CLabel>
+                    <div style={{background:"rgba(90,186,106,0.08)",border:"1px solid rgba(90,186,106,0.25)",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px"}}>
+                      <div style={{color:"#5aba6a",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"3px"}}>DOMESTIC ADVANTAGE</div>
+                      <div style={{color:"#d0d0d8",fontSize:"12px"}}>As a US domestic student you apply at domestic admission rates and are eligible for FAFSA, federal loans, merit aid, and need-based grants.</div>
+                    </div>
+                    <p style={{color:"#9898a8",fontSize:"12px",margin:0}}><strong style={{color:"#d0d0d8"}}>Financial Aid: </strong>{data.riskAnalysis.internationalPenalty.financialAidRisk}</p>
+                  </>
+                ) : (
+                  <>
+                    <CLabel>INTERNATIONAL PENALTY<InfoTip text="Most US universities admit international students at a much lower rate than domestic students, and offer little or no financial aid. This section quantifies exactly how much harder it is for you as an international applicant."/></CLabel>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"10px",marginBottom:"12px"}}>
+                      <SBox label="Domestic" value={data.riskAnalysis.internationalPenalty.domesticRate} color="#5aba6a"/>
+                      <SBox label="Intl Rate" value={data.riskAnalysis.internationalPenalty.internationalRate} color="#c0302a"/>
+                      <SBox label="x Harder" value={data.riskAnalysis.internationalPenalty.penaltyFactor} color="#e8c96a"/>
+                    </div>
+                    <div style={{background:"rgba(139,156,244,0.08)",border:"1px solid rgba(139,156,244,0.25)",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px"}}>
+                      <div style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"3px"}}>INTERNATIONAL NOTE</div>
+                      <div style={{color:"#d0d0d8",fontSize:"12px",overflowWrap:"break-word"}}>{data.riskAnalysis.internationalPenalty.canadianSpecific}</div>
+                    </div>
+                    <p style={{color:"#9898a8",fontSize:"12px",margin:0}}><strong style={{color:"#d0d0d8"}}>Financial Aid: </strong>{data.riskAnalysis.internationalPenalty.financialAidRisk}</p>
+                  </>
+                )}
               </DCard>
               <DCard>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"14px"}}>
@@ -1271,8 +1346,10 @@ function ComparePage({schoolA, schoolB, catA, catB, profile, onBack}) {
     const progA = (schoolA.targetProgram||{}).name || profile.intendedMajor;
     const progB = (schoolB.targetProgram||{}).name || profile.intendedMajor;
     const ctx =
-      "Canadian student (province=" + profile.province + ", avg=" + profile.grade +
+      (profile.studentOrigin==="us" ? "Domestic US student" : "International student from " + profile.province) +
+      " (location=" + profile.province + ", avg=" + profile.grade +
       ", SAT=" + (profile.satScore||"none") + ", major=" + profile.intendedMajor + ") " +
+      (profile.studentOrigin!=="us" ? "F-1 visa required. " + (["United Kingdom","Australia","New Zealand","Singapore","Hong Kong"].includes(profile.province) ? "English test likely waived. " : "IELTS/TOEFL required. ") + "No US federal aid eligibility. " : "Full financial aid eligible. ") +
       "comparing " + sA + " (" + progA + ") vs " + sB + " (" + progB + "). " +
       "Return ONLY a single JSON object, no markdown:\n";
 
@@ -1881,6 +1958,7 @@ const LOGO_URI = "./logo.webp"; "";
 
 function App() {
   const [province,setProvince]           = useState("");
+  const [studentOrigin,setStudentOrigin] = useState(""); // "canada" | "us" | "other"
   const [cumAvg,setCumAvg]               = useState("");
   const [actScore,setActScore]           = useState("");
   const [programs,setPrograms]           = useState({ib:false,ap:false});
@@ -1903,7 +1981,7 @@ function App() {
   const [pgPathKey,setPgPathKey]         = useState(null);
   const pgPath = pgPathKey ? (POST_GRAD_PATHS.find(p=>p.key===pgPathKey)||null) : null;
 
-  const profile = {province, cumAvg, actScore, satScore, programs, ibScore, apCourses, awards, hsYear, intendedMajor, extras, postGrad: pgPathKey !== null, pgPathKey};
+  const profile = {province, cumAvg, actScore, satScore, programs, ibScore, apCourses, awards, hsYear, intendedMajor, extras, postGrad: pgPathKey !== null, pgPathKey, studentOrigin};
 
   function resetToForm() {
     setPage("form");
@@ -1923,7 +2001,10 @@ function App() {
   }
 
   async function generate() {
-    if (!province || !cumAvg || !intendedMajor || !hsYear) { setError("Please fill in province, cumulative average, school year, and intended major."); return; }
+    if (!studentOrigin) { setError("Please select where you are from."); return; }
+    if (!province || !cumAvg || !intendedMajor || !hsYear) { setError("Please fill in your location, cumulative average, school year, and intended major."); return; }
+    const isUSStudent = studentOrigin === "us";
+    const isIntl = studentOrigin !== "us";
     setError(""); setLoading(true); setResults(null); setCompareList([]);
     const gs     = GRADE_SYSTEMS[province] || {};
     const hsInfo = HS_YEARS.find(y=>y.value===hsYear) || HS_YEARS[3];
@@ -1947,15 +2028,34 @@ function App() {
       const extras_ap = hasAP ? " AP courses: " + (apCourses||"various") + "." : "";
       const extras_tests = (satScore||actScore) ? " SAT=" + (satScore||"N/A") + " ACT=" + (actScore||"N/A") + "." : "";
 
+      const regionContext = isUSStudent
+        ? "DOMESTIC US student from " + province + ": treat as domestic applicant. Use domestic admission rates. Full FAFSA, merit scholarships, and need-based aid eligibility. No English proficiency test required. Common App applies normally."
+        : studentOrigin==="canada"
+        ? "CANADIAN international student from " + province + ": grading system is " + (gs.scale||"percentage") + ". No IELTS/TOEFL required for most schools as Canada is English-speaking (except Quebec French programs). Eligible for limited merit aid but NOT federal US aid. F-1 visa required. Strong passport, straightforward visa process."
+        : "INTERNATIONAL student from " + province + ": grading system is " + (gs.scale||"percentage") + ". " +
+          (province==="China" ? "GaoKao score context important. IELTS 6.5-7.5 or TOEFL 90-100 typically required. F-1 visa required. High competition from Chinese applicants at elite schools." :
+           province==="India" ? "CBSE/ICSE percentage context important. IELTS 6.5+ or TOEFL 90+ typically required. F-1 visa required. Strong STEM applicant pool from India." :
+           province==="United Kingdom" ? "A-Level grades context important. No IELTS/TOEFL required (native English). F-1 visa required. UK A-levels highly respected by US universities." :
+           province==="South Korea" ? "Suneung context important. IELTS 6.5+ or TOEFL 90+ typically required. F-1 visa required." :
+           province==="Germany" ? "Abitur context important. IELTS 6.5+ or TOEFL 90+ typically required. F-1 visa required. Strong academic reputation." :
+           province==="France" ? "Baccalauréat context. IELTS 6.5+ or TOEFL 90+ typically required. F-1 visa required." :
+           province==="Australia" || province==="New Zealand" ? "Native English — no IELTS/TOEFL required at most schools. F-1 visa required." :
+           province==="Nigeria" || province==="Ghana" || province==="Kenya" ? "WAEC/NECO grades important. IELTS 6.5+ or TOEFL 90+ may be required. F-1 visa required. Financial documentation critical for visa." :
+           province==="Singapore" || province==="Hong Kong" ? "English proficiency strong — TOEFL/IELTS may be waived. F-1 visa required." :
+           "IELTS 6.5+ or TOEFL 90+ typically required. F-1 visa required. Financial documentation needed.") +
+          " NOT eligible for US federal financial aid. Limited merit scholarships available. Factor in full cost of attendance (~$55,000-$85,000/yr at private schools).";
+
       const prompt =
-        "You are a US university admissions expert for Canadian students. " +
-        "Student profile: " + province + " student, cumulative average " + cumAvg +
+        "You are a US university admissions expert. " +
+        "STUDENT CONTEXT: " + regionContext + " " +
+        "Academic profile: cumulative average " + cumAvg +
         " (" + (gs.scale||"percentage") + "), major: " + intendedMajor + "." +
         extras_tests + extras_ib + extras_ap +
-        " ECs: " + (extras||"none") + ". Awards: " + (awards||"none") + "." +         (prevSchools.length > 0 ? " IMPORTANT: Do NOT recommend any of these schools that were already shown: " + prevSchools.join(", ") + ". Suggest completely different schools." : "") +
+        " ECs: " + (extras||"none") + ". Awards: " + (awards||"none") + "." +
+        (prevSchools.length > 0 ? " IMPORTANT: Do NOT recommend any of these schools that were already shown: " + prevSchools.join(", ") + ". Suggest completely different schools." : "") +
         (isSr ? " Applying this cycle." : " " + hsInfo.yearsOut + " years before applying.") +
         extras_pg + "\n\n" +
-        "Recommend 4 " + tierDef + ".\n\n" +
+        "Recommend 4 " + tierDef + ". In the 'note' field for each school, include region-specific advice: visa requirements, English test requirements if applicable, financial aid availability, and any specific considerations for a student from " + province + ".\n\n" +
         "Respond with ONLY a JSON object, no markdown, no explanation. Use this structure:\n" +
         (tier==="reach" ? '{"gpaEquivalent":"3.9/4.0 US GPA equivalent","profileSummary":"2 sentence profile assessment","' + tier + '":[' : '{"'  + tier + '":[') +
         '{"name":"","location":"City, ST","acceptRate":"","intlFriendly":"","tuition":"","note":"","targetProgram":{"name":"","admRate":"","degree":"","notes":""}},' +
@@ -2200,24 +2300,41 @@ function App() {
             <span style={{background:"linear-gradient(135deg,#c0302a 0%,#c9a84c 25%,#f0e090 50%,#c9a84c 75%,#c0302a 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",fontFamily:"'Great Vibes',cursive",fontSize:"clamp(44px,8vw,80px)",fontWeight:"400"}}>Roadmap</span>
           </h1>
           <p style={{color:"#9898a8",fontSize:"15px",maxWidth:"520px",margin:"0 auto",lineHeight:"1.6"}}>
-            Program-specific accept rates, deep risk analysis, side-by-side comparisons. Built for Canadian international students.
+            Program-specific accept rates, deep risk analysis, side-by-side comparisons. Built for students applying to US universities.
           </p>
         </div>
 
         <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(180,140,60,0.18)",borderRadius:"20px",padding:"28px",marginBottom:"32px"}}>
+          <div style={{marginBottom:"18px"}}>
+            <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>WHERE ARE YOU FROM? *</label>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"8px"}}>
+              {[{key:"canada",label:"🇨🇦 Canada"},{key:"us",label:"🇺🇸 United States"},{key:"other",label:"🌎 Other Country"}].map(o=>{
+                const sel = studentOrigin===o.key;
+                return (
+                  <button key={o.key} onClick={()=>{setStudentOrigin(o.key);setProvince("");}} style={{padding:"12px 8px",borderRadius:"12px",cursor:"pointer",border:"1px solid "+(sel?"rgba(201,168,76,0.6)":"rgba(201,168,76,0.07)"),background:sel?"rgba(201,168,76,0.12)":"rgba(255,255,255,0.03)",color:sel?"#c9a84c":"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"700",textAlign:"center",transition:"all 0.18s"}}>
+                    {o.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"18px",marginBottom:"18px"}}>
             <div>
-              <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"7px"}}>YOUR PROVINCE *</label>
-              <select value={province} onChange={e=>setProvince(e.target.value)} style={Object.assign({},inp,{cursor:"pointer",appearance:"none"})}>
-                <option value="" disabled>Select province</option>
-                {PROVINCES.map(p=><option key={p} value={p} style={{background:"#0c0c0c"}}>{p}</option>)}
+              <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"7px"}}>
+                {studentOrigin==="us" ? "YOUR STATE *" : studentOrigin==="canada" ? "YOUR PROVINCE *" : "YOUR LOCATION *"}
+              </label>
+              <select value={province} onChange={e=>setProvince(e.target.value)} style={Object.assign({},inp,{cursor:"pointer",appearance:"none"})} disabled={!studentOrigin}>
+                <option value="" disabled>{!studentOrigin ? "Select origin first" : studentOrigin==="us" ? "Select state" : studentOrigin==="canada" ? "Select province" : "Select country/region"}</option>
+                {studentOrigin==="canada" && PROVINCES.map(p=><option key={p} value={p} style={{background:"#0c0c0c"}}>{p}</option>)}
+                {studentOrigin==="us" && US_STATES.map(s=><option key={s} value={s} style={{background:"#0c0c0c"}}>{s}</option>)}
+                {studentOrigin==="other" && OTHER_COUNTRIES.map(c=><option key={c} value={c} style={{background:"#0c0c0c"}}>{c}</option>)}
               </select>
             </div>
             <div>
               <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"7px"}}>
-                CUMULATIVE AVERAGE *{province ? " ("+((GRADE_SYSTEMS[province]||{}).scale||"")+")" : ""}
+                {studentOrigin==="us" ? "GPA *" : "CUMULATIVE AVERAGE *"}{province ? " ("+((GRADE_SYSTEMS[province]||{}).scale||"")+")" : ""}
               </label>
-              <input value={cumAvg} onChange={e=>setCumAvg(e.target.value)} placeholder={province ? ((GRADE_SYSTEMS[province]||{}).example||"Enter average") : "Select province first"} style={inp}/>
+              <input value={cumAvg} onChange={e=>setCumAvg(e.target.value)} placeholder={province ? ((GRADE_SYSTEMS[province]||{}).example||"Enter average") : studentOrigin==="us" ? "Select state first" : "Select location first"} style={inp}/>
               {province && <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginTop:"4px"}}>Enter your overall cumulative average across all courses</div>}
             </div>
           </div>
