@@ -8,7 +8,13 @@
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <style>* { box-sizing: border-box; margin: 0; padding: 0; } @media (max-width: 600px) { .mobile-hide { display: none !important; } }</style>
+  <style>* { box-sizing: border-box; margin: 0; padding: 0; } @media (max-width: 600px) { .mobile-hide { display: none !important; } }
+  #google_translate_element { display: inline-block; }
+  .goog-te-gadget { font-family: 'Montserrat', sans-serif !important; font-size: 11px !important; color: #9898a8 !important; }
+  .goog-te-gadget select { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(201,168,76,0.3) !important; border-radius: 8px !important; color: #c9a84c !important; padding: 5px 10px !important; font-size: 11px !important; cursor: pointer !important; outline: none !important; }
+  .goog-te-gadget .goog-te-gadget-simple { background: transparent !important; border: none !important; }
+  .goog-logo-link, .goog-te-gadget span { display: none !important; }
+  </style>
 </head>
 <body>
   <div id="root"></div>
@@ -2268,7 +2274,7 @@ function App() {
             </div>
           </div>
         </div>
-        
+        <div id="google_translate_element"></div>
       </div>
 
       {compareList.length > 0 && (
@@ -2488,7 +2494,7 @@ function Footer() {
           <div style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.15em",marginBottom:"20px"}}>CONNECT WITH US</div>
           <div style={{display:"flex",justifyContent:"center",gap:"12px",flexWrap:"wrap"}}>
             {[
-              {label:"Instagram",icon:"📸",url:"https://www.instagram.com/fypuhere?igsh=Mzdia3Jma3JudjFj&utm_source=qr"},
+              {label:"Instagram",icon:"📸",url:"https://www.instagram.com/fypuhere"},
               {label:"TikTok",icon:"🎵",url:"https://www.tiktok.com/@fypuhere"},
               {label:"Connect with Founder",icon:"✉️",url:"mailto:Hellokayleec@gmail.com"},
             ].map(s=>(
@@ -2542,5 +2548,17 @@ function Footer() {
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(React.createElement(App));
   </script>
-<script defer src="/_vercel/insights/script.js"></script> </body>
+<script defer src="/_vercel/insights/script.js"></script>
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'zh-CN,zh-TW,ko,ja,fr,de,es,hi,ar,pt,vi,th,ru,tr,it,nl,sv,no,da,pl,id,ms,tl,bn,ur,ne,si,km,my,fa,am,sw,yo,ig,ha,ro,uk,el,cs,sk,hu,fi',
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
 </html>
