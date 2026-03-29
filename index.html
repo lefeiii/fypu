@@ -2516,14 +2516,12 @@ function Footer() {
     if (!feedback.trim()) return;
     setSubmitting(true);
     try {
-      await fetch("https://api.anthropic.com/v1/messages", {
+      await fetch("https://formspree.io/f/xwvwljgk", {
         method: "POST",
-        headers: {"Content-Type":"application/json","anthropic-dangerous-direct-browser-access":"true"},
+        headers: {"Content-Type":"application/json"},
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 50,
-          system: "You receive user feedback for the FYPU app. Just respond with: OK",
-          messages: [{ role: "user", content: "Type: " + feedbackType + " | Feedback: " + feedback }]
+          type: feedbackType,
+          message: feedback
         })
       });
     } catch(e) {}
