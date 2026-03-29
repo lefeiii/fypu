@@ -2307,15 +2307,48 @@ function App() {
             Enter your grades and profile. Get a personalized AI university list with acceptance odds, risk analysis, and a step-by-step roadmap — in under 60 seconds.
           </p>
           <div style={{marginTop:"32px",marginBottom:"8px"}}>
-            <video
-              src="./demo_finals.MOV"
-              autoPlay
-              muted
-              loop
-              playsInline
-              style={{width:"100%",maxWidth:"720px",borderRadius:"16px",border:"1px solid rgba(201,168,76,0.25)",boxShadow:"0 8px 40px rgba(192,48,42,0.20)",display:"block",margin:"0 auto"}}
-            />
-            <div style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",textAlign:"center",marginTop:"10px",letterSpacing:"0.08em"}}>↑ LIVE DEMO — SEE FYPU IN ACTION</div>
+            {(()=>{
+              const [modalOpen, setModalOpen] = React.useState(false);
+              return (
+                <>
+                  <div
+                    onClick={()=>setModalOpen(true)}
+                    style={{maxWidth:"480px",margin:"0 auto",borderRadius:"12px",border:"1px solid rgba(201,168,76,0.25)",boxShadow:"0 8px 40px rgba(192,48,42,0.20)",background:"#0a0a0a",cursor:"pointer",position:"relative",overflow:"hidden",height:"80px",display:"flex",alignItems:"center",justifyContent:"center",gap:"14px",transition:"border-color 0.2s"}}
+                    onMouseEnter={e=>e.currentTarget.style.borderColor="rgba(201,168,76,0.6)"}
+                    onMouseLeave={e=>e.currentTarget.style.borderColor="rgba(201,168,76,0.25)"}
+                  >
+                    <div style={{width:"36px",height:"36px",borderRadius:"50%",background:"linear-gradient(135deg,#c0302a,#c9a84c)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                      <span style={{color:"#fff",fontSize:"14px",marginLeft:"3px"}}>▶</span>
+                    </div>
+                    <div style={{textAlign:"left"}}>
+                      <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif"}}>Watch Live Demo</div>
+                      <div style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",marginTop:"2px"}}>See FYPU generate your university list in real time</div>
+                    </div>
+                  </div>
+
+                  {modalOpen && (
+                    <div
+                      onClick={()=>setModalOpen(false)}
+                      style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}
+                    >
+                      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:"860px",borderRadius:"16px",overflow:"hidden",border:"1px solid rgba(201,168,76,0.3)",boxShadow:"0 20px 80px rgba(0,0,0,0.8)",position:"relative"}}>
+                        <button
+                          onClick={()=>setModalOpen(false)}
+                          style={{position:"absolute",top:"12px",right:"12px",background:"rgba(0,0,0,0.6)",border:"1px solid rgba(255,255,255,0.2)",color:"#f0f0f0",borderRadius:"50%",width:"32px",height:"32px",cursor:"pointer",fontSize:"16px",zIndex:10,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1}}
+                        >×</button>
+                        <video
+                          src="./demo_finals.mp4"
+                          controls
+                          autoPlay
+                          playsInline
+                          style={{width:"100%",display:"block",background:"#0a0a0a"}}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>
 
