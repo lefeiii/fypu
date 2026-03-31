@@ -1962,22 +1962,41 @@ function SchoolCard({school, category, profile, onAnalyze, compareNames, onToggl
 const LOGO_URI = "./logo.webp"; "";
 
 function App() {
-  // Load saved profile from localStorage on first render
-  const saved = (() => { try { return JSON.parse(localStorage.getItem('fypu_profile')||'{}'); } catch(e) { return {}; } })();
-
-  const [province,setProvince]           = useState(saved.province||"");
-  const [studentOrigin,setStudentOrigin] = useState(saved.studentOrigin||""); // "canada" | "us" | "other"
-  const [cumAvg,setCumAvg]               = useState(saved.cumAvg||"");
-  const [actScore,setActScore]           = useState(saved.actScore||"");
-  const [programs,setPrograms]           = useState(saved.programs||{ib:false,ap:false});
-  const [ibScore,setIbScore]             = useState(saved.ibScore||"");
-  const [apCourses,setApCourses]         = useState(saved.apCourses||"");
-  const [awards,setAwards]               = useState(saved.awards||"");
-  const [hsYear,setHsYear]               = useState(saved.hsYear||"");
-  const [satScore,setSatScore]           = useState(saved.satScore||"");
-  const [intendedMajor,setIntendedMajor] = useState(saved.intendedMajor||"");
-  const [extras,setExtras]               = useState(saved.extras||"");
+  const [province,setProvince]           = useState("");
+  const [studentOrigin,setStudentOrigin] = useState("");
+  const [cumAvg,setCumAvg]               = useState("");
+  const [actScore,setActScore]           = useState("");
+  const [programs,setPrograms]           = useState({ib:false,ap:false});
+  const [ibScore,setIbScore]             = useState("");
+  const [apCourses,setApCourses]         = useState("");
+  const [awards,setAwards]               = useState("");
+  const [hsYear,setHsYear]               = useState("");
+  const [satScore,setSatScore]           = useState("");
+  const [intendedMajor,setIntendedMajor] = useState("");
+  const [extras,setExtras]               = useState("");
   const [profileSaved, setProfileSaved]  = useState(false);
+
+  // Load saved profile on mount
+  useEffect(()=>{
+    try {
+      const s = localStorage.getItem('fypu_profile');
+      if (s) {
+        const d = JSON.parse(s);
+        if (d.studentOrigin) setStudentOrigin(d.studentOrigin);
+        if (d.province) setProvince(d.province);
+        if (d.cumAvg) setCumAvg(d.cumAvg);
+        if (d.actScore) setActScore(d.actScore);
+        if (d.satScore) setSatScore(d.satScore);
+        if (d.programs) setPrograms(d.programs);
+        if (d.ibScore) setIbScore(d.ibScore);
+        if (d.apCourses) setApCourses(d.apCourses);
+        if (d.awards) setAwards(d.awards);
+        if (d.hsYear) setHsYear(d.hsYear);
+        if (d.intendedMajor) setIntendedMajor(d.intendedMajor);
+        if (d.extras) setExtras(d.extras);
+      }
+    } catch(e) {}
+  },[]);
   const [results,setResults]             = useState(null);
   const [loading,setLoading]             = useState(false);
   const [error,setError]                 = useState("");
