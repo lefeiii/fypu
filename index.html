@@ -8,14 +8,7 @@
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <style>* { box-sizing: border-box; margin: 0; padding: 0; } @media (max-width: 600px) { .mobile-hide { display: none !important; } }
-  #google_translate_element { display: inline-block; }
-  .goog-te-gadget { font-family: 'Montserrat', sans-serif !important; font-size: 0 !important; }
-  .goog-te-gadget select { background: rgba(255,255,255,0.04) !important; border: 1px solid rgba(201,168,76,0.25) !important; border-radius: 8px !important; color: #c9a84c !important; padding: 8px 12px !important; font-size: 11px !important; cursor: pointer !important; outline: none !important; font-family: 'Montserrat', sans-serif !important; font-weight: 600 !important; letter-spacing: 0.05em !important; appearance: none !important; -webkit-appearance: none !important; }
-  .goog-te-gadget > span, .goog-logo-link, .goog-te-gadget img { display: none !important; }
-  .goog-te-banner-frame, .skiptranslate iframe { display: none !important; }
-  body { top: 0 !important; }
-  </style>
+  <style>* { box-sizing: border-box; margin: 0; padding: 0; } @media (max-width: 600px) { .mobile-hide { display: none !important; } }</style>
 </head>
 <body>
   <div id="root"></div>
@@ -1963,7 +1956,7 @@ const LOGO_URI = "./logo.webp"; "";
 
 function App() {
   const [province,setProvince]           = useState("");
-  const [studentOrigin,setStudentOrigin] = useState("");
+  const [studentOrigin,setStudentOrigin] = useState(""); // "canada" | "us" | "other"
   const [cumAvg,setCumAvg]               = useState("");
   const [actScore,setActScore]           = useState("");
   const [programs,setPrograms]           = useState({ib:false,ap:false});
@@ -1974,29 +1967,6 @@ function App() {
   const [satScore,setSatScore]           = useState("");
   const [intendedMajor,setIntendedMajor] = useState("");
   const [extras,setExtras]               = useState("");
-  const [profileSaved, setProfileSaved]  = useState(false);
-
-  // Load saved profile on mount
-  useEffect(()=>{
-    try {
-      const s = localStorage.getItem('fypu_profile');
-      if (s) {
-        const d = JSON.parse(s);
-        if (d.studentOrigin) setStudentOrigin(d.studentOrigin);
-        if (d.province) setProvince(d.province);
-        if (d.cumAvg) setCumAvg(d.cumAvg);
-        if (d.actScore) setActScore(d.actScore);
-        if (d.satScore) setSatScore(d.satScore);
-        if (d.programs) setPrograms(d.programs);
-        if (d.ibScore) setIbScore(d.ibScore);
-        if (d.apCourses) setApCourses(d.apCourses);
-        if (d.awards) setAwards(d.awards);
-        if (d.hsYear) setHsYear(d.hsYear);
-        if (d.intendedMajor) setIntendedMajor(d.intendedMajor);
-        if (d.extras) setExtras(d.extras);
-      }
-    } catch(e) {}
-  },[]);
   const [results,setResults]             = useState(null);
   const [loading,setLoading]             = useState(false);
   const [error,setError]                 = useState("");
@@ -2008,25 +1978,6 @@ function App() {
   const [postGrad,setPostGrad]           = useState(false);
   const [pgPathKey,setPgPathKey]         = useState(null);
   const pgPath = pgPathKey ? (POST_GRAD_PATHS.find(p=>p.key===pgPathKey)||null) : null;
-
-  function saveProfile() {
-    try {
-      localStorage.setItem('fypu_profile', JSON.stringify({
-        province, studentOrigin, cumAvg, actScore, programs,
-        ibScore, apCourses, awards, hsYear, satScore, intendedMajor, extras
-      }));
-      setProfileSaved(true);
-      setTimeout(()=>setProfileSaved(false), 2500);
-    } catch(e) {}
-  }
-
-  function clearProfile() {
-    try { localStorage.removeItem('fypu_profile'); } catch(e) {}
-    setProvince(""); setStudentOrigin(""); setCumAvg(""); setActScore("");
-    setPrograms({ib:false,ap:false}); setIbScore(""); setApCourses("");
-    setAwards(""); setHsYear(""); setSatScore(""); setIntendedMajor("");
-    setExtras(""); setPgPathKey(null);
-  }
   const [howItWorksOpen, setHowItWorksOpen] = React.useState(false);
 
   const profile = {province, cumAvg, actScore, satScore, programs, ibScore, apCourses, awards, hsYear, intendedMajor, extras, postGrad: pgPathKey !== null, pgPathKey, studentOrigin};
@@ -2557,14 +2508,6 @@ function App() {
           </div>
 
           {error && <div style={{color:"#c0302a",fontSize:"13px",marginBottom:"14px",padding:"10px 14px",background:"rgba(139,26,26,0.12)",borderRadius:"8px"}}>{error}</div>}
-          <div style={{display:"flex",gap:"8px",marginBottom:"12px"}}>
-            <button onClick={saveProfile} style={{flex:1,padding:"10px",borderRadius:"10px",cursor:"pointer",border:"1px solid rgba(201,168,76,0.35)",background:profileSaved?"rgba(90,186,106,0.12)":"rgba(201,168,76,0.07)",color:profileSaved?"#5aba6a":"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",letterSpacing:"0.08em",transition:"all 0.2s"}}>
-              {profileSaved ? "✓ PROFILE SAVED" : "💾 SAVE PROFILE"}
-            </button>
-            <button onClick={clearProfile} style={{padding:"10px 16px",borderRadius:"10px",cursor:"pointer",border:"1px solid rgba(255,255,255,0.08)",background:"transparent",color:"#705858",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",letterSpacing:"0.08em"}}>
-              CLEAR
-            </button>
-          </div>
           <button onClick={generate} disabled={loading} style={{width:"100%",background:loading?"rgba(201,168,76,0.3)":"linear-gradient(135deg,#6b9fe4,#2a2a44)",color:"#080808",border:"none",borderRadius:"12px",padding:"14px",fontSize:"14px",fontWeight:"700",letterSpacing:"0.1em",cursor:loading?"not-allowed":"pointer",fontFamily:"'Montserrat',sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:"8px"}}>
             {loading ? (
               <><span style={{display:"inline-block",animation:"nbspin 1s linear infinite"}}>o</span> FINDING YOUR SCHOOLS...</>
