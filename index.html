@@ -8,13 +8,7 @@
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <style>* { box-sizing: border-box; margin: 0; padding: 0; } @media (max-width: 600px) { .mobile-hide { display: none !important; } }
-  #google_translate_element { display: inline-block; }
-  .goog-te-gadget { font-family: 'Montserrat', sans-serif !important; font-size: 11px !important; color: #9898a8 !important; }
-  .goog-te-gadget select { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(201,168,76,0.3) !important; border-radius: 8px !important; color: #c9a84c !important; padding: 5px 10px !important; font-size: 11px !important; cursor: pointer !important; outline: none !important; }
-  .goog-te-gadget .goog-te-gadget-simple { background: transparent !important; border: none !important; }
-  .goog-logo-link, .goog-te-gadget span { display: none !important; }
-  </style>
+  <style>* { box-sizing: border-box; margin: 0; padding: 0; } @media (max-width: 600px) { .mobile-hide { display: none !important; } }</style>
 </head>
 <body>
   <div id="root"></div>
@@ -1984,6 +1978,7 @@ function App() {
   const [postGrad,setPostGrad]           = useState(false);
   const [pgPathKey,setPgPathKey]         = useState(null);
   const pgPath = pgPathKey ? (POST_GRAD_PATHS.find(p=>p.key===pgPathKey)||null) : null;
+  const [howItWorksOpen, setHowItWorksOpen] = React.useState(false);
 
   const profile = {province, cumAvg, actScore, satScore, programs, ibScore, apCourses, awards, hsYear, intendedMajor, extras, postGrad: pgPathKey !== null, pgPathKey, studentOrigin};
 
@@ -2016,6 +2011,7 @@ function App() {
     const hasIB  = programs.ib;
     const hasAP  = programs.ap;
     const pgPath = pgPathKey ? (POST_GRAD_PATHS.find(p=>p.key===pgPathKey)||null) : null;
+  const [howItWorksOpen, setHowItWorksOpen] = React.useState(false);
 
     // Tier prompts are built inside fetchTier() below - no single combined prompt needed
 
@@ -2250,7 +2246,7 @@ function App() {
               onToggleCompare={toggleCompare}/>
           ))}
           <div style={{marginTop:"20px",padding:"12px 16px",background:"rgba(255,255,255,0.03)",borderRadius:"10px",color:"#9898a8",fontSize:"11px",lineHeight:"1.6",fontFamily:"'Montserrat',sans-serif"}}>
-            AI-generated recommendations. Program admit rates and credit policies are approximate benchmarks. Always verify directly with university admissions and registrar offices.
+            FYPU gives you a personalized starting point based on your profile. Acceptance rates and program details are research-based estimates — confirm specifics directly with universities before applying.
           </div>
         </div>
         <style dangerouslySetInnerHTML={{__html:"@keyframes nbspin { to { transform: rotate(360deg); } } @keyframes nbpulse { 0%,100%{opacity:.5} 50%{opacity:1} } * { box-sizing: border-box; overflow-wrap: break-word; word-break: break-word; } p { margin: 0 0 8px; max-width: 100%; } select, input, textarea { color: #f0f0f0 !important; background: #0a0a0a; } select option { background: #141414; color: #f0f0f0; } input::placeholder, textarea::placeholder { color: #444444 !important; } input:focus, textarea:focus, select:focus { border-color: rgba(192,48,42,0.80) !important; outline: none; } ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #080808; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; } @keyframes diamond-pulse { 0%,100%{filter:drop-shadow(0 0 4px rgba(168,200,248,0.3))} 50%{filter:drop-shadow(0 0 12px rgba(255,255,255,0.6))} } .diamond-logo { animation: diamond-pulse 3s ease-in-out infinite; }"}}/>
@@ -2264,18 +2260,51 @@ function App() {
 
       <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,900;1,6..96,400;1,6..96,900&family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 
-      <div style={{borderBottom:"1px solid rgba(107,159,228,0.32)",padding:"22px 36px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-        <div>
-          <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
-            <div style={{display:"inline-flex"}}><img src={LOGO_URI} alt="FYPU" style={{height:"70px",width:"auto",mixBlendMode:"screen"}} /></div>
-            <div>
-              <div style={{fontFamily:"'Great Vibes',cursive",fontSize:"32px",fontWeight:"400",background:"linear-gradient(135deg,#c0302a 0%,#c9a84c 25%,#f0e090 50%,#c9a84c 75%,#c0302a 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",lineHeight:"1.1"}}>Find Your Perfect University</div>
-              <div style={{color:"#9898a8",fontSize:"10px",letterSpacing:"0.13em",marginTop:"2px",fontFamily:"'Montserrat',sans-serif"}}>AI-POWERED UNIVERSITY ADVISOR</div>
+      <div style={{borderBottom:"1px solid rgba(107,159,228,0.32)",padding:"16px 28px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"12px",flexWrap:"wrap"}}>
+        <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
+          <div style={{display:"inline-flex"}}><img src={LOGO_URI} alt="FYPU" style={{height:"70px",width:"auto",mixBlendMode:"screen"}} /></div>
+          <div>
+            <div style={{fontFamily:"'Great Vibes',cursive",fontSize:"32px",fontWeight:"400",background:"linear-gradient(135deg,#c0302a 0%,#c9a84c 25%,#f0e090 50%,#c9a84c 75%,#c0302a 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",lineHeight:"1.1"}}>Find Your Perfect University</div>
+            <div style={{color:"#9898a8",fontSize:"10px",letterSpacing:"0.13em",marginTop:"2px",fontFamily:"'Montserrat',sans-serif"}}>AI-POWERED UNIVERSITY ADVISOR</div>
+          </div>
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
+          <button onClick={()=>setHowItWorksOpen(true)} style={{background:"rgba(201,168,76,0.08)",border:"1px solid rgba(201,168,76,0.25)",color:"#c9a84c",borderRadius:"8px",padding:"8px 16px",cursor:"pointer",fontSize:"11px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.08em",whiteSpace:"nowrap"}}>HOW IT WORKS</button>
+          <div id="google_translate_element"></div>
+        </div>
+      </div>
+
+      {howItWorksOpen && (
+        <div onClick={()=>setHowItWorksOpen(false)} style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.85)",zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
+          <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:"720px",background:"#0f0f0f",border:"1px solid rgba(201,168,76,0.25)",borderRadius:"20px",padding:"32px",position:"relative",maxHeight:"90vh",overflowY:"auto"}}>
+            <button onClick={()=>setHowItWorksOpen(false)} style={{position:"absolute",top:"16px",right:"16px",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.15)",color:"#f0f0f0",borderRadius:"50%",width:"32px",height:"32px",cursor:"pointer",fontSize:"16px",display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>
+            <div style={{color:"#c9a84c",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.15em",marginBottom:"8px"}}>FYPU</div>
+            <div style={{color:"#f0f0f0",fontFamily:"'DM Serif Display',serif",fontSize:"26px",fontWeight:"700",marginBottom:"24px"}}>How It Works</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",marginBottom:"24px"}}>
+              {[
+                {step:"01",title:"Enter Your Profile",desc:"Fill in your grades, test scores, extracurriculars, and intended major. Takes about 60 seconds.",icon:"📋"},
+                {step:"02",title:"AI Generates Your List",desc:"Claude analyzes your profile against real university data and returns 12 personalized schools across reach, target, and safety tiers.",icon:"🎓"},
+                {step:"03",title:"Deep Dive Any School",desc:"Click Analyze for risk analysis, timeline, and optimization advice. Use Compare to weigh two schools side by side.",icon:"🔍"},
+              ].map(s=>(
+                <div key={s.step} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(201,168,76,0.12)",borderRadius:"14px",padding:"18px",textAlign:"center"}}>
+                  <div style={{fontSize:"24px",marginBottom:"8px"}}>{s.icon}</div>
+                  <div style={{color:"#c9a84c",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.15em",marginBottom:"6px"}}>STEP {s.step}</div>
+                  <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>{s.title}</div>
+                  <div style={{color:"#9898a8",fontSize:"11px",lineHeight:"1.6"}}>{s.desc}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{background:"rgba(139,26,26,0.08)",border:"1px solid rgba(201,168,76,0.15)",borderRadius:"12px",padding:"16px 18px",marginBottom:"20px"}}>
+              <div style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700",letterSpacing:"0.12em",marginBottom:"8px"}}>ABOUT THE DATA</div>
+              <div style={{color:"#9898a8",fontSize:"12px",lineHeight:"1.7"}}>FYPU draws on data from <strong style={{color:"#d0d0d8"}}>Common Data Sets</strong>, <strong style={{color:"#d0d0d8"}}>university admissions pages</strong>, <strong style={{color:"#d0d0d8"}}>College Board</strong>, <strong style={{color:"#d0d0d8"}}>IPEDS</strong>, and student forums to give you a personalized starting point. Think of it as your first conversation with a college advisor — use it to build your list, then confirm the details directly with universities.</div>
+            </div>
+            <div style={{background:"rgba(201,168,76,0.06)",border:"1px solid rgba(201,168,76,0.15)",borderRadius:"12px",padding:"16px 18px"}}>
+              <div style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700",letterSpacing:"0.12em",marginBottom:"8px"}}>BUILT FOR SHORT ATTENTION SPANS</div>
+              <div style={{color:"#9898a8",fontSize:"12px",lineHeight:"1.7"}}>Most students aren't going to read through a government website or dig through a ChatGPT wall of text. FYPU gives you <strong style={{color:"#d0d0d8"}}>crisp numbers</strong>, <strong style={{color:"#d0d0d8"}}>visual breakdowns</strong>, and <strong style={{color:"#d0d0d8"}}>instant answers</strong> — no paragraphs, no research required. Fill out one form, get a fully personalized university list with acceptance odds, risk analysis, and a step-by-step roadmap in <strong style={{color:"#d0d0d8"}}>under 60 seconds</strong>. The kind of insight that used to take hours of googling, delivered instantly in a format you can actually use.</div>
             </div>
           </div>
         </div>
-        <div id="google_translate_element"></div>
-      </div>
+      )}
 
       {compareList.length > 0 && (
         <div style={{position:"sticky",top:0,zIndex:100,background:"rgba(8,8,8,0.97)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(201,168,76,0.32)",padding:"10px 24px",display:"flex",alignItems:"center",gap:"12px",flexWrap:"wrap"}}>
@@ -2325,24 +2354,11 @@ function App() {
                       <div style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",marginTop:"2px"}}>See FYPU generate your university list in real time</div>
                     </div>
                   </div>
-
                   {modalOpen && (
-                    <div
-                      onClick={()=>setModalOpen(false)}
-                      style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}
-                    >
+                    <div onClick={()=>setModalOpen(false)} style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
                       <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:"860px",borderRadius:"16px",overflow:"hidden",border:"1px solid rgba(201,168,76,0.3)",boxShadow:"0 20px 80px rgba(0,0,0,0.8)",position:"relative"}}>
-                        <button
-                          onClick={()=>setModalOpen(false)}
-                          style={{position:"absolute",top:"12px",right:"12px",background:"rgba(0,0,0,0.6)",border:"1px solid rgba(255,255,255,0.2)",color:"#f0f0f0",borderRadius:"50%",width:"32px",height:"32px",cursor:"pointer",fontSize:"16px",zIndex:10,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1}}
-                        >×</button>
-                        <video
-                          src="./demo_finals.mp4"
-                          controls
-                          autoPlay
-                          playsInline
-                          style={{width:"100%",display:"block",background:"#0a0a0a"}}
-                        />
+                        <button onClick={()=>setModalOpen(false)} style={{position:"absolute",top:"12px",right:"12px",background:"rgba(0,0,0,0.6)",border:"1px solid rgba(255,255,255,0.2)",color:"#f0f0f0",borderRadius:"50%",width:"32px",height:"32px",cursor:"pointer",fontSize:"16px",zIndex:10,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>×</button>
+                        <video src="./demo_finals.mp4" controls autoPlay playsInline style={{width:"100%",display:"block",background:"#0a0a0a"}}/>
                       </div>
                     </div>
                   )}
@@ -2501,10 +2517,11 @@ function App() {
 
       </div>
       <style dangerouslySetInnerHTML={{__html:"@keyframes nbspin { to { transform: rotate(360deg); } } * { box-sizing: border-box; overflow-wrap: break-word; word-break: break-word; } p { margin: 0 0 8px; max-width: 100%; } select, input, textarea { color: #f0f0f0 !important; background: #0a0a0a; } select option { background: #141414; color: #f0f0f0; } input::placeholder, textarea::placeholder { color: #444444 !important; } input:focus, textarea:focus, select:focus { border-color: rgba(192,48,42,0.80) !important; outline: none; } ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #080808; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; } @keyframes diamond-pulse { 0%,100%{filter:drop-shadow(0 0 4px rgba(168,200,248,0.3))} 50%{filter:drop-shadow(0 0 12px rgba(255,255,255,0.6))} } .diamond-logo { animation: diamond-pulse 3s ease-in-out infinite; }"}}/>
-    <Footer/>
+      <Footer/>
     </div>
   );
 }
+
 
 function Footer() {
   const [feedback, setFeedback] = React.useState("");
@@ -2519,10 +2536,7 @@ function Footer() {
       await fetch("https://formspree.io/f/xwvwljgk", {
         method: "POST",
         headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({
-          type: feedbackType,
-          message: feedback
-        })
+        body: JSON.stringify({ type: feedbackType, message: feedback })
       });
     } catch(e) {}
     setSubmitting(false);
@@ -2585,7 +2599,6 @@ function Footer() {
     </div>
   );
 }
-
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(React.createElement(App));
