@@ -4,16 +4,17 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FYPU — Find Your Perfect University</title>
-  <meta name="description" content="AI-powered US university advisor for high school students worldwide."/>
+  <meta name="description" content="AI-powered US university advisor for Canadian students."/>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>* { box-sizing: border-box; margin: 0; padding: 0; } @media (max-width: 600px) { .mobile-hide { display: none !important; } }
   #google_translate_element { display: inline-block; }
-  .goog-te-gadget { font-family: 'Montserrat', sans-serif !important; font-size: 11px !important; color: #9898a8 !important; }
-  .goog-te-gadget select { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(201,168,76,0.3) !important; border-radius: 8px !important; color: #c9a84c !important; padding: 5px 10px !important; font-size: 11px !important; cursor: pointer !important; outline: none !important; }
-  .goog-te-gadget .goog-te-gadget-simple { background: transparent !important; border: none !important; }
-  .goog-logo-link, .goog-te-gadget span { display: none !important; }
+  .goog-te-gadget { font-family: 'Montserrat', sans-serif !important; font-size: 0 !important; }
+  .goog-te-gadget select { background: rgba(255,255,255,0.04) !important; border: 1px solid rgba(201,168,76,0.25) !important; border-radius: 8px !important; color: #c9a84c !important; padding: 8px 12px !important; font-size: 11px !important; cursor: pointer !important; outline: none !important; font-family: 'Montserrat', sans-serif !important; font-weight: 600 !important; appearance: none !important; -webkit-appearance: none !important; }
+  .goog-te-gadget > span, .goog-logo-link, .goog-te-gadget img { display: none !important; }
+  .goog-te-banner-frame, .skiptranslate iframe { display: none !important; }
+  body { top: 0 !important; }
   </style>
 </head>
 <body>
@@ -29,18 +30,7 @@
 
 const PROVINCES = ["Alberta","British Columbia","Manitoba","New Brunswick","Newfoundland & Labrador","Nova Scotia","Ontario","PEI","Quebec","Saskatchewan"];
 
-const US_STATES = ["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming","Washington D.C."];
-
-const OTHER_COUNTRIES = [
-  "United Kingdom","India","China","South Korea","Germany","France","Australia",
-  "Brazil","Nigeria","Mexico","Japan","Singapore","UAE","Pakistan","Bangladesh",
-  "Indonesia","Philippines","Vietnam","Turkey","Italy","Spain","Netherlands",
-  "Sweden","Norway","Denmark","Switzerland","Poland","Egypt","Kenya","Ghana",
-  "Sri Lanka","Nepal","Malaysia","Thailand","Hong Kong","Taiwan","New Zealand","Other"
-];
-
 const GRADE_SYSTEMS = {
-  // Canadian provinces
   "Alberta":{scale:"Percentage (0-100%)",example:"e.g. 92%"},
   "British Columbia":{scale:"Percentage (0-100%)",example:"e.g. 89%"},
   "Manitoba":{scale:"Percentage (0-100%)",example:"e.g. 85%"},
@@ -51,47 +41,6 @@ const GRADE_SYSTEMS = {
   "PEI":{scale:"Percentage (0-100%)",example:"e.g. 86%"},
   "Quebec":{scale:"R-Score or Percentage",example:"e.g. R-Score 32 or 88%"},
   "Saskatchewan":{scale:"Percentage (0-100%)",example:"e.g. 93%"},
-  // US States — GPA
-  ...Object.fromEntries(US_STATES.map(s=>[s,{scale:"GPA (0-4.0 unweighted / 0-5.0 weighted)",example:"e.g. 3.8 unweighted, 4.3 weighted"}])),
-  // Other countries
-  "United Kingdom":{scale:"A-Level grades or GCSE (A*-E)",example:"e.g. A*A*A or 3 A-Levels"},
-  "India":{scale:"Percentage (0-100%) — CBSE/ICSE/State Board",example:"e.g. 92% (CBSE Class 12)"},
-  "China":{scale:"GaoKao score (300-750) or percentage",example:"e.g. 650/750 GaoKao or 88%"},
-  "South Korea":{scale:"Suneung grade (1-9) or percentage",example:"e.g. Grade 1-2 Suneung or 95%"},
-  "Germany":{scale:"German grade (1.0-4.0, lower is better) or Abitur",example:"e.g. 1.5 Abitur or GPA 1.8"},
-  "France":{scale:"French Baccalauréat (0-20)",example:"e.g. 17/20 Baccalauréat"},
-  "Australia":{scale:"ATAR (0-99.95) or percentage",example:"e.g. ATAR 95 or 90%"},
-  "Brazil":{scale:"ENEM score (0-1000) or percentage (0-10)",example:"e.g. ENEM 850 or 8.5/10"},
-  "Nigeria":{scale:"WAEC/NECO percentage or grade (A1-F9)",example:"e.g. 5 A1s WAEC or 85%"},
-  "Mexico":{scale:"Percentage (0-100) or GPA (0-10)",example:"e.g. 9.2/10 or 92%"},
-  "Japan":{scale:"Percentage (0-100) or GPA equivalent",example:"e.g. 90% or GPA 3.8"},
-  "Singapore":{scale:"GPA (0-4.0) or A-Level (A-E)",example:"e.g. 3.9 GPA or AAA A-Levels"},
-  "UAE":{scale:"Percentage (0-100%)",example:"e.g. 95%"},
-  "Pakistan":{scale:"Percentage (0-100%) — FSc/HSSC",example:"e.g. 88% FSc"},
-  "Bangladesh":{scale:"GPA (0-5.0) — HSC",example:"e.g. 5.0 GPA HSC"},
-  "Indonesia":{scale:"GPA (0-4.0) or percentage",example:"e.g. 3.7 or 88%"},
-  "Philippines":{scale:"GWA (1.0-5.0, lower is better) or percentage",example:"e.g. 1.5 GWA or 92%"},
-  "Vietnam":{scale:"GPA (0-10) or percentage",example:"e.g. 8.5/10"},
-  "Turkey":{scale:"GPA (0-100) or YKS score",example:"e.g. 90/100 or YKS 450"},
-  "Italy":{scale:"Grade (0-10) or Maturità (60-100)",example:"e.g. 9/10 or 95/100 Maturità"},
-  "Spain":{scale:"GPA (0-10) or Selectividad score",example:"e.g. 8.5/10 or 12/14 EBAU"},
-  "Netherlands":{scale:"GPA (1-10, higher is better)",example:"e.g. 8.2/10"},
-  "Sweden":{scale:"Grades (F, E, D, C, B, A) or GPA (0-20)",example:"e.g. 19.5/20 merit score"},
-  "Norway":{scale:"Grades (1-6, higher is better)",example:"e.g. 5.5/6"},
-  "Denmark":{scale:"Danish 7-point scale (-3 to 12)",example:"e.g. 10/12"},
-  "Switzerland":{scale:"GPA (1-6, higher is better)",example:"e.g. 5.5/6 Matura"},
-  "Poland":{scale:"GPA (1-6) or Matura percentage",example:"e.g. 5.5/6 or 85% Matura"},
-  "Egypt":{scale:"Percentage (0-100%) — Thanaweya Amma",example:"e.g. 92%"},
-  "Kenya":{scale:"KCSE Grade (A-E) or points (0-84)",example:"e.g. A (80 points) KCSE"},
-  "Ghana":{scale:"WASSCE grade (A1-F9) or aggregate",example:"e.g. Aggregate 6 WASSCE"},
-  "Sri Lanka":{scale:"A-Level grades (A-S) or percentage",example:"e.g. AAB A-Levels"},
-  "Nepal":{scale:"Percentage (0-100%) — NEB/+2",example:"e.g. 88% NEB"},
-  "Malaysia":{scale:"CGPA (0-4.0) or SPM grade",example:"e.g. 3.8 CGPA or 9A SPM"},
-  "Thailand":{scale:"GPA (0-4.0) or percentage",example:"e.g. 3.7 GPA"},
-  "Hong Kong":{scale:"HKDSE score (Level 1-5**)",example:"e.g. 5**5**5* HKDSE"},
-  "Taiwan":{scale:"GPA (0-4.3) or percentage",example:"e.g. 3.9 GPA or 92%"},
-  "New Zealand":{scale:"NCEA credits or GPA (0-9)",example:"e.g. Excellence endorsement or 8/9"},
-  "Other":{scale:"Enter your grading system and score",example:"e.g. 90% or GPA 3.8 — specify system"},
 };
 
 const HS_YEARS = [
@@ -579,25 +528,15 @@ function AnalysisPage({school, category, profile, onBack}) {
 
   async function runAnalysis() {
     const gs = GRADE_SYSTEMS[profile.province] || {};
-    const isUSStudent = profile.studentOrigin === "us";
-    const visaNote = isUSStudent ? "Domestic US student, no visa required." :
-      profile.studentOrigin==="canada" ? "Canadian student, F-1 visa required, no English test needed." :
-      profile.province==="United Kingdom" || profile.province==="Australia" || profile.province==="New Zealand" || profile.province==="Singapore" || profile.province==="Hong Kong"
-        ? "English-speaking country, TOEFL/IELTS may be waived. F-1 visa required." :
-      "IELTS 6.5+ or TOEFL 90+ required. F-1 visa required. Financial proof needed.";
     const ctx =
-      "Current date: " + new Date().toLocaleDateString('en-US', {month:'long', year:'numeric'}) + ". " +
-      (isUSStudent ? "Domestic US student" : "International student from " + profile.province) +
-      ": location=" + profile.province + ", avg=" + profile.cumAvg + " (" + (gs.scale||"") + "), " +
+      "Current date: " + new Date().toLocaleDateString('en-US', {month:'long', year:'numeric'}) + ". Student: province=" + profile.province + ", avg=" + profile.cumAvg + " (" + (gs.scale||"") + "), " +
       "SAT=" + (profile.satScore||"N/A") + ", ACT=" + (profile.actScore||"N/A") + ", " +
       "major=" + profile.intendedMajor + ", year=" + hsYear +
       (profile.programs&&profile.programs.ib ? ", IB predicted="+profile.ibScore+"/45" : "") +
       (profile.programs&&profile.programs.ap ? ", AP: "+profile.apCourses : "") +
       ", ECs=" + (profile.extras||"none") + ", awards=" + (profile.awards||"none") + ". " +
-      visaNote + " " +
       "School: " + school.name + " (" + category + ", accept=" + school.acceptRate + "). " +
-      "Program: " + ((school.targetProgram||{}).name||profile.intendedMajor) + " (" + ((school.targetProgram||{}).admRate||"?") + "). " +
-      "Tailor ALL advice specifically for a student from " + profile.province + " including visa steps, English test requirements, financial aid eligibility, and credential evaluation if needed.";
+      "Program: " + ((school.targetProgram||{}).name||profile.intendedMajor) + " (" + ((school.targetProgram||{}).admRate||"?") + "). ";
 
     async function callAPI(promptText, maxTok) {
       for (let t = 1; t <= 2; t++) {
@@ -858,30 +797,17 @@ function AnalysisPage({school, category, profile, onBack}) {
               </DCard>
 
               <DCard>
-                {profile.studentOrigin==="us" ? (
-                  <>
-                    <CLabel>FINANCIAL AID OPPORTUNITY<InfoTip text="As a domestic US student, you have full access to federal financial aid, merit scholarships, and need-based aid that international students cannot access."/></CLabel>
-                    <div style={{background:"rgba(90,186,106,0.08)",border:"1px solid rgba(90,186,106,0.25)",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px"}}>
-                      <div style={{color:"#5aba6a",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"3px"}}>DOMESTIC ADVANTAGE</div>
-                      <div style={{color:"#d0d0d8",fontSize:"12px"}}>As a US domestic student you apply at domestic admission rates and are eligible for FAFSA, federal loans, merit aid, and need-based grants.</div>
-                    </div>
-                    <p style={{color:"#9898a8",fontSize:"12px",margin:0}}><strong style={{color:"#d0d0d8"}}>Financial Aid: </strong>{data.riskAnalysis.internationalPenalty.financialAidRisk}</p>
-                  </>
-                ) : (
-                  <>
-                    <CLabel>INTERNATIONAL PENALTY<InfoTip text="Most US universities admit international students at a much lower rate than domestic students, and offer little or no financial aid. This section quantifies exactly how much harder it is for you as an international applicant."/></CLabel>
-                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"10px",marginBottom:"12px"}}>
-                      <SBox label="Domestic" value={data.riskAnalysis.internationalPenalty.domesticRate} color="#5aba6a"/>
-                      <SBox label="Intl Rate" value={data.riskAnalysis.internationalPenalty.internationalRate} color="#c0302a"/>
-                      <SBox label="x Harder" value={data.riskAnalysis.internationalPenalty.penaltyFactor} color="#e8c96a"/>
-                    </div>
-                    <div style={{background:"rgba(139,156,244,0.08)",border:"1px solid rgba(139,156,244,0.25)",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px"}}>
-                      <div style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"3px"}}>INTERNATIONAL NOTE</div>
-                      <div style={{color:"#d0d0d8",fontSize:"12px",overflowWrap:"break-word"}}>{data.riskAnalysis.internationalPenalty.canadianSpecific}</div>
-                    </div>
-                    <p style={{color:"#9898a8",fontSize:"12px",margin:0}}><strong style={{color:"#d0d0d8"}}>Financial Aid: </strong>{data.riskAnalysis.internationalPenalty.financialAidRisk}</p>
-                  </>
-                )}
+                <CLabel>INTERNATIONAL PENALTY<InfoTip text="Most US universities admit international students at a much lower rate than domestic students, and offer little or no financial aid. This section quantifies exactly how much harder it is for you as a Canadian applicant."/></CLabel>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"10px",marginBottom:"12px"}}>
+                  <SBox label="Domestic" value={data.riskAnalysis.internationalPenalty.domesticRate} color="#5aba6a"/>
+                  <SBox label="Intl Rate" value={data.riskAnalysis.internationalPenalty.internationalRate} color="#c0302a"/>
+                  <SBox label="x Harder" value={data.riskAnalysis.internationalPenalty.penaltyFactor} color="#e8c96a"/>
+                </div>
+                <div style={{background:"rgba(139,156,244,0.08)",border:"1px solid rgba(139,156,244,0.25)",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px"}}>
+                  <div style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"3px"}}>CANADIAN NOTE</div>
+                  <div style={{color:"#d0d0d8",fontSize:"12px",overflowWrap:"break-word"}}>{data.riskAnalysis.internationalPenalty.canadianSpecific}</div>
+                </div>
+                <p style={{color:"#9898a8",fontSize:"12px",margin:0}}><strong style={{color:"#d0d0d8"}}>Financial Aid: </strong>{data.riskAnalysis.internationalPenalty.financialAidRisk}</p>
               </DCard>
               <DCard>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"14px"}}>
@@ -1350,10 +1276,8 @@ function ComparePage({schoolA, schoolB, catA, catB, profile, onBack}) {
     const progA = (schoolA.targetProgram||{}).name || profile.intendedMajor;
     const progB = (schoolB.targetProgram||{}).name || profile.intendedMajor;
     const ctx =
-      (profile.studentOrigin==="us" ? "Domestic US student" : "International student from " + profile.province) +
-      " (location=" + profile.province + ", avg=" + profile.grade +
+      "Canadian student (province=" + profile.province + ", avg=" + profile.grade +
       ", SAT=" + (profile.satScore||"none") + ", major=" + profile.intendedMajor + ") " +
-      (profile.studentOrigin!=="us" ? "F-1 visa required. " + (["United Kingdom","Australia","New Zealand","Singapore","Hong Kong"].includes(profile.province) ? "English test likely waived. " : "IELTS/TOEFL required. ") + "No US federal aid eligibility. " : "Full financial aid eligible. ") +
       "comparing " + sA + " (" + progA + ") vs " + sB + " (" + progB + "). " +
       "Return ONLY a single JSON object, no markdown:\n";
 
@@ -1962,7 +1886,7 @@ const LOGO_URI = "./logo.webp"; "";
 
 function App() {
   const [province,setProvince]           = useState("");
-  const [studentOrigin,setStudentOrigin] = useState(""); // "canada" | "us" | "other"
+  const [studentOrigin,setStudentOrigin] = useState("");
   const [cumAvg,setCumAvg]               = useState("");
   const [actScore,setActScore]           = useState("");
   const [programs,setPrograms]           = useState({ib:false,ap:false});
@@ -1973,6 +1897,31 @@ function App() {
   const [satScore,setSatScore]           = useState("");
   const [intendedMajor,setIntendedMajor] = useState("");
   const [extras,setExtras]               = useState("");
+  const [profileSaved,setProfileSaved]   = useState(false);
+  const [howItWorksOpen,setHowItWorksOpen] = useState(false);
+  const [demoOpen,setDemoOpen]             = useState(false);
+
+  useEffect(()=>{
+    try {
+      const s = localStorage.getItem('fypu_profile');
+      if (s) {
+        const d = JSON.parse(s);
+        if (d.studentOrigin) setStudentOrigin(d.studentOrigin);
+        if (d.province) setProvince(d.province);
+        if (d.cumAvg) setCumAvg(d.cumAvg);
+        if (d.actScore) setActScore(d.actScore);
+        if (d.satScore) setSatScore(d.satScore);
+        if (d.programs) setPrograms(d.programs);
+        if (d.ibScore) setIbScore(d.ibScore);
+        if (d.apCourses) setApCourses(d.apCourses);
+        if (d.awards) setAwards(d.awards);
+        if (d.hsYear) setHsYear(d.hsYear);
+        if (d.intendedMajor) setIntendedMajor(d.intendedMajor);
+        if (d.extras) setExtras(d.extras);
+      }
+    } catch(e) {}
+  },[]);
+
   const [results,setResults]             = useState(null);
   const [loading,setLoading]             = useState(false);
   const [error,setError]                 = useState("");
@@ -1985,7 +1934,26 @@ function App() {
   const [pgPathKey,setPgPathKey]         = useState(null);
   const pgPath = pgPathKey ? (POST_GRAD_PATHS.find(p=>p.key===pgPathKey)||null) : null;
 
-  const profile = {province, cumAvg, actScore, satScore, programs, ibScore, apCourses, awards, hsYear, intendedMajor, extras, postGrad: pgPathKey !== null, pgPathKey, studentOrigin};
+  function saveProfile() {
+    try {
+      localStorage.setItem('fypu_profile', JSON.stringify({
+        province, studentOrigin, cumAvg, actScore, programs,
+        ibScore, apCourses, awards, hsYear, satScore, intendedMajor, extras
+      }));
+      setProfileSaved(true);
+      setTimeout(()=>setProfileSaved(false), 2500);
+    } catch(e) {}
+  }
+
+  function clearProfile() {
+    try { localStorage.removeItem('fypu_profile'); } catch(e) {}
+    setProvince(""); setStudentOrigin(""); setCumAvg(""); setActScore("");
+    setPrograms({ib:false,ap:false}); setIbScore(""); setApCourses("");
+    setAwards(""); setHsYear(""); setSatScore(""); setIntendedMajor("");
+    setExtras(""); setPgPathKey(null);
+  }
+
+  const profile = {province, studentOrigin, cumAvg, actScore, satScore, programs, ibScore, apCourses, awards, hsYear, intendedMajor, extras, postGrad: pgPathKey !== null, pgPathKey};
 
   function resetToForm() {
     setPage("form");
@@ -2005,10 +1973,7 @@ function App() {
   }
 
   async function generate() {
-    if (!studentOrigin) { setError("Please select where you are from."); return; }
-    if (!province || !cumAvg || !intendedMajor || !hsYear) { setError("Please fill in your location, cumulative average, school year, and intended major."); return; }
-    const isUSStudent = studentOrigin === "us";
-    const isIntl = studentOrigin !== "us";
+    if (!province || !cumAvg || !intendedMajor || !hsYear) { setError("Please fill in province, cumulative average, school year, and intended major."); return; }
     setError(""); setLoading(true); setResults(null); setCompareList([]);
     const gs     = GRADE_SYSTEMS[province] || {};
     const hsInfo = HS_YEARS.find(y=>y.value===hsYear) || HS_YEARS[3];
@@ -2032,34 +1997,15 @@ function App() {
       const extras_ap = hasAP ? " AP courses: " + (apCourses||"various") + "." : "";
       const extras_tests = (satScore||actScore) ? " SAT=" + (satScore||"N/A") + " ACT=" + (actScore||"N/A") + "." : "";
 
-      const regionContext = isUSStudent
-        ? "DOMESTIC US student from " + province + ": treat as domestic applicant. Use domestic admission rates. Full FAFSA, merit scholarships, and need-based aid eligibility. No English proficiency test required. Common App applies normally."
-        : studentOrigin==="canada"
-        ? "CANADIAN international student from " + province + ": grading system is " + (gs.scale||"percentage") + ". No IELTS/TOEFL required for most schools as Canada is English-speaking (except Quebec French programs). Eligible for limited merit aid but NOT federal US aid. F-1 visa required. Strong passport, straightforward visa process."
-        : "INTERNATIONAL student from " + province + ": grading system is " + (gs.scale||"percentage") + ". " +
-          (province==="China" ? "GaoKao score context important. IELTS 6.5-7.5 or TOEFL 90-100 typically required. F-1 visa required. High competition from Chinese applicants at elite schools." :
-           province==="India" ? "CBSE/ICSE percentage context important. IELTS 6.5+ or TOEFL 90+ typically required. F-1 visa required. Strong STEM applicant pool from India." :
-           province==="United Kingdom" ? "A-Level grades context important. No IELTS/TOEFL required (native English). F-1 visa required. UK A-levels highly respected by US universities." :
-           province==="South Korea" ? "Suneung context important. IELTS 6.5+ or TOEFL 90+ typically required. F-1 visa required." :
-           province==="Germany" ? "Abitur context important. IELTS 6.5+ or TOEFL 90+ typically required. F-1 visa required. Strong academic reputation." :
-           province==="France" ? "Baccalauréat context. IELTS 6.5+ or TOEFL 90+ typically required. F-1 visa required." :
-           province==="Australia" || province==="New Zealand" ? "Native English — no IELTS/TOEFL required at most schools. F-1 visa required." :
-           province==="Nigeria" || province==="Ghana" || province==="Kenya" ? "WAEC/NECO grades important. IELTS 6.5+ or TOEFL 90+ may be required. F-1 visa required. Financial documentation critical for visa." :
-           province==="Singapore" || province==="Hong Kong" ? "English proficiency strong — TOEFL/IELTS may be waived. F-1 visa required." :
-           "IELTS 6.5+ or TOEFL 90+ typically required. F-1 visa required. Financial documentation needed.") +
-          " NOT eligible for US federal financial aid. Limited merit scholarships available. Factor in full cost of attendance (~$55,000-$85,000/yr at private schools).";
-
       const prompt =
-        "You are a US university admissions expert. " +
-        "STUDENT CONTEXT: " + regionContext + " " +
-        "Academic profile: cumulative average " + cumAvg +
+        "You are a US university admissions expert for Canadian students. " +
+        "Student profile: " + province + " student, cumulative average " + cumAvg +
         " (" + (gs.scale||"percentage") + "), major: " + intendedMajor + "." +
         extras_tests + extras_ib + extras_ap +
-        " ECs: " + (extras||"none") + ". Awards: " + (awards||"none") + "." +
-        (prevSchools.length > 0 ? " IMPORTANT: Do NOT recommend any of these schools that were already shown: " + prevSchools.join(", ") + ". Suggest completely different schools." : "") +
+        " ECs: " + (extras||"none") + ". Awards: " + (awards||"none") + "." +         (prevSchools.length > 0 ? " IMPORTANT: Do NOT recommend any of these schools that were already shown: " + prevSchools.join(", ") + ". Suggest completely different schools." : "") +
         (isSr ? " Applying this cycle." : " " + hsInfo.yearsOut + " years before applying.") +
         extras_pg + "\n\n" +
-        "Recommend 4 " + tierDef + ". In the 'note' field for each school, include region-specific advice: visa requirements, English test requirements if applicable, financial aid availability, and any specific considerations for a student from " + province + ".\n\n" +
+        "Recommend 4 " + tierDef + ".\n\n" +
         "Respond with ONLY a JSON object, no markdown, no explanation. Use this structure:\n" +
         (tier==="reach" ? '{"gpaEquivalent":"3.9/4.0 US GPA equivalent","profileSummary":"2 sentence profile assessment","' + tier + '":[' : '{"'  + tier + '":[') +
         '{"name":"","location":"City, ST","acceptRate":"","intlFriendly":"","tuition":"","note":"","targetProgram":{"name":"","admRate":"","degree":"","notes":""}},' +
@@ -2250,7 +2196,7 @@ function App() {
               onToggleCompare={toggleCompare}/>
           ))}
           <div style={{marginTop:"20px",padding:"12px 16px",background:"rgba(255,255,255,0.03)",borderRadius:"10px",color:"#9898a8",fontSize:"11px",lineHeight:"1.6",fontFamily:"'Montserrat',sans-serif"}}>
-            AI-generated recommendations. Program admit rates and credit policies are approximate benchmarks. Always verify directly with university admissions and registrar offices.
+            FYPU gives you a personalized starting point based on your profile. Acceptance rates and program details are research-based estimates — confirm specifics directly with universities before applying.
           </div>
         </div>
         <style dangerouslySetInnerHTML={{__html:"@keyframes nbspin { to { transform: rotate(360deg); } } @keyframes nbpulse { 0%,100%{opacity:.5} 50%{opacity:1} } * { box-sizing: border-box; overflow-wrap: break-word; word-break: break-word; } p { margin: 0 0 8px; max-width: 100%; } select, input, textarea { color: #f0f0f0 !important; background: #0a0a0a; } select option { background: #141414; color: #f0f0f0; } input::placeholder, textarea::placeholder { color: #444444 !important; } input:focus, textarea:focus, select:focus { border-color: rgba(192,48,42,0.80) !important; outline: none; } ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #080808; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; } @keyframes diamond-pulse { 0%,100%{filter:drop-shadow(0 0 4px rgba(168,200,248,0.3))} 50%{filter:drop-shadow(0 0 12px rgba(255,255,255,0.6))} } .diamond-logo { animation: diamond-pulse 3s ease-in-out infinite; }"}}/>
@@ -2264,18 +2210,47 @@ function App() {
 
       <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,900;1,6..96,400;1,6..96,900&family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 
-      <div style={{borderBottom:"1px solid rgba(107,159,228,0.32)",padding:"22px 36px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-        <div>
-          <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
-            <div style={{display:"inline-flex"}}><img src={LOGO_URI} alt="FYPU" style={{height:"70px",width:"auto",mixBlendMode:"screen"}} /></div>
-            <div>
-              <div style={{fontFamily:"'Great Vibes',cursive",fontSize:"32px",fontWeight:"400",background:"linear-gradient(135deg,#c0302a 0%,#c9a84c 25%,#f0e090 50%,#c9a84c 75%,#c0302a 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",lineHeight:"1.1"}}>Find Your Perfect University</div>
-              <div style={{color:"#9898a8",fontSize:"10px",letterSpacing:"0.13em",marginTop:"2px",fontFamily:"'Montserrat',sans-serif"}}>AI-POWERED UNIVERSITY ADVISOR</div>
+      <div style={{borderBottom:"1px solid rgba(107,159,228,0.32)",padding:"16px 28px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"12px",flexWrap:"wrap"}}>
+        <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
+          <div style={{display:"inline-flex"}}><img src={LOGO_URI} alt="FYPU" style={{height:"70px",width:"auto",mixBlendMode:"screen"}} /></div>
+          <div>
+            <div style={{fontFamily:"'Great Vibes',cursive",fontSize:"32px",fontWeight:"400",background:"linear-gradient(135deg,#c0302a 0%,#c9a84c 25%,#f0e090 50%,#c9a84c 75%,#c0302a 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",lineHeight:"1.1"}}>Find Your Perfect University</div>
+            <div style={{color:"#9898a8",fontSize:"10px",letterSpacing:"0.13em",marginTop:"2px",fontFamily:"'Montserrat',sans-serif"}}>AI-POWERED UNIVERSITY ADVISOR</div>
+          </div>
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
+          <button onClick={()=>setHowItWorksOpen(true)} style={{background:"rgba(201,168,76,0.08)",border:"1px solid rgba(201,168,76,0.25)",color:"#c9a84c",borderRadius:"8px",padding:"8px 16px",cursor:"pointer",fontSize:"11px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.08em",whiteSpace:"nowrap"}}>HOW IT WORKS</button>
+          <div id="google_translate_element"></div>
+        </div>
+      </div>
+
+      {howItWorksOpen && (
+        <div onClick={()=>setHowItWorksOpen(false)} style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.85)",zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
+          <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:"720px",background:"#0f0f0f",border:"1px solid rgba(201,168,76,0.25)",borderRadius:"20px",padding:"32px",position:"relative",maxHeight:"90vh",overflowY:"auto"}}>
+            <button onClick={()=>setHowItWorksOpen(false)} style={{position:"absolute",top:"16px",right:"16px",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.15)",color:"#f0f0f0",borderRadius:"50%",width:"32px",height:"32px",cursor:"pointer",fontSize:"16px",display:"flex",alignItems:"center",justifyContent:"center"}}>x</button>
+            <div style={{color:"#c9a84c",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.15em",marginBottom:"8px"}}>FYPU</div>
+            <div style={{color:"#f0f0f0",fontFamily:"'DM Serif Display',serif",fontSize:"26px",fontWeight:"700",marginBottom:"24px"}}>How It Works</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",marginBottom:"24px"}}>
+              {[{step:"01",title:"Enter Your Profile",desc:"Fill in your grades, test scores, extracurriculars, and intended major. Takes about 60 seconds.",icon:"📋"},{step:"02",title:"Get Your List",desc:"Get 12 personalized schools across reach, target, and safety tiers in under 60 seconds.",icon:"🎓"},{step:"03",title:"Deep Dive",desc:"Click Analyze for risk analysis and timeline. Use Compare for side-by-side breakdowns.",icon:"🔍"}].map(s=>(
+                <div key={s.step} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(201,168,76,0.12)",borderRadius:"14px",padding:"18px",textAlign:"center"}}>
+                  <div style={{fontSize:"24px",marginBottom:"8px"}}>{s.icon}</div>
+                  <div style={{color:"#c9a84c",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.15em",marginBottom:"6px"}}>STEP {s.step}</div>
+                  <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>{s.title}</div>
+                  <div style={{color:"#9898a8",fontSize:"11px",lineHeight:"1.6"}}>{s.desc}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{background:"rgba(139,26,26,0.08)",border:"1px solid rgba(201,168,76,0.15)",borderRadius:"12px",padding:"16px 18px",marginBottom:"16px"}}>
+              <div style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700",letterSpacing:"0.12em",marginBottom:"8px"}}>ABOUT THE DATA</div>
+              <div style={{color:"#9898a8",fontSize:"12px",lineHeight:"1.7"}}>FYPU draws on data from <strong style={{color:"#d0d0d8"}}>Common Data Sets</strong>, <strong style={{color:"#d0d0d8"}}>university admissions pages</strong>, <strong style={{color:"#d0d0d8"}}>College Board</strong>, and <strong style={{color:"#d0d0d8"}}>IPEDS</strong>. Think of it as your first conversation with a college advisor — use it to build your list, then confirm details directly with universities.</div>
+            </div>
+            <div style={{background:"rgba(201,168,76,0.06)",border:"1px solid rgba(201,168,76,0.15)",borderRadius:"12px",padding:"16px 18px"}}>
+              <div style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700",letterSpacing:"0.12em",marginBottom:"8px"}}>BUILT FOR SHORT ATTENTION SPANS</div>
+              <div style={{color:"#9898a8",fontSize:"12px",lineHeight:"1.7"}}>Most students will not read through a government website or a ChatGPT wall of text. FYPU gives you <strong style={{color:"#d0d0d8"}}>crisp numbers</strong>, <strong style={{color:"#d0d0d8"}}>visual breakdowns</strong>, and <strong style={{color:"#d0d0d8"}}>instant answers</strong> — no paragraphs, no research required. The insight that used to take hours of googling, in <strong style={{color:"#d0d0d8"}}>under 60 seconds</strong>.</div>
             </div>
           </div>
         </div>
-        <div id="google_translate_element"></div>
-      </div>
+      )}
 
       {compareList.length > 0 && (
         <div style={{position:"sticky",top:0,zIndex:100,background:"rgba(8,8,8,0.97)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(201,168,76,0.32)",padding:"10px 24px",display:"flex",alignItems:"center",gap:"12px",flexWrap:"wrap"}}>
@@ -2304,41 +2279,41 @@ function App() {
             <span style={{background:"linear-gradient(135deg,#c0302a 0%,#c9a84c 25%,#f0e090 50%,#c9a84c 75%,#c0302a 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",fontFamily:"'Great Vibes',cursive",fontSize:"clamp(44px,8vw,80px)",fontWeight:"400"}}>University</span>
           </h1>
           <p style={{color:"#9898a8",fontSize:"13px",maxWidth:"520px",margin:"0 auto",lineHeight:"1.6"}}>
-            Enter your grades and profile. Get a personalized AI university list with acceptance odds, risk analysis, and a step-by-step roadmap — in under 60 seconds.
+            Enter your grades and profile. Get a personalized university list with acceptance odds, risk analysis, and a step-by-step roadmap — in under 60 seconds.
           </p>
+          <div style={{marginTop:"32px",marginBottom:"8px"}}>
+            <div onClick={()=>setDemoOpen(true)} style={{maxWidth:"480px",margin:"0 auto",borderRadius:"12px",border:"1px solid rgba(201,168,76,0.25)",boxShadow:"0 8px 40px rgba(192,48,42,0.20)",background:"#0a0a0a",cursor:"pointer",height:"80px",display:"flex",alignItems:"center",justifyContent:"center",gap:"14px",transition:"border-color 0.2s"}} onMouseEnter={e=>e.currentTarget.style.borderColor="rgba(201,168,76,0.6)"} onMouseLeave={e=>e.currentTarget.style.borderColor="rgba(201,168,76,0.25)"}>
+              <div style={{width:"36px",height:"36px",borderRadius:"50%",background:"linear-gradient(135deg,#c0302a,#c9a84c)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><span style={{color:"#fff",fontSize:"14px",marginLeft:"3px"}}>▶</span></div>
+              <div style={{textAlign:"left"}}>
+                <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif"}}>Watch Live Demo</div>
+                <div style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",marginTop:"2px"}}>See FYPU generate your university list in real time</div>
+              </div>
+            </div>
+            {demoOpen && (
+              <div onClick={()=>setDemoOpen(false)} style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
+                <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:"860px",borderRadius:"16px",overflow:"hidden",border:"1px solid rgba(201,168,76,0.3)",position:"relative"}}>
+                  <button onClick={()=>setDemoOpen(false)} style={{position:"absolute",top:"12px",right:"12px",background:"rgba(0,0,0,0.6)",border:"1px solid rgba(255,255,255,0.2)",color:"#f0f0f0",borderRadius:"50%",width:"32px",height:"32px",cursor:"pointer",fontSize:"18px",zIndex:10,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>x</button>
+                  <video src="./demo_finals.mp4" controls autoPlay playsInline style={{width:"100%",display:"block",background:"#0a0a0a"}}/>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(180,140,60,0.18)",borderRadius:"20px",padding:"28px",marginBottom:"32px"}}>
-          <div style={{marginBottom:"18px"}}>
-            <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>WHERE ARE YOU FROM? *</label>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"8px"}}>
-              {[{key:"canada",label:"🇨🇦 Canada"},{key:"us",label:"🇺🇸 United States"},{key:"other",label:"🌎 Other Country"}].map(o=>{
-                const sel = studentOrigin===o.key;
-                return (
-                  <button key={o.key} onClick={()=>{setStudentOrigin(o.key);setProvince("");}} style={{padding:"12px 8px",borderRadius:"12px",cursor:"pointer",border:"1px solid "+(sel?"rgba(201,168,76,0.6)":"rgba(201,168,76,0.07)"),background:sel?"rgba(201,168,76,0.12)":"rgba(255,255,255,0.03)",color:sel?"#c9a84c":"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"700",textAlign:"center",transition:"all 0.18s"}}>
-                    {o.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"18px",marginBottom:"18px"}}>
             <div>
-              <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"7px"}}>
-                {studentOrigin==="us" ? "YOUR STATE *" : studentOrigin==="canada" ? "YOUR PROVINCE *" : "YOUR LOCATION *"}
-              </label>
-              <select value={province} onChange={e=>setProvince(e.target.value)} style={Object.assign({},inp,{cursor:"pointer",appearance:"none"})} disabled={!studentOrigin}>
-                <option value="" disabled>{!studentOrigin ? "Select origin first" : studentOrigin==="us" ? "Select state" : studentOrigin==="canada" ? "Select province" : "Select country/region"}</option>
-                {studentOrigin==="canada" && PROVINCES.map(p=><option key={p} value={p} style={{background:"#0c0c0c"}}>{p}</option>)}
-                {studentOrigin==="us" && US_STATES.map(s=><option key={s} value={s} style={{background:"#0c0c0c"}}>{s}</option>)}
-                {studentOrigin==="other" && OTHER_COUNTRIES.map(c=><option key={c} value={c} style={{background:"#0c0c0c"}}>{c}</option>)}
+              <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"7px"}}>YOUR PROVINCE *</label>
+              <select value={province} onChange={e=>setProvince(e.target.value)} style={Object.assign({},inp,{cursor:"pointer",appearance:"none"})}>
+                <option value="" disabled>Select province</option>
+                {PROVINCES.map(p=><option key={p} value={p} style={{background:"#0c0c0c"}}>{p}</option>)}
               </select>
             </div>
             <div>
               <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"7px"}}>
-                {studentOrigin==="us" ? "GPA *" : "CUMULATIVE AVERAGE *"}{province ? " ("+((GRADE_SYSTEMS[province]||{}).scale||"")+")" : ""}
+                CUMULATIVE AVERAGE *{province ? " ("+((GRADE_SYSTEMS[province]||{}).scale||"")+")" : ""}
               </label>
-              <input value={cumAvg} onChange={e=>setCumAvg(e.target.value)} placeholder={province ? ((GRADE_SYSTEMS[province]||{}).example||"Enter average") : studentOrigin==="us" ? "Select state first" : "Select location first"} style={inp}/>
+              <input value={cumAvg} onChange={e=>setCumAvg(e.target.value)} placeholder={province ? ((GRADE_SYSTEMS[province]||{}).example||"Enter average") : "Select province first"} style={inp}/>
               {province && <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginTop:"4px"}}>Enter your overall cumulative average across all courses</div>}
             </div>
           </div>
@@ -2448,6 +2423,14 @@ function App() {
           </div>
 
           {error && <div style={{color:"#c0302a",fontSize:"13px",marginBottom:"14px",padding:"10px 14px",background:"rgba(139,26,26,0.12)",borderRadius:"8px"}}>{error}</div>}
+          <div style={{display:"flex",gap:"8px",marginBottom:"12px"}}>
+            <button onClick={saveProfile} style={{flex:1,padding:"10px",borderRadius:"10px",cursor:"pointer",border:"1px solid rgba(201,168,76,0.35)",background:profileSaved?"rgba(90,186,106,0.12)":"rgba(201,168,76,0.07)",color:profileSaved?"#5aba6a":"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",letterSpacing:"0.08em",transition:"all 0.2s"}}>
+              {profileSaved ? "✓ PROFILE SAVED" : "💾 SAVE PROFILE"}
+            </button>
+            <button onClick={clearProfile} style={{padding:"10px 16px",borderRadius:"10px",cursor:"pointer",border:"1px solid rgba(255,255,255,0.08)",background:"transparent",color:"#705858",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",letterSpacing:"0.08em"}}>
+              CLEAR
+            </button>
+          </div>
           <button onClick={generate} disabled={loading} style={{width:"100%",background:loading?"rgba(201,168,76,0.3)":"linear-gradient(135deg,#6b9fe4,#2a2a44)",color:"#080808",border:"none",borderRadius:"12px",padding:"14px",fontSize:"14px",fontWeight:"700",letterSpacing:"0.1em",cursor:loading?"not-allowed":"pointer",fontFamily:"'Montserrat',sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:"8px"}}>
             {loading ? (
               <><span style={{display:"inline-block",animation:"nbspin 1s linear infinite"}}>o</span> FINDING YOUR SCHOOLS...</>
@@ -2457,7 +2440,7 @@ function App() {
 
       </div>
       <style dangerouslySetInnerHTML={{__html:"@keyframes nbspin { to { transform: rotate(360deg); } } * { box-sizing: border-box; overflow-wrap: break-word; word-break: break-word; } p { margin: 0 0 8px; max-width: 100%; } select, input, textarea { color: #f0f0f0 !important; background: #0a0a0a; } select option { background: #141414; color: #f0f0f0; } input::placeholder, textarea::placeholder { color: #444444 !important; } input:focus, textarea:focus, select:focus { border-color: rgba(192,48,42,0.80) !important; outline: none; } ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #080808; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; } @keyframes diamond-pulse { 0%,100%{filter:drop-shadow(0 0 4px rgba(168,200,248,0.3))} 50%{filter:drop-shadow(0 0 12px rgba(255,255,255,0.6))} } .diamond-logo { animation: diamond-pulse 3s ease-in-out infinite; }"}}/>
-    <Footer/>
+      <Footer/>
     </div>
   );
 }
@@ -2472,15 +2455,10 @@ function Footer() {
     if (!feedback.trim()) return;
     setSubmitting(true);
     try {
-      await fetch("https://api.anthropic.com/v1/messages", {
+      await fetch("https://formspree.io/f/xwvwljgk", {
         method: "POST",
-        headers: {"Content-Type":"application/json","anthropic-dangerous-direct-browser-access":"true"},
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 50,
-          system: "You receive user feedback for the FYPU app. Just respond with: OK",
-          messages: [{ role: "user", content: "Type: " + feedbackType + " | Feedback: " + feedback }]
-        })
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ type: feedbackType, message: feedback })
       });
     } catch(e) {}
     setSubmitting(false);
@@ -2493,13 +2471,8 @@ function Footer() {
         <div style={{textAlign:"center",marginBottom:"40px"}}>
           <div style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.15em",marginBottom:"20px"}}>CONNECT WITH US</div>
           <div style={{display:"flex",justifyContent:"center",gap:"12px",flexWrap:"wrap"}}>
-            {[
-              {label:"Instagram",icon:"📸",url:"https://www.instagram.com/fypuhere"},
-              {label:"TikTok",icon:"🎵",url:"https://www.tiktok.com/@fypuhere"},
-              {label:"Connect with Founder",icon:"✉️",url:"mailto:Hellokayleec@gmail.com"},
-            ].map(s=>(
-              <a key={s.label} href={s.url} target="_blank" rel="noopener noreferrer"
-                style={{display:"inline-flex",alignItems:"center",gap:"8px",padding:"10px 20px",borderRadius:"12px",border:"1px solid rgba(201,168,76,0.2)",background:"rgba(201,168,76,0.05)",color:"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"600",textDecoration:"none"}}>
+            {[{label:"Instagram",icon:"📸",url:"https://www.instagram.com/fypuhere"},{label:"TikTok",icon:"🎵",url:"https://www.tiktok.com/@fypuhere"},{label:"Connect with Founder",icon:"✉️",url:"mailto:Hellokayleec@gmail.com"}].map(s=>(
+              <a key={s.label} href={s.url} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:"8px",padding:"10px 20px",borderRadius:"12px",border:"1px solid rgba(201,168,76,0.2)",background:"rgba(201,168,76,0.05)",color:"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"600",textDecoration:"none"}}>
                 <span>{s.icon}</span>{s.label}
               </a>
             ))}
@@ -2517,19 +2490,13 @@ function Footer() {
             <div>
               <div style={{display:"flex",gap:"8px",marginBottom:"14px",flexWrap:"wrap"}}>
                 {[{key:"general",label:"💡 General"},{key:"bug",label:"👋 Connect with Founder"},{key:"feature",label:"✨ Feature Request"},{key:"accuracy",label:"🎯 Accuracy"}].map(t=>(
-                  <button key={t.key} onClick={()=>setFeedbackType(t.key)}
-                    style={{padding:"6px 14px",borderRadius:"8px",cursor:"pointer",border:"1px solid "+(feedbackType===t.key?"rgba(201,168,76,0.5)":"rgba(255,255,255,0.08)"),background:feedbackType===t.key?"rgba(201,168,76,0.1)":"transparent",color:feedbackType===t.key?"#c9a84c":"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"600"}}>
+                  <button key={t.key} onClick={()=>setFeedbackType(t.key)} style={{padding:"6px 14px",borderRadius:"8px",cursor:"pointer",border:"1px solid "+(feedbackType===t.key?"rgba(201,168,76,0.5)":"rgba(255,255,255,0.08)"),background:feedbackType===t.key?"rgba(201,168,76,0.1)":"transparent",color:feedbackType===t.key?"#c9a84c":"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"600"}}>
                     {t.label}
                   </button>
                 ))}
               </div>
-              <textarea value={feedback} onChange={e=>setFeedback(e.target.value)}
-                placeholder="Tell us what you think, what's missing, or what could be better..."
-                rows={4}
-                style={{width:"100%",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"10px",padding:"12px 14px",color:"#f0f0f0",fontSize:"13px",fontFamily:"'Montserrat',sans-serif",resize:"vertical",outline:"none",boxSizing:"border-box",marginBottom:"12px"}}
-              />
-              <button onClick={submitFeedback} disabled={submitting||!feedback.trim()}
-                style={{padding:"10px 24px",borderRadius:"10px",cursor:feedback.trim()?"pointer":"not-allowed",border:"none",background:feedback.trim()?"linear-gradient(135deg,#c9a84c,#e8c96a)":"rgba(255,255,255,0.05)",color:feedback.trim()?"#080808":"#555",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"700",letterSpacing:"0.08em"}}>
+              <textarea value={feedback} onChange={e=>setFeedback(e.target.value)} placeholder="Tell us what you think, what's missing, or what could be better..." rows={4} style={{width:"100%",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"10px",padding:"12px 14px",color:"#f0f0f0",fontSize:"13px",fontFamily:"'Montserrat',sans-serif",resize:"vertical",outline:"none",boxSizing:"border-box",marginBottom:"12px"}}/>
+              <button onClick={submitFeedback} disabled={submitting||!feedback.trim()} style={{padding:"10px 24px",borderRadius:"10px",cursor:feedback.trim()?"pointer":"not-allowed",border:"none",background:feedback.trim()?"linear-gradient(135deg,#c9a84c,#e8c96a)":"rgba(255,255,255,0.05)",color:feedback.trim()?"#080808":"#555",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"700",letterSpacing:"0.08em"}}>
                 {submitting ? "SENDING..." : "SEND FEEDBACK"}
               </button>
             </div>
@@ -2544,19 +2511,13 @@ function Footer() {
   );
 }
 
-
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(React.createElement(App));
   </script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script type="text/javascript">
   function googleTranslateElementInit() {
-    new google.translate.TranslateElement({
-      pageLanguage: 'en',
-      includedLanguages: 'zh-CN,zh-TW,ko,ja,fr,de,es,hi,ar,pt,vi,th,ru,tr,it,nl,sv,no,da,pl,id,ms,tl,bn,ur,ne,si,km,my,fa,am,sw,yo,ig,ha,ro,uk,el,cs,sk,hu,fi',
-      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-      autoDisplay: false
-    }, 'google_translate_element');
+    new google.translate.TranslateElement({pageLanguage:'en',includedLanguages:'zh-CN,zh-TW,ko,ja,fr,de,es,hi,ar,pt,vi,th,ru,tr,it,nl,sv,no,da,pl,id,ms,tl,bn,ur,ne,si,km,my,fa,am,sw,yo,ig,ha,ro,uk,el,cs,sk,hu,fi',layout:google.translate.TranslateElement.InlineLayout.SIMPLE,autoDisplay:false},'google_translate_element');
   }
 </script>
 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
