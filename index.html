@@ -1900,6 +1900,7 @@ function App() {
   const [profileSaved,setProfileSaved]   = useState(false);
   const [howItWorksOpen,setHowItWorksOpen] = useState(false);
   const [demoOpen,setDemoOpen]             = useState(false);
+  const [musicOpen,setMusicOpen]           = useState(false);
 
   useEffect(()=>{
     try {
@@ -2439,8 +2440,47 @@ function App() {
         </div>
 
       </div>
-      <style dangerouslySetInnerHTML={{__html:"@keyframes nbspin { to { transform: rotate(360deg); } } * { box-sizing: border-box; overflow-wrap: break-word; word-break: break-word; } p { margin: 0 0 8px; max-width: 100%; } select, input, textarea { color: #f0f0f0 !important; background: #0a0a0a; } select option { background: #141414; color: #f0f0f0; } input::placeholder, textarea::placeholder { color: #444444 !important; } input:focus, textarea:focus, select:focus { border-color: rgba(192,48,42,0.80) !important; outline: none; } ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #080808; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; } @keyframes diamond-pulse { 0%,100%{filter:drop-shadow(0 0 4px rgba(168,200,248,0.3))} 50%{filter:drop-shadow(0 0 12px rgba(255,255,255,0.6))} } .diamond-logo { animation: diamond-pulse 3s ease-in-out infinite; }"}}/>
+      <style dangerouslySetInnerHTML={{__html:"@keyframes nbspin { to { transform: rotate(360deg); } } * { box-sizing: border-box; overflow-wrap: break-word; word-break: break-word; } p { margin: 0 0 8px; max-width: 100%; } select, input, textarea { color: #f0f0f0 !important; background: #0a0a0a; } select option { background: #141414; color: #f0f0f0; } input::placeholder, textarea::placeholder { color: #444444 !important; } input:focus, textarea:focus, select:focus { border-color: rgba(192,48,42,0.80) !important; outline: none; } ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #080808; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; } @keyframes diamond-pulse { 0%,100%{filter:drop-shadow(0 0 4px rgba(168,200,248,0.3))} 50%{filter:drop-shadow(0 0 12px rgba(255,255,255,0.6))} } .diamond-logo { animation: diamond-pulse 3s ease-in-out infinite; } @keyframes musicFloat { 0%{transform:translateY(0px) rotate(-1.5deg) skewX(0.5deg)} 15%{transform:translateY(-4px) rotate(0.8deg) skewX(-0.8deg)} 30%{transform:translateY(-8px) rotate(-0.4deg) skewX(1deg)} 45%{transform:translateY(-11px) rotate(1.8deg) skewX(-0.5deg)} 60%{transform:translateY(-7px) rotate(-1deg) skewX(0.8deg)} 75%{transform:translateY(-3px) rotate(0.5deg) skewX(-0.3deg)} 100%{transform:translateY(0px) rotate(-1.5deg) skewX(0.5deg)} }"}}/>
       <Footer/>
+
+      <div style={{position:"fixed",bottom:"28px",right:"28px",zIndex:9000,animation:"musicFloat 4.5s ease-in-out infinite",transformOrigin:"top center"}}>
+        {musicOpen ? (
+          <div style={{background:"#0a0a0a",border:"1px solid rgba(201,168,76,0.35)",borderRadius:"18px",overflow:"hidden",boxShadow:"0 16px 60px rgba(0,0,0,0.75), 0 0 0 1px rgba(201,168,76,0.1)",width:"300px",animation:"musicFloat 4.5s ease-in-out infinite"}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 15px 10px",background:"linear-gradient(135deg,rgba(201,168,76,0.08),rgba(192,48,42,0.06))"}}>
+              <div style={{display:"flex",alignItems:"center",gap:"9px"}}>
+                <div style={{width:"28px",height:"28px",borderRadius:"8px",background:"linear-gradient(135deg,#c9a84c,#e8c96a)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"13px",flexShrink:0}}>🎵</div>
+                <div>
+                  <div style={{color:"#c9a84c",fontSize:"10px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em"}}>FYPU PLAYLIST</div>
+                  <div style={{color:"#9898a8",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",fontStyle:"italic"}}>for the big decisions</div>
+                </div>
+              </div>
+              <button onClick={()=>setMusicOpen(false)} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",color:"#9898a8",width:"22px",height:"22px",borderRadius:"50%",cursor:"pointer",fontSize:"11px",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>✕</button>
+            </div>
+            <iframe
+              src="https://open.spotify.com/embed/playlist/3cLzuKClIdVVUl44kNARF5?utm_source=generator&theme=0"
+              width="300"
+              height="460"
+              frameBorder="0"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              style={{display:"block"}}
+            />
+          </div>
+        ) : (
+          <button
+            onClick={()=>setMusicOpen(true)}
+            style={{background:"linear-gradient(135deg,#0d0d0d,#111)",border:"1px solid rgba(201,168,76,0.40)",borderRadius:"14px",padding:"11px 16px",cursor:"pointer",display:"flex",alignItems:"center",gap:"10px",boxShadow:"0 8px 32px rgba(0,0,0,0.6), 0 0 20px rgba(201,168,76,0.08)",transition:"all 0.25s",animation:"musicFloat 4.5s ease-in-out infinite"}}
+            onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(201,168,76,0.8)";e.currentTarget.style.boxShadow="0 8px 32px rgba(0,0,0,0.6), 0 0 28px rgba(201,168,76,0.18)";}}
+            onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(201,168,76,0.40)";e.currentTarget.style.boxShadow="0 8px 32px rgba(0,0,0,0.6), 0 0 20px rgba(201,168,76,0.08)";}}
+          >
+            <div style={{width:"34px",height:"34px",borderRadius:"10px",background:"linear-gradient(135deg,#c9a84c,#e8c96a)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",flexShrink:0,boxShadow:"0 2px 8px rgba(201,168,76,0.4)"}}>🎵</div>
+            <div style={{textAlign:"left"}}>
+              <div style={{color:"#c9a84c",fontSize:"11px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.06em",whiteSpace:"nowrap"}}>FYPU Playlist</div>
+              <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",whiteSpace:"nowrap",fontStyle:"italic"}}>for the big decisions ✨</div>
+            </div>
+          </button>
+        )}
+      </div>
     </div>
   );
 }
