@@ -2303,16 +2303,14 @@ function App() {
 
       <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,900;1,6..96,400;1,6..96,900&family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 
-      <div style={{borderBottom:"1px solid rgba(107,159,228,0.32)",padding:"16px 28px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"12px",flexWrap:"wrap"}}>
-        <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
-          <div style={{display:"inline-flex"}}><img src={LOGO_URI} alt="FYPU" style={{height:"70px",width:"auto",mixBlendMode:"screen"}} /></div>
-          <div>
-            <div style={{fontFamily:"'Great Vibes',cursive",fontSize:"32px",fontWeight:"400",background:"linear-gradient(135deg,#c0302a 0%,#c9a84c 25%,#f0e090 50%,#c9a84c 75%,#c0302a 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",lineHeight:"1.1"}}>Find Your Perfect University</div>
-            <div style={{color:"#9898a8",fontSize:"10px",letterSpacing:"0.13em",marginTop:"2px",fontFamily:"'Montserrat',sans-serif"}}>AI-POWERED UNIVERSITY ADVISOR</div>
-          </div>
-        </div>
+      <div style={{borderBottom:"1px solid rgba(255,255,255,0.06)",padding:"0 32px",height:"56px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-          <button onClick={()=>setHowItWorksOpen(true)} style={{background:"rgba(201,168,76,0.08)",border:"1px solid rgba(201,168,76,0.25)",color:"#c9a84c",borderRadius:"8px",padding:"8px 16px",cursor:"pointer",fontSize:"11px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.08em",whiteSpace:"nowrap"}}>HOW IT WORKS</button>
+          <img src={LOGO_URI} alt="FYPU" style={{height:"36px",width:"auto",mixBlendMode:"screen",opacity:0.9}}/>
+          <span style={{color:"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",letterSpacing:"0.18em"}}>FYPU</span>
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
+          <button onClick={()=>setHowItWorksOpen(true)} style={{background:"none",border:"none",color:"#9898a8",cursor:"pointer",fontSize:"11px",fontWeight:"600",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.10em",padding:"6px 0"}}>HOW IT WORKS</button>
+          <div style={{width:"1px",height:"16px",background:"rgba(255,255,255,0.12)"}}/>
           <div id="google_translate_element"></div>
         </div>
       </div>
@@ -2366,22 +2364,20 @@ function App() {
       )}
 
       <div style={{maxWidth:"860px",margin:"0 auto",padding:"40px 20px",position:"relative",zIndex:1}}>
-        <div style={{textAlign:"center",marginBottom:"40px"}}>
-          <h1 style={{fontFamily:"'Bodoni Moda',serif",fontSize:"clamp(42px,7vw,76px)",fontWeight:"900",fontStyle:"normal",WebkitTextStroke:"1.5px #f0f0f0",lineHeight:"1.05",letterSpacing:"-0.01em",color:"#f0f0f0",marginBottom:"14px"}}>
-            Find Your Perfect<br/>
-            <span style={{background:"linear-gradient(135deg,#c0302a 0%,#c9a84c 25%,#f0e090 50%,#c9a84c 75%,#c0302a 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",fontFamily:"'Great Vibes',cursive",fontSize:"clamp(44px,8vw,80px)",fontWeight:"400"}}>University</span>
+        <div style={{textAlign:"center",marginBottom:"48px",paddingTop:"24px"}}>
+          <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.22em",marginBottom:"28px"}}>AI-POWERED UNIVERSITY ADVISOR</div>
+          <h1 style={{fontFamily:"'Bodoni Moda',serif",fontSize:"clamp(36px,5.5vw,64px)",fontWeight:"900",lineHeight:"1.08",letterSpacing:"-0.01em",color:"#f0f0f0",marginBottom:"10px"}}>
+            Find Your Perfect
           </h1>
-          <p style={{color:"#9898a8",fontSize:"13px",maxWidth:"520px",margin:"0 auto",lineHeight:"1.6"}}>
-            Enter your grades and profile. Get a personalized university list with acceptance odds, risk analysis, and a step-by-step roadmap — in under 60 seconds.
+          <div style={{fontFamily:"'Great Vibes',cursive",fontSize:"clamp(48px,8vw,88px)",fontWeight:"400",background:"linear-gradient(135deg,#c0302a 0%,#c9a84c 30%,#f0e090 50%,#c9a84c 70%,#c0302a 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",lineHeight:"1.1",marginBottom:"28px"}}>University</div>
+          <p style={{color:"#9898a8",fontSize:"13px",maxWidth:"440px",margin:"0 auto",lineHeight:"1.75",letterSpacing:"0.01em"}}>
+            Enter your grades and profile. Get a personalized list with acceptance odds, risk analysis, and a step-by-step roadmap — in under 60 seconds.
           </p>
-          <div style={{marginTop:"32px",marginBottom:"8px"}}>
-            <div onClick={()=>setDemoOpen(true)} style={{maxWidth:"480px",margin:"0 auto",borderRadius:"12px",border:"1px solid rgba(201,168,76,0.25)",boxShadow:"0 8px 40px rgba(192,48,42,0.20)",background:"#0a0a0a",cursor:"pointer",height:"80px",display:"flex",alignItems:"center",justifyContent:"center",gap:"14px",transition:"border-color 0.2s"}} onMouseEnter={e=>e.currentTarget.style.borderColor="rgba(201,168,76,0.6)"} onMouseLeave={e=>e.currentTarget.style.borderColor="rgba(201,168,76,0.25)"}>
-              <div style={{width:"36px",height:"36px",borderRadius:"50%",background:"linear-gradient(135deg,#c0302a,#c9a84c)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><span style={{color:"#fff",fontSize:"14px",marginLeft:"3px"}}>▶</span></div>
-              <div style={{textAlign:"left"}}>
-                <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif"}}>Watch Live Demo</div>
-                <div style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",marginTop:"2px"}}>See FYPU generate your university list in real time</div>
-              </div>
-            </div>
+          <div style={{marginTop:"36px",marginBottom:"8px"}}>
+            <button onClick={()=>setDemoOpen(true)} style={{background:"none",border:"none",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"10px",padding:"10px 20px",borderRadius:"100px",border:"1px solid rgba(255,255,255,0.1)",transition:"all 0.2s"}} onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(201,168,76,0.4)";e.currentTarget.style.background="rgba(201,168,76,0.04)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.1)";e.currentTarget.style.background="none";}}>
+              <div style={{width:"28px",height:"28px",borderRadius:"50%",background:"linear-gradient(135deg,#c0302a,#c9a84c)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><span style={{color:"#fff",fontSize:"11px",marginLeft:"2px"}}>▶</span></div>
+              <span style={{color:"#9898a8",fontSize:"12px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.06em"}}>Watch live demo</span>
+            </button>
             {demoOpen && (
               <div onClick={()=>setDemoOpen(false)} style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
                 <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:"860px",borderRadius:"16px",overflow:"hidden",border:"1px solid rgba(201,168,76,0.3)",position:"relative"}}>
