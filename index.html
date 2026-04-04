@@ -2168,31 +2168,25 @@ function App() {
       <div style={{minHeight:"100vh",background:"#080808",backgroundImage:"radial-gradient(ellipse at 8% 5%,rgba(139,26,26,0.08) 0%,transparent 40%),radial-gradient(ellipse at 92% 95%,rgba(201,168,76,0.04) 0%,transparent 60%)",fontFamily:"sans-serif",color:"#d0d0d8"}}>
 
         <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,900;1,6..96,400;1,6..96,900&family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-        <div style={{borderBottom:"1px solid rgba(201,168,76,0.20)",padding:"16px 28px",display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"space-between",gap:"12px",flexWrap:"wrap"}}>
-          <div style={{display:"flex",alignItems:"center",gap:"14px",minWidth:0,flex:1}}>
-            <button onClick={resetToForm} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.13)",color:"#d0d0d8",borderRadius:"9px",padding:"7px 14px",cursor:"pointer",fontSize:"12px",fontFamily:"'Montserrat',sans-serif",flexShrink:0,display:"flex",alignItems:"center",gap:"6px"}}>
-              &#8592; Edit Profile
-            </button>
-            <button onClick={()=>{setResults(null);setCompareList([]);setCompareTarget(null);setAnalysisTarget(null);generate();}} disabled={loading} style={{background:loading?"rgba(139,26,26,0.30)":"linear-gradient(135deg,#8b1a1a,#c0302a)",border:"1px solid rgba(201,168,76,0.50)",color:loading?"#888":"#f0f0f0",borderRadius:"9px",padding:"9px 20px",boxShadow:loading?"none":"0 0 12px rgba(192,48,42,0.30)",cursor:loading?"not-allowed":"pointer",fontSize:"12px",fontFamily:"'Montserrat',sans-serif",fontWeight:"600",letterSpacing:"0.08em",flexShrink:0,display:"flex",alignItems:"center",gap:"6px",transition:"opacity 0.2s"}}>
-              {loading ? "⟳  Regenerating..." : "↻  Regenerate"}
-            </button>
-            <div style={{minWidth:0}}>
-              <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-                <span style={{fontSize:"18px"}}></span>
-                <div className="mobile-hide" style={{display:"inline-flex"}}><img src={LOGO_URI} alt="FYPU" style={{height:"90px",width:"auto",mixBlendMode:"screen"}} /></div><span className="mobile-hide" style={{fontFamily:"'Great Vibes',cursive",fontSize:"30px",fontWeight:"400",background:"linear-gradient(135deg,#c0302a 0%,#c9a84c 25%,#f0e090 50%,#c9a84c 75%,#c0302a 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",whiteSpace:"nowrap"}}>Find Your Perfect University</span>
-              </div>
-              <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginTop:"1px"}}></div>
-            </div>
+        <div style={{borderBottom:"1px solid rgba(255,255,255,0.06)",padding:"0 24px",height:"56px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"16px"}}>
+          <div style={{display:"flex",alignItems:"center",gap:"10px",flexShrink:0}}>
+            <img src={LOGO_URI} alt="FYPU" style={{height:"32px",width:"auto",mixBlendMode:"screen",opacity:0.9}}/>
+            <span style={{color:"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",letterSpacing:"0.18em"}}>FYPU</span>
           </div>
-          <div style={{display:"flex",alignItems:"center",gap:"8px",flexShrink:0,flexWrap:"wrap",justifyContent:"flex-end"}}>
+          <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
             {hasIBAP && (
               <div style={{display:"flex",gap:"4px"}}>
-                {profile.programs.ib && <span style={{background:"rgba(139,26,26,0.12)",border:"1px solid rgba(167,139,250,0.35)",color:"#c9a84c",borderRadius:"6px",padding:"4px 9px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700"}}>IB</span>}
-                {profile.programs.ap && <span style={{background:"rgba(201,168,76,0.07)",border:"1px solid rgba(96,165,250,0.35)",color:"#c9a84c",borderRadius:"6px",padding:"4px 9px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700"}}>AP</span>}
+                {profile.programs.ib && <span style={{background:"rgba(139,26,26,0.12)",border:"1px solid rgba(167,139,250,0.35)",color:"#c9a84c",borderRadius:"5px",padding:"3px 8px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700"}}>IB</span>}
+                {profile.programs.ap && <span style={{background:"rgba(201,168,76,0.07)",border:"1px solid rgba(96,165,250,0.35)",color:"#c9a84c",borderRadius:"5px",padding:"3px 8px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700"}}>AP</span>}
               </div>
             )}
-            <div style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>{intendedMajor}</div>
-            
+            {intendedMajor && <span style={{color:"#705858",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",display:"none"}} className="mobile-hide">{intendedMajor}</span>}
+            <button onClick={resetToForm} style={{background:"none",border:"1px solid rgba(255,255,255,0.12)",color:"#9898a8",borderRadius:"8px",padding:"6px 14px",cursor:"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.06em"}}>
+              ← Edit
+            </button>
+            <button onClick={()=>{setResults(null);setCompareList([]);setCompareTarget(null);setAnalysisTarget(null);generate();}} disabled={loading} style={{background:loading?"rgba(139,26,26,0.20)":"rgba(192,48,42,0.85)",border:"1px solid rgba(201,168,76,0.30)",color:loading?"#888":"#f0f0f0",borderRadius:"8px",padding:"6px 16px",cursor:loading?"not-allowed":"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",fontWeight:"600",letterSpacing:"0.06em",transition:"opacity 0.2s"}}>
+              {loading ? "Regenerating..." : "↻ Regenerate"}
+            </button>
           </div>
         </div>
         {compareList.length > 0 && (
