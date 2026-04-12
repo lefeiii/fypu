@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FYPU — Dream List Analyzer</title>
+  <meta name="description" content="Enter your dream schools and academic profile. See exactly where you stand at each one."/>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #080808; color: #d0d0d8; font-family: sans-serif; }
+    input, textarea, select { color: #f0f0f0 !important; background: #0a0a0a; }
+    input::placeholder, textarea::placeholder { color: #444 !important; }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: rgba(192,48,42,0.8) !important; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #080808; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+    .fade-up { animation: fadeUp 0.5s ease both; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" data-presets="react">
+    const { useState, useEffect, useRef } = React;
+
+    const LOGO_URI = "./logo.webp";
+
+    const TIER_CONFIG = {
+      reach:  { label:"REACH",  color:"#c0302a", bg:"rgba(192,48,42,0.10)",  border:"rgba(192,48,42,0.35)",  desc:"Low odds — but worth a shot" },
+      target: { label:"TARGET", color:"#c9a84c", bg:"rgba(201,168,76,0.08)",  border:"rgba(201,168,76,0.30)",  desc:"You're in range — make it count" },
+      safety: { label:"SAFETY", color:"#5aba6a", bg:"rgba(90,186,106,0.10)",  border:"rgba(90,186,106,0.30)",  desc:"Strong chance — lock it in" },
+    };
+
+    const TOP_SCHOOLS = [
+  "Harvard University",
+  "Princeton University",
+  "Yale University",
+  "Columbia University",
+  "University of Pennsylvania",
+  "Brown University",
+  "Dartmouth College",
+  "Cornell University",
+  "MIT",
+  "Stanford University",
+  "California Institute of Technology",
+  "Williams College",
+  "Amherst College",
+  "Swarthmore College",
+  "Wellesley College",
+  "Bowdoin College",
+  "Middlebury College",
+  "Pomona College",
+  "Carleton College",
+  "Claremont McKenna College",
+  "Haverford College",
+  "Vassar College",
+  "Colby College",
+  "Hamilton College",
+  "Colgate University",
+  "Bates College",
+  "Grinnell College",
+  "Smith College",
+  "Mount Holyoke College",
+  "Bryn Mawr College",
+  "Trinity College",
+  "Oberlin College",
+  "Kenyon College",
+  "Davidson College",
+  "Colorado College",
+  "Macalester College",
+  "Skidmore College",
+  "Union College",
+  "Lafayette College",
+  "Bucknell University",
+  "Lehigh University",
+  "Dickinson College",
+  "Denison University",
+  "Furman University",
+  "College of the Holy Cross",
+  "Scripps College",
+  "Occidental College",
+  "Pitzer College",
+  "Harvey Mudd College",
+  "Reed College",
+  "Lawrence University",
+  "Whitman College",
+  "Rhodes College",
+  "Sewanee: University of the South",
+  "Wabash College",
+  "Allegheny College",
+  "Gettysburg College",
+  "Connecticut College",
+  "St. Lawrence University",
+  "Muhlenberg College",
+  "Hobart and William Smith Colleges",
+  "University of Chicago",
+  "Duke University",
+  "Johns Hopkins University",
+  "Northwestern University",
+  "Carnegie Mellon University",
+  "Vanderbilt University",
+  "Rice University",
+  "Georgetown University",
+  "University of Notre Dame",
+  "Tufts University",
+  "Boston University",
+  "Emory University",
+  "Washington University in St. Louis",
+  "University of Southern California",
+  "New York University",
+  "Northeastern University",
+  "Tulane University",
+  "Brandeis University",
+  "Case Western Reserve University",
+  "Wake Forest University",
+  "Rensselaer Polytechnic Institute",
+  "Worcester Polytechnic Institute",
+  "Rochester Institute of Technology",
+  "Stevens Institute of Technology",
+  "University of Rochester",
+  "Yeshiva University",
+  "Fordham University",
+  "Santa Clara University",
+  "Loyola Marymount University",
+  "American University",
+  "George Washington University",
+  "Boston College",
+  "Villanova University",
+  "Providence College",
+  "Marquette University",
+  "University of Miami",
+  "Syracuse University",
+  "Drexel University",
+  "Temple University",
+  "Hofstra University",
+  "Babson College",
+  "Bentley University",
+  "Elon University",
+  "High Point University",
+  "UCLA",
+  "UC Berkeley",
+  "University of Michigan",
+  "University of Virginia",
+  "University of North Carolina at Chapel Hill",
+  "Georgia Institute of Technology",
+  "University of Florida",
+  "University of Texas at Austin",
+  "Ohio State University",
+  "Penn State University",
+  "Purdue University",
+  "University of Wisconsin-Madison",
+  "University of Illinois Urbana-Champaign",
+  "University of Washington",
+  "University of Maryland College Park",
+  "Michigan State University",
+  "Indiana University Bloomington",
+  "University of Minnesota Twin Cities",
+  "University of Georgia",
+  "University of Pittsburgh",
+  "University of Connecticut",
+  "Rutgers University",
+  "University of Delaware",
+  "Iowa State University",
+  "University of Iowa",
+  "University of Colorado Boulder",
+  "Arizona State University",
+  "University of Arizona",
+  "University of Utah",
+  "University of Oregon",
+  "Oregon State University",
+  "Colorado State University",
+  "Virginia Tech",
+  "North Carolina State University",
+  "Clemson University",
+  "University of South Carolina",
+  "University of Tennessee",
+  "University of Kentucky",
+  "University of Alabama",
+  "Auburn University",
+  "Louisiana State University",
+  "Florida State University",
+  "University of Central Florida",
+  "University of South Florida",
+  "Florida International University",
+  "University of Cincinnati",
+  "University of Missouri",
+  "University of Nebraska-Lincoln",
+  "Kansas State University",
+  "University of Kansas",
+  "Oklahoma State University",
+  "University of Oklahoma",
+  "Texas A&M University",
+  "University of Houston",
+  "Baylor University",
+  "Texas Tech University",
+  "Southern Methodist University",
+  "Texas Christian University",
+  "Brigham Young University",
+  "University of Nevada Las Vegas",
+  "University of New Mexico",
+  "University of Hawaii at Manoa",
+  "UC San Diego",
+  "UC Davis",
+  "UC Santa Barbara",
+  "UC Irvine",
+  "UC Santa Cruz",
+  "UC Riverside",
+  "UC Merced",
+  "Stony Brook University",
+  "University at Buffalo",
+  "Binghamton University",
+  "SUNY Geneseo",
+  "City College of New York",
+  "Baruch College",
+  "United States Military Academy",
+  "United States Naval Academy",
+  "United States Air Force Academy",
+  "United States Coast Guard Academy",
+  "Juilliard School",
+  "Berklee College of Music",
+  "Rhode Island School of Design",
+  "Pratt Institute",
+  "School of Visual Arts",
+  "Parsons School of Design",
+  "Savannah College of Art and Design",
+  "New England Conservatory",
+  "Howard University",
+  "Spelman College",
+  "Morehouse College",
+  "Hampton University",
+  "Florida A&M University",
+  "North Carolina A&T State University",
+  "Xavier University of Louisiana",
+  "Tuskegee University",
+  "Gonzaga University",
+  "Loyola University Chicago",
+  "DePaul University",
+  "St. John's University",
+  "Seton Hall University",
+  "Fairfield University",
+  "Xavier University",
+  "Creighton University",
+  "Duquesne University",
+  "Pepperdine University",
+  "Chapman University",
+  "University of San Diego",
+  "University of San Francisco",
+  "Seattle University",
+  "Lewis & Clark College",
+  "Whitworth University",
+  "Willamette University",
+  "Pacific Lutheran University",
+  "Portland State University",
+  "George Fox University",
+  "College of William & Mary",
+  "James Madison University",
+  "George Mason University",
+  "University of Mary Washington",
+  "Towson University",
+  "Quinnipiac University",
+  "Sacred Heart University",
+  "Bryant University",
+  "Roger Williams University",
+  "Salve Regina University",
+  "Stonehill College",
+  "Merrimack College",
+  "Assumption University",
+  "Endicott College",
+  "Suffolk University",
+  "Simmons University",
+  "Emmanuel College",
+  "Springfield College",
+  "Western New England University",
+  "Bridgewater State University",
+  "Butler University",
+  "Wittenberg University",
+  "Ohio Wesleyan University",
+  "Wooster College",
+  "Hiram College",
+  "Otterbein University",
+  "Capital University",
+  "Valparaiso University",
+  "University of Dayton",
+  "John Carroll University",
+  "Baldwin Wallace University",
+  "Samford University",
+  "Belmont University",
+  "Lipscomb University",
+  "Lee University",
+  "Millsaps College",
+  "Rollins College",
+  "Stetson University",
+  "Eckerd College",
+  "Embry-Riddle Aeronautical University",
+  "Liberty University",
+  "Regent University",
+  "New School"
+];
+
+    function SchoolInput({ index, value, onChange, onRemove, canRemove }) {
+      const [suggestions, setSuggestions] = useState([]);
+      const [focused, setFocused] = useState(false);
+      const ref = useRef(null);
+
+      useEffect(() => {
+        if (value.length < 2) { setSuggestions([]); return; }
+        const q = value.toLowerCase();
+        setSuggestions(TOP_SCHOOLS.filter(s => s.toLowerCase().includes(q)).slice(0, 5));
+      }, [value]);
+
+      useEffect(() => {
+        function handle(e) { if (ref.current && !ref.current.contains(e.target)) setFocused(false); }
+        document.addEventListener("mousedown", handle);
+        return () => document.removeEventListener("mousedown", handle);
+      }, []);
+
+      return (
+        <div ref={ref} style={{position:"relative"}}>
+          <div style={{display:"flex",gap:"8px",alignItems:"center"}}>
+            <div style={{width:"22px",height:"22px",borderRadius:"50%",background:"rgba(201,168,76,0.10)",border:"1px solid rgba(201,168,76,0.25)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+              <span style={{color:"#c9a84c",fontSize:"10px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif"}}>{index+1}</span>
+            </div>
+            <input
+              value={value}
+              onChange={e => onChange(e.target.value)}
+              onFocus={() => setFocused(true)}
+              placeholder={`School ${index+1} — e.g. MIT, Harvard, UofT...`}
+              style={{flex:1,background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:"10px",padding:"11px 14px",fontSize:"13px",color:"#f0f0f0",transition:"border-color 0.2s"}}
+            />
+            {canRemove && (
+              <button onClick={onRemove} style={{background:"none",border:"none",color:"#555",cursor:"pointer",fontSize:"18px",padding:"4px",lineHeight:1,flexShrink:0}}>×</button>
+            )}
+          </div>
+          {focused && suggestions.length > 0 && (
+            <div style={{position:"absolute",top:"calc(100% + 4px)",left:"30px",right:canRemove?"32px":"0",zIndex:200,background:"#111",border:"1px solid rgba(255,255,255,0.12)",borderRadius:"10px",overflow:"hidden",boxShadow:"0 8px 32px rgba(0,0,0,0.6)"}}>
+              {suggestions.map(s => (
+                <div key={s} onMouseDown={() => { onChange(s); setSuggestions([]); setFocused(false); }}
+                  style={{padding:"10px 14px",color:"#d0d0d8",fontSize:"13px",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.05)",transition:"background 0.1s"}}
+                  onMouseEnter={e => e.currentTarget.style.background="rgba(201,168,76,0.06)"}
+                  onMouseLeave={e => e.currentTarget.style.background="transparent"}
+                >
+                  {s}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function TierBadge({ tier }) {
+      const cfg = TIER_CONFIG[tier] || TIER_CONFIG.reach;
+      return (
+        <span style={{background:cfg.bg,border:"1px solid "+cfg.border,color:cfg.color,borderRadius:"6px",padding:"3px 10px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700",letterSpacing:"0.08em",whiteSpace:"nowrap"}}>
+          {cfg.label}
+        </span>
+      );
+    }
+
+    function OddsBar({ pct, color }) {
+      const num = parseFloat(String(pct).replace(/[^0-9.]/g,"")) || 0;
+      return (
+        <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
+          <div style={{flex:1,height:"6px",background:"rgba(255,255,255,0.06)",borderRadius:"3px",overflow:"hidden"}}>
+            <div style={{width:Math.min(num,100)+"%",height:"100%",background:color,borderRadius:"3px",transition:"width 0.8s ease"}}/>
+          </div>
+          <span style={{color,fontSize:"12px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif",minWidth:"36px",textAlign:"right"}}>{pct}</span>
+        </div>
+      );
+    }
+
+    function SchoolCard({ result, index, profile }) {
+      const [open, setOpen] = useState(false);
+      const tier = (result.tier||"reach").toLowerCase();
+      const cfg = TIER_CONFIG[tier] || TIER_CONFIG.reach;
+
+      return (
+        <div className="fade-up" style={{animationDelay: index*0.08+"s", background:cfg.bg, border:"1px solid "+cfg.border, borderRadius:"16px", marginBottom:"12px", overflow:"hidden"}}>
+          {/* Summary row */}
+          <div onClick={() => setOpen(!open)} style={{padding:"18px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:"16px",flexWrap:"wrap"}}>
+            <div style={{width:"36px",height:"36px",borderRadius:"10px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+              <span style={{color:cfg.color,fontSize:"13px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif"}}>{index+1}</span>
+            </div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap",marginBottom:"4px"}}>
+                <span style={{color:"#f0f0f0",fontFamily:"'DM Serif Display',serif",fontSize:"17px",fontWeight:"700"}}>{result.name}</span>
+                <TierBadge tier={tier}/>
+              </div>
+              <div style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>{result.location} · Overall admit: {result.overallAdmitRate} · Intl: {result.intlAdmitRate}</div>
+            </div>
+            <div style={{display:"flex",alignItems:"center",gap:"16px",flexShrink:0}}>
+              <div style={{textAlign:"center"}}>
+                <div style={{color:cfg.color,fontSize:"22px",fontWeight:"900",fontFamily:"'Montserrat',sans-serif",lineHeight:1}}>{result.yourOdds}</div>
+                <div style={{color:"#9898a8",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",marginTop:"2px",letterSpacing:"0.1em"}}>YOUR ODDS</div>
+              </div>
+              <span style={{color:"#555",fontSize:"20px",transform:open?"rotate(180deg)":"rotate(0deg)",transition:"transform 0.2s",display:"inline-block"}}>▾</span>
+            </div>
+          </div>
+
+          {/* Expanded detail */}
+          {open && (
+            <div style={{borderTop:"1px solid rgba(255,255,255,0.06)",padding:"20px 20px 24px"}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"20px"}}>
+                {/* Your odds breakdown */}
+                <div style={{background:"rgba(255,255,255,0.03)",borderRadius:"12px",padding:"16px"}}>
+                  <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"14px"}}>ADMISSION ODDS</div>
+                  <OddsBar pct={result.yourOdds} color={cfg.color}/>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px",marginTop:"12px"}}>
+                    <div style={{background:"rgba(255,255,255,0.03)",borderRadius:"8px",padding:"10px",textAlign:"center"}}>
+                      <div style={{color:"#f0f0f0",fontSize:"14px",fontWeight:"700"}}>{result.overallAdmitRate}</div>
+                      <div style={{color:"#9898a8",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",marginTop:"2px"}}>OVERALL RATE</div>
+                    </div>
+                    <div style={{background:"rgba(255,255,255,0.03)",borderRadius:"8px",padding:"10px",textAlign:"center"}}>
+                      <div style={{color:"#f0f0f0",fontSize:"14px",fontWeight:"700"}}>{result.intlAdmitRate}</div>
+                      <div style={{color:"#9898a8",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",marginTop:"2px"}}>INTL RATE</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* GPA & test gap */}
+                <div style={{background:"rgba(255,255,255,0.03)",borderRadius:"12px",padding:"16px"}}>
+                  <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"14px"}}>YOUR PROFILE VS MEDIAN</div>
+                  {[
+                    {label:"GPA", yours:result.profileComparison?.yourGPA, median:result.profileComparison?.medianGPA},
+                    {label:"SAT", yours:result.profileComparison?.yourSAT, median:result.profileComparison?.medianSAT},
+                  ].map(row => (
+                    <div key={row.label} style={{marginBottom:"10px"}}>
+                      <div style={{display:"flex",justifyContent:"space-between",marginBottom:"4px"}}>
+                        <span style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>{row.label}</span>
+                        <span style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>Median: {row.median}</span>
+                      </div>
+                      <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
+                        <div style={{flex:1,height:"5px",background:"rgba(255,255,255,0.06)",borderRadius:"3px"}}>
+                          <div style={{width:"100%",height:"100%",background:"rgba(255,255,255,0.15)",borderRadius:"3px",position:"relative"}}>
+                            <div style={{position:"absolute",left:0,top:0,width:row.yours?"60%":"0%",height:"100%",background:cfg.color,borderRadius:"3px"}}/>
+                          </div>
+                        </div>
+                        <span style={{color:"#f0f0f0",fontSize:"11px",fontWeight:"700",minWidth:"50px",textAlign:"right"}}>{row.yours || "N/A"}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* What's missing */}
+              {result.gaps && result.gaps.length > 0 && (
+                <div style={{background:"rgba(192,48,42,0.08)",border:"1px solid rgba(192,48,42,0.20)",borderRadius:"12px",padding:"14px 16px",marginBottom:"14px"}}>
+                  <div style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"10px"}}>WHAT'S MISSING FROM YOUR PROFILE</div>
+                  {result.gaps.map((g, i) => (
+                    <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",marginBottom:"8px"}}>
+                      <span style={{color:"#c0302a",fontSize:"12px",flexShrink:0,marginTop:"1px"}}>▸</span>
+                      <span style={{color:"#d0d0d8",fontSize:"12px",lineHeight:"1.5"}}>{g}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Strengths */}
+              {result.strengths && result.strengths.length > 0 && (
+                <div style={{background:"rgba(90,186,106,0.06)",border:"1px solid rgba(90,186,106,0.18)",borderRadius:"12px",padding:"14px 16px",marginBottom:"14px"}}>
+                  <div style={{color:"#5aba6a",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"10px"}}>WHAT WORKS IN YOUR FAVOUR</div>
+                  {result.strengths.map((s, i) => (
+                    <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",marginBottom:"8px"}}>
+                      <span style={{color:"#5aba6a",fontSize:"12px",flexShrink:0,marginTop:"1px"}}>✓</span>
+                      <span style={{color:"#d0d0d8",fontSize:"12px",lineHeight:"1.5"}}>{s}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Verdict */}
+              {result.verdict && (
+                <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:"12px",padding:"14px 16px"}}>
+                  <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"6px"}}>HONEST ASSESSMENT</div>
+                  <div style={{color:"#f0f0f0",fontSize:"13px",lineHeight:"1.65"}}>{result.verdict}</div>
+                </div>
+              )}
+
+              <a href={"https://www.google.com/search?q="+encodeURIComponent(result.name+" undergraduate admissions apply")} target="_blank" rel="noopener noreferrer"
+                style={{display:"inline-flex",alignItems:"center",gap:"6px",marginTop:"14px",color:cfg.color,fontSize:"11px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700",textDecoration:"none",letterSpacing:"0.06em"}}>
+                APPLY TO {result.name.toUpperCase()} →
+              </a>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function OverviewTable({ results }) {
+      const sorted = [...results].sort((a,b) => {
+        const order = {safety:0,target:1,reach:2};
+        return (order[a.tier]||2) - (order[b.tier]||2);
+      });
+      return (
+        <div style={{background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",overflow:"hidden",marginBottom:"28px"}}>
+          <div style={{padding:"14px 20px",borderBottom:"1px solid rgba(255,255,255,0.06)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <span style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.15em"}}>COMPARATIVE OVERVIEW</span>
+            <div style={{display:"flex",gap:"12px"}}>
+              {Object.entries(TIER_CONFIG).map(([k,v]) => {
+                const count = results.filter(r => (r.tier||"reach").toLowerCase()===k).length;
+                return count > 0 ? (
+                  <span key={k} style={{color:v.color,fontSize:"11px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700"}}>{count} {v.label}</span>
+                ) : null;
+              })}
+            </div>
+          </div>
+          <div style={{overflowX:"auto"}}>
+            <table style={{width:"100%",borderCollapse:"collapse"}}>
+              <thead>
+                <tr style={{borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+                  {["SCHOOL","VERDICT","YOUR ODDS","OVERALL RATE","INTL RATE","TUITION/YR"].map(h => (
+                    <th key={h} style={{padding:"10px 16px",color:"#555",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",textAlign:"left",fontWeight:"600",whiteSpace:"nowrap"}}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {sorted.map((r, i) => {
+                  const tier = (r.tier||"reach").toLowerCase();
+                  const cfg = TIER_CONFIG[tier] || TIER_CONFIG.reach;
+                  return (
+                    <tr key={i} style={{borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
+                      <td style={{padding:"12px 16px"}}>
+                        <div style={{color:"#f0f0f0",fontSize:"13px",fontFamily:"'DM Serif Display',serif",fontWeight:"700"}}>{r.name}</div>
+                        <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginTop:"2px"}}>{r.location}</div>
+                      </td>
+                      <td style={{padding:"12px 16px"}}><TierBadge tier={tier}/></td>
+                      <td style={{padding:"12px 16px"}}>
+                        <span style={{color:cfg.color,fontSize:"14px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif"}}>{r.yourOdds}</span>
+                      </td>
+                      <td style={{padding:"12px 16px",color:"#9898a8",fontSize:"12px",fontFamily:"'Montserrat',sans-serif"}}>{r.overallAdmitRate}</td>
+                      <td style={{padding:"12px 16px",color:"#9898a8",fontSize:"12px",fontFamily:"'Montserrat',sans-serif"}}>{r.intlAdmitRate}</td>
+                      <td style={{padding:"12px 16px",color:"#9898a8",fontSize:"12px",fontFamily:"'Montserrat',sans-serif"}}>{r.tuition}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [schools, setSchools] = useState(["","","",""]);
+      const [origin, setOrigin]   = useState("");
+      const [location, setLocation] = useState("");
+      const [cumAvg, setCumAvg]   = useState("");
+      const [satScore, setSatScore] = useState("");
+      const [actScore, setActScore] = useState("");
+      const [ibScore, setIbScore] = useState("");
+      const [major, setMajor]     = useState("");
+      const [extras, setExtras]   = useState("");
+      const [awards, setAwards]   = useState("");
+      const [hsYear, setHsYear]   = useState("");
+
+      const [results, setResults] = useState(null);
+      const [loading, setLoading] = useState(false);
+      const [error, setError]     = useState("");
+      const [progress, setProgress] = useState(0);
+
+      function addSchool() {
+        if (schools.length < 8) setSchools(s => [...s, ""]);
+      }
+      function removeSchool(i) {
+        setSchools(s => s.filter((_,j) => j!==i));
+      }
+      function updateSchool(i, val) {
+        setSchools(s => s.map((v,j) => j===i ? val : v));
+      }
+
+      const filledSchools = schools.filter(s => s.trim().length > 1);
+
+      async function analyze() {
+        if (filledSchools.length < 1) { setError("Please enter at least one school."); return; }
+        if (!cumAvg) { setError("Please enter your cumulative average."); return; }
+        if (!major) { setError("Please enter your intended major."); return; }
+        setError(""); setLoading(true); setResults(null); setProgress(0);
+
+        const profile =
+          "Student profile: origin=" + (origin||"international") +
+          ", location=" + (location||"unspecified") +
+          ", cumulative average=" + cumAvg +
+          ", SAT=" + (satScore||"N/A") +
+          ", ACT=" + (actScore||"N/A") +
+          ", IB predicted=" + (ibScore||"N/A") +
+          ", intended major=" + major +
+          ", high school year=" + (hsYear||"Grade 12") +
+          ", ECs=" + (extras||"none") +
+          ", awards=" + (awards||"none");
+
+        const schoolList = filledSchools.join(", ");
+
+        const prompt =
+          "You are a brutally honest US/Canadian university admissions expert. " +
+          profile + ". " +
+          "Analyze this student's realistic chances at each of these schools: " + schoolList + ". " +
+          "For each school, determine: their honest admission odds as a percentage, " +
+          "whether it's a reach/target/safety for this specific student, " +
+          "what's missing from their profile, and what works in their favor. " +
+          "Be specific and data-driven. Use real acceptance rate data. " +
+          "Return ONLY a JSON array, no markdown:\n" +
+          '[{"name":"exact school name","location":"City, State/Country","tier":"reach|target|safety",' +
+          '"yourOdds":"X%","overallAdmitRate":"X%","intlAdmitRate":"X%","tuition":"$X,XXX/yr",' +
+          '"profileComparison":{"yourGPA":"X.X/4.0 equiv","medianGPA":"X.X/4.0","yourSAT":"XXXX","medianSAT":"XXXX-XXXX"},' +
+          '"gaps":["specific gap 1","specific gap 2","specific gap 3"],' +
+          '"strengths":["specific strength 1","specific strength 2"],' +
+          '"verdict":"2-3 sentence honest assessment for this specific student at this specific school"}]';
+
+        try {
+          const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+          const apiUrl = isLocal
+            ? "https://api.anthropic.com/v1/messages"
+            : "/api/claude";
+
+          const headers = {"Content-Type":"application/json"};
+          if (isLocal) headers["anthropic-dangerous-direct-browser-access"] = "true";
+
+          // Animate progress while waiting
+          let p = 0;
+          const interval = setInterval(() => {
+            p = Math.min(p + Math.random() * 8, 88);
+            setProgress(Math.round(p));
+          }, 400);
+
+          const res = await fetch(apiUrl, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              model: "claude-sonnet-4-20250514",
+              max_tokens: 4000,
+              messages: [{ role: "user", content: prompt }]
+            })
+          });
+
+          clearInterval(interval);
+          setProgress(95);
+
+          const json = await res.json();
+          if (json.error) throw new Error(json.error.message || "API error");
+
+          const raw = (json.content||[]).map(b => b.text||"").join("").trim();
+          const cleaned = raw.replace(/```json|```/g,"").trim();
+          const first = cleaned.indexOf("[");
+          const last = cleaned.lastIndexOf("]");
+          if (first === -1 || last === -1) throw new Error("No results returned");
+
+          const parsed = JSON.parse(cleaned.slice(first, last+1));
+          setProgress(100);
+          setTimeout(() => { setResults(parsed); setLoading(false); }, 300);
+
+        } catch(e) {
+          console.error(e);
+          setError("Analysis failed: " + e.message + ". Please try again.");
+          setLoading(false);
+          setProgress(0);
+        }
+      }
+
+      const inp = {
+        width:"100%",background:"rgba(255,255,255,0.03)",
+        border:"1px solid rgba(255,255,255,0.08)",borderRadius:"10px",
+        color:"#f0f0f0",padding:"11px 14px",fontSize:"13px",
+        transition:"border-color 0.2s"
+      };
+
+      return (
+        <div style={{minHeight:"100vh",background:"#080808",backgroundImage:"radial-gradient(ellipse at 10% 0%,rgba(139,26,26,0.10) 0%,transparent 50%),radial-gradient(ellipse at 90% 100%,rgba(201,168,76,0.04) 0%,transparent 50%)"}}>
+
+          {/* Header */}
+          <div style={{borderBottom:"1px solid rgba(255,255,255,0.06)",padding:"0 32px",height:"56px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+            <a href="./index.html" style={{display:"flex",alignItems:"center",gap:"10px",textDecoration:"none"}}>
+              <img src={LOGO_URI} alt="FYPU" style={{height:"36px",width:"auto",mixBlendMode:"screen",opacity:0.9}}/>
+              <span style={{color:"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",letterSpacing:"0.18em"}}>FYPU</span>
+            </a>
+            <a href="./index.html" style={{background:"none",border:"none",color:"#9898a8",cursor:"pointer",fontSize:"11px",fontWeight:"600",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.10em",textDecoration:"none"}}>
+              ← BACK TO ADVISOR
+            </a>
+          </div>
+
+          <div style={{maxWidth:"800px",margin:"0 auto",padding:"52px 24px 80px"}}>
+
+            {/* Hero */}
+            {!results && !loading && (
+              <div style={{textAlign:"center",marginBottom:"52px"}}>
+                <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.22em",marginBottom:"22px"}}>DREAM LIST ANALYZER</div>
+                <h1 style={{fontFamily:"'Bodoni Moda',serif",fontSize:"clamp(32px,5vw,54px)",fontWeight:"900",color:"#f0f0f0",lineHeight:"1.08",marginBottom:"10px"}}>
+                  Your Schools.<br/>Your Honest Odds.
+                </h1>
+                <div style={{fontFamily:"'Great Vibes',cursive",fontSize:"clamp(32px,5vw,52px)",background:"linear-gradient(135deg,#c0302a 0%,#c9a84c 30%,#f0e090 50%,#c9a84c 70%,#c0302a 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:"22px",lineHeight:"1.2"}}>
+                  No sugarcoating.
+                </div>
+                <p style={{color:"#9898a8",fontSize:"13px",maxWidth:"420px",margin:"0 auto",lineHeight:"1.75"}}>
+                  Enter your dream school list and academic profile. Get a side-by-side analysis of your real chances at each one — with exactly what's holding you back.
+                </p>
+              </div>
+            )}
+
+            {/* Results hero */}
+            {results && (
+              <div style={{marginBottom:"32px",display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:"12px"}}>
+                <div>
+                  <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.18em",marginBottom:"6px"}}>DREAM LIST ANALYSIS</div>
+                  <h2 style={{color:"#f0f0f0",fontFamily:"'Bodoni Moda',serif",fontSize:"28px",fontWeight:"900"}}>{results.length} School{results.length!==1?"s":""} Analyzed</h2>
+                </div>
+                <button onClick={() => { setResults(null); setProgress(0); }}
+                  style={{background:"none",border:"1px solid rgba(255,255,255,0.12)",color:"#9898a8",borderRadius:"8px",padding:"8px 16px",cursor:"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.08em"}}>
+                  ← Edit List
+                </button>
+              </div>
+            )}
+
+            {/* Loading */}
+            {loading && (
+              <div style={{textAlign:"center",padding:"80px 20px"}}>
+                <div style={{width:"52px",height:"52px",border:"2px solid rgba(255,255,255,0.06)",borderTop:"2px solid #c0302a",borderRadius:"50%",animation:"spin 0.8s linear infinite",margin:"0 auto 28px"}}/>
+                <div style={{color:"#f0f0f0",fontFamily:"'DM Serif Display',serif",fontSize:"20px",marginBottom:"8px"}}>Analyzing your profile...</div>
+                <div style={{color:"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",marginBottom:"28px"}}>Comparing against {filledSchools.length} school{filledSchools.length!==1?"s":""}</div>
+                <div style={{maxWidth:"320px",margin:"0 auto"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:"6px"}}>
+                    <span style={{color:"#555",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>Progress</span>
+                    <span style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>{progress}%</span>
+                  </div>
+                  <div style={{height:"3px",background:"rgba(255,255,255,0.06)",borderRadius:"2px",overflow:"hidden"}}>
+                    <div style={{width:progress+"%",height:"100%",background:"linear-gradient(90deg,#c0302a,#c9a84c)",borderRadius:"2px",transition:"width 0.4s ease"}}/>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Results */}
+            {results && !loading && (
+              <div>
+                <OverviewTable results={results}/>
+                <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.15em",marginBottom:"16px"}}>SCHOOL-BY-SCHOOL BREAKDOWN</div>
+                {results.map((r, i) => (
+                  <SchoolCard key={i} result={r} index={i} profile={{cumAvg, satScore, major}}/>
+                ))}
+                <div style={{marginTop:"24px",padding:"14px 18px",background:"rgba(255,255,255,0.02)",borderRadius:"10px",color:"#555",fontSize:"11px",lineHeight:"1.7",fontFamily:"'Montserrat',sans-serif"}}>
+                  Odds are AI-generated estimates based on your profile and real admission data. Confirm specifics directly with each university before applying.
+                </div>
+              </div>
+            )}
+
+            {/* Form */}
+            {!results && !loading && (
+              <div>
+                {/* School list */}
+                <div style={{marginBottom:"28px"}}>
+                  <label style={{display:"block",color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.18em",marginBottom:"14px"}}>YOUR DREAM SCHOOLS *</label>
+                  <div style={{display:"flex",flexDirection:"column",gap:"10px",marginBottom:"12px"}}>
+                    {schools.map((s, i) => (
+                      <SchoolInput key={i} index={i} value={s} onChange={v => updateSchool(i, v)} onRemove={() => removeSchool(i)} canRemove={schools.length > 1}/>
+                    ))}
+                  </div>
+                  {schools.length < 8 && (
+                    <button onClick={addSchool} style={{background:"none",border:"1px dashed rgba(201,168,76,0.25)",color:"#c9a84c",borderRadius:"10px",padding:"10px 18px",cursor:"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",fontWeight:"600",letterSpacing:"0.08em",width:"100%",transition:"all 0.2s"}}
+                      onMouseEnter={e => e.currentTarget.style.borderColor="rgba(201,168,76,0.6)"}
+                      onMouseLeave={e => e.currentTarget.style.borderColor="rgba(201,168,76,0.25)"}>
+                      + Add another school ({schools.length}/8)
+                    </button>
+                  )}
+                </div>
+
+                {/* Profile */}
+                <div style={{background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:"18px",padding:"24px",marginBottom:"20px"}}>
+                  <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.18em",marginBottom:"20px"}}>YOUR ACADEMIC PROFILE</div>
+
+                  {/* Origin */}
+                  <div style={{marginBottom:"18px"}}>
+                    <label style={{display:"block",color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"10px"}}>WHERE ARE YOU FROM? *</label>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"8px",marginBottom:"10px"}}>
+                      {[{key:"canada",label:"🇨🇦 Canada"},{key:"us",label:"🇺🇸 United States"},{key:"other",label:"🌎 International"}].map(o => (
+                        <button key={o.key} onClick={() => setOrigin(o.key)}
+                          style={{padding:"11px 8px",borderRadius:"10px",cursor:"pointer",border:"1px solid "+(origin===o.key?"rgba(201,168,76,0.6)":"rgba(255,255,255,0.07)"),background:origin===o.key?"rgba(201,168,76,0.10)":"rgba(255,255,255,0.02)",color:origin===o.key?"#c9a84c":"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"700",transition:"all 0.15s"}}>
+                          {o.label}
+                        </button>
+                      ))}
+                    </div>
+                    {origin && (
+                      <input value={location} onChange={e => setLocation(e.target.value)}
+                        placeholder={origin==="canada"?"Province (e.g. Ontario)":origin==="us"?"State (e.g. California)":"Country (e.g. Singapore)"}
+                        style={inp}/>
+                    )}
+                  </div>
+
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"14px",marginBottom:"14px"}}>
+                    <div>
+                      <label style={{display:"block",color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"7px"}}>CUMULATIVE AVERAGE *</label>
+                      <input value={cumAvg} onChange={e => setCumAvg(e.target.value)} placeholder="e.g. 92% or 3.9 GPA" style={inp}/>
+                    </div>
+                    <div>
+                      <label style={{display:"block",color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"7px"}}>INTENDED MAJOR *</label>
+                      <input value={major} onChange={e => setMajor(e.target.value)} placeholder="e.g. Computer Science" style={inp}/>
+                    </div>
+                  </div>
+
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"14px",marginBottom:"14px"}}>
+                    <div>
+                      <label style={{display:"block",color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"7px"}}>SAT SCORE</label>
+                      <input value={satScore} onChange={e => setSatScore(e.target.value)} placeholder="e.g. 1480" style={inp}/>
+                    </div>
+                    <div>
+                      <label style={{display:"block",color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"7px"}}>ACT SCORE</label>
+                      <input value={actScore} onChange={e => setActScore(e.target.value)} placeholder="e.g. 33" style={inp}/>
+                    </div>
+                    <div>
+                      <label style={{display:"block",color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"7px"}}>IB PREDICTED</label>
+                      <input value={ibScore} onChange={e => setIbScore(e.target.value)} placeholder="e.g. 38/45" style={inp}/>
+                    </div>
+                  </div>
+
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"14px",marginBottom:"14px"}}>
+                    <div>
+                      <label style={{display:"block",color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"7px"}}>HIGH SCHOOL YEAR</label>
+                      <select value={hsYear} onChange={e => setHsYear(e.target.value)} style={{...inp,cursor:"pointer",appearance:"none"}}>
+                        <option value="">Select year</option>
+                        <option value="Grade 9">Grade 9 (4 years out)</option>
+                        <option value="Grade 10">Grade 10 (3 years out)</option>
+                        <option value="Grade 11">Grade 11 (2 years out)</option>
+                        <option value="Grade 12">Grade 12 (Applying now)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{display:"block",color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"7px"}}>EXTRACURRICULARS</label>
+                      <input value={extras} onChange={e => setExtras(e.target.value)} placeholder="e.g. Debate captain, robotics..." style={inp}/>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{display:"block",color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"7px"}}>AWARDS & ACCOMPLISHMENTS</label>
+                    <textarea value={awards} onChange={e => setAwards(e.target.value)} placeholder="e.g. National math olympiad, Schulich Leader nominee..." rows={2}
+                      style={{...inp,resize:"vertical"}}/>
+                  </div>
+                </div>
+
+                {error && (
+                  <div style={{color:"#c0302a",fontSize:"13px",marginBottom:"14px",padding:"10px 14px",background:"rgba(139,26,26,0.12)",borderRadius:"8px"}}>{error}</div>
+                )}
+
+                <button onClick={analyze} disabled={loading}
+                  style={{width:"100%",background:"linear-gradient(135deg,#8b1a1a,#c0302a)",border:"1px solid rgba(201,168,76,0.35)",color:"#f0f0f0",borderRadius:"12px",padding:"16px",fontSize:"13px",fontWeight:"700",letterSpacing:"0.12em",cursor:"pointer",fontFamily:"'Montserrat',sans-serif",transition:"opacity 0.2s"}}>
+                  ANALYZE MY DREAM LIST ({filledSchools.length} school{filledSchools.length!==1?"s":""})
+                </button>
+
+                <div style={{textAlign:"center",marginTop:"16px"}}>
+                  <a href="./index.html" style={{color:"#555",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",textDecoration:"none",letterSpacing:"0.08em"}}>
+                    Don't have a list yet? ← Find schools that fit you
+                  </a>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(React.createElement(App));
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>
