@@ -2,6 +2,7 @@
   "version": 2,
   "builds": [
     { "src": "index.html", "use": "@vercel/static" },
+    { "src": "dreamlist.html", "use": "@vercel/static" },
     { "src": "logo.webp", "use": "@vercel/static" },
     { "src": "demo_finals.mp4", "use": "@vercel/static" },
     { "src": "api/claude.js", "use": "@vercel/node" }
@@ -10,6 +11,7 @@
     { "src": "/api/claude", "dest": "/api/claude.js" },
     { "src": "/logo.webp", "dest": "/logo.webp" },
     { "src": "/demo_finals.mp4", "dest": "/demo_finals.mp4" },
+    { "src": "/dreamlist", "dest": "/dreamlist.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
