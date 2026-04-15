@@ -360,18 +360,182 @@ const LINKS = {
   "University of the Pacific":"https://www.pacific.edu/admission/undergrad/apply",
 };
 
-// ─── getLink: checks applyUrl arg first, then map, then smart fallback ──────
+// ─── DOMAIN MAP: school name → root .edu domain (used to build apply search) ─
+const DOMAINS = {
+  // Ivies + elite
+  "MIT":"mit.edu","Massachusetts Institute of Technology":"mit.edu",
+  "Harvard":"harvard.edu","Harvard University":"harvard.edu",
+  "Stanford":"stanford.edu","Stanford University":"stanford.edu",
+  "Princeton":"princeton.edu","Princeton University":"princeton.edu",
+  "Yale":"yale.edu","Yale University":"yale.edu",
+  "Columbia":"columbia.edu","Columbia University":"columbia.edu",
+  "University of Chicago":"uchicago.edu","UChicago":"uchicago.edu",
+  "University of Pennsylvania":"upenn.edu","Penn":"upenn.edu","UPenn":"upenn.edu",
+  "Brown University":"brown.edu","Dartmouth College":"dartmouth.edu",
+  "Cornell University":"cornell.edu","Caltech":"caltech.edu",
+  "California Institute of Technology":"caltech.edu",
+  // Top nationals
+  "Duke University":"duke.edu","Johns Hopkins University":"jhu.edu",
+  "Northwestern University":"northwestern.edu","Vanderbilt University":"vanderbilt.edu",
+  "Rice University":"rice.edu","Georgetown University":"georgetown.edu",
+  "University of Notre Dame":"nd.edu","Carnegie Mellon University":"cmu.edu","CMU":"cmu.edu",
+  "Tufts University":"tufts.edu","Washington University in St. Louis":"wustl.edu","WashU":"wustl.edu",
+  "Emory University":"emory.edu","Wake Forest University":"wfu.edu",
+  "Tulane University":"tulane.edu","Brandeis University":"brandeis.edu",
+  "Case Western Reserve University":"case.edu","Lehigh University":"lehigh.edu",
+  "Villanova University":"villanova.edu","Fordham University":"fordham.edu",
+  "Boston College":"bc.edu","Boston University":"bu.edu",
+  "Northeastern University":"northeastern.edu",
+  "George Washington University":"gwu.edu","GWU":"gwu.edu",
+  "American University":"american.edu",
+  // Public flagships
+  "UCLA":"ucla.edu","University of California, Los Angeles":"ucla.edu",
+  "UC Berkeley":"berkeley.edu","University of California, Berkeley":"berkeley.edu",
+  "University of Michigan":"umich.edu","University of Michigan, Ann Arbor":"umich.edu",
+  "University of Virginia":"virginia.edu","UVA":"virginia.edu",
+  "University of Southern California":"usc.edu","USC":"usc.edu",
+  "NYU":"nyu.edu","New York University":"nyu.edu",
+  "Georgia Tech":"gatech.edu","Georgia Institute of Technology":"gatech.edu",
+  "University of Illinois Urbana-Champaign":"illinois.edu","UIUC":"illinois.edu",
+  "University of Wisconsin-Madison":"wisc.edu","UW-Madison":"wisc.edu",
+  "University of North Carolina at Chapel Hill":"unc.edu","UNC":"unc.edu",
+  "University of Texas at Austin":"utexas.edu","UT Austin":"utexas.edu",
+  "Purdue University":"purdue.edu","Ohio State University":"osu.edu",
+  "The Ohio State University":"osu.edu",
+  "Penn State University":"psu.edu","Pennsylvania State University":"psu.edu","Penn State":"psu.edu",
+  "University of Florida":"ufl.edu","UF":"ufl.edu",
+  "University of Georgia":"uga.edu","University of Washington":"uw.edu","UW":"uw.edu",
+  "University of Maryland":"umd.edu","UMD":"umd.edu",
+  "University of Maryland, College Park":"umd.edu",
+  "Virginia Tech":"vt.edu","Virginia Polytechnic Institute":"vt.edu",
+  "North Carolina State University":"ncsu.edu","NC State":"ncsu.edu",
+  "University of Minnesota":"umn.edu","University of Minnesota Twin Cities":"umn.edu",
+  "Indiana University Bloomington":"indiana.edu","Michigan State University":"msu.edu","MSU":"msu.edu",
+  "University of Pittsburgh":"pitt.edu","Pitt":"pitt.edu",
+  "University of Iowa":"uiowa.edu","Iowa State University":"iastate.edu",
+  "Rutgers University":"rutgers.edu","Rutgers University-New Brunswick":"rutgers.edu",
+  "University of Connecticut":"uconn.edu","UConn":"uconn.edu",
+  "University of Delaware":"udel.edu",
+  "University of Colorado Boulder":"colorado.edu","CU Boulder":"colorado.edu",
+  "Arizona State University":"asu.edu","ASU":"asu.edu",
+  "University of Arizona":"arizona.edu","University of Utah":"utah.edu",
+  "University of Oregon":"uoregon.edu","Oregon State University":"oregonstate.edu",
+  "Clemson University":"clemson.edu","University of South Carolina":"sc.edu",
+  "Florida State University":"fsu.edu","FSU":"fsu.edu",
+  "University of Central Florida":"ucf.edu","UCF":"ucf.edu",
+  "University of South Florida":"usf.edu","USF":"usf.edu",
+  "Florida International University":"fiu.edu","FIU":"fiu.edu",
+  "Texas A&M University":"tamu.edu","Texas A&M":"tamu.edu",
+  "University of Houston":"uh.edu","Baylor University":"baylor.edu",
+  "Texas Tech University":"ttu.edu","Southern Methodist University":"smu.edu","SMU":"smu.edu",
+  "University of Miami":"miami.edu",
+  // UC system
+  "UC San Diego":"ucsd.edu","University of California, San Diego":"ucsd.edu",
+  "UC Santa Barbara":"ucsb.edu","University of California, Santa Barbara":"ucsb.edu",
+  "UC Davis":"ucdavis.edu","University of California, Davis":"ucdavis.edu",
+  "UC Irvine":"uci.edu","University of California, Irvine":"uci.edu",
+  "UC Santa Cruz":"ucsc.edu","University of California, Santa Cruz":"ucsc.edu",
+  // LACs
+  "Amherst College":"amherst.edu","Williams College":"williams.edu",
+  "Swarthmore College":"swarthmore.edu","Pomona College":"pomona.edu",
+  "Wellesley College":"wellesley.edu","Bowdoin College":"bowdoin.edu",
+  "Middlebury College":"middlebury.edu","Colby College":"colby.edu",
+  "Carleton College":"carleton.edu","Colgate University":"colgate.edu",
+  "Hamilton College":"hamilton.edu","Vassar College":"vassar.edu",
+  "Grinnell College":"grinnell.edu","Haverford College":"haverford.edu",
+  "Davidson College":"davidson.edu","Bates College":"bates.edu",
+  "Reed College":"reed.edu","Oberlin College":"oberlin.edu",
+  "Macalester College":"macalester.edu","Smith College":"smith.edu",
+  "Mount Holyoke College":"mtholyoke.edu","Bryn Mawr College":"brynmawr.edu",
+  "Barnard College":"barnard.edu","Harvey Mudd College":"hmc.edu",
+  "Claremont McKenna College":"cmc.edu","Scripps College":"scrippscollege.edu",
+  "Occidental College":" occidental.edu","Trinity College":"trincoll.edu",
+  "Connecticut College":"conncoll.edu","Colorado College":"coloradocollege.edu",
+  "Kenyon College":"kenyon.edu","Denison University":"denison.edu",
+  "DePauw University":"depauw.edu","Gettysburg College":"gettysburg.edu",
+  "Lafayette College":"lafayette.edu","Bucknell University":"bucknell.edu",
+  "Dickinson College":"dickinson.edu","Muhlenberg College":"muhlenberg.edu",
+  "Franklin & Marshall College":"fandm.edu","Wheaton College":"wheatonma.edu",
+  // Tech/specialty
+  "Rensselaer Polytechnic Institute":"rpi.edu","RPI":"rpi.edu",
+  "Worcester Polytechnic Institute":"wpi.edu","WPI":"wpi.edu",
+  "Stevens Institute of Technology":"stevens.edu",
+  "Rose-Hulman Institute of Technology":"rose-hulman.edu",
+  "Colorado School of Mines":"mines.edu",
+  "Rochester Institute of Technology":"rit.edu","RIT":"rit.edu",
+  "Drexel University":"drexel.edu","Temple University":"temple.edu",
+  // Business
+  "Babson College":"babson.edu","Bentley University":"bentley.edu",
+  // NY
+  "Stony Brook University":"stonybrook.edu","University at Buffalo":"buffalo.edu","UB":"buffalo.edu",
+  "Hofstra University":"hofstra.edu","Yeshiva University":"yu.edu",
+  // Misc
+  "University of Rochester":"rochester.edu",
+  "College of William & Mary":"wm.edu","College of William and Mary":"wm.edu","William & Mary":"wm.edu",
+  "University of Richmond":"richmond.edu","Elon University":"elon.edu",
+  "James Madison University":"jmu.edu","George Mason University":"gmu.edu",
+  "University of Vermont":"uvm.edu","UVM":"uvm.edu",
+  "University of New Hampshire":"unh.edu","Quinnipiac University":"qu.edu",
+  "Providence College":"providence.edu","Fairfield University":"fairfield.edu",
+  "Saint Louis University":"slu.edu","SLU":"slu.edu",
+  "Loyola University Chicago":"luc.edu","Loyola Marymount University":"lmu.edu","LMU":"lmu.edu",
+  "Santa Clara University":"scu.edu","University of San Francisco":"usfca.edu",
+  "Pepperdine University":"pepperdine.edu","Chapman University":"chapman.edu",
+  "Gonzaga University":"gonzaga.edu","Seattle University":"seattleu.edu",
+  "University of Denver":"du.edu","DU":"du.edu",
+  "High Point University":"highpoint.edu",
+  "Seton Hall University":"shu.edu","St. John's University":"stjohns.edu",
+  "Marquette University":"marquette.edu","Xavier University":"xavier.edu",
+  "University of Dayton":"udayton.edu","Butler University":"butler.edu",
+  "Drake University":"drake.edu","Bradley University":"bradley.edu",
+  "University of Scranton":"scranton.edu","Duquesne University":"duq.edu",
+  "Creighton University":"creighton.edu","Rockhurst University":"rockhurst.edu",
+  "Fordham University":"fordham.edu",
+};
+
+// ─── getLink: 4-tier lookup with guaranteed working fallback ─────────────────
 function getLink(name, applyUrl) {
-  // 1. Use URL returned directly by the AI if it looks valid
-  if (applyUrl && applyUrl.startsWith("http") && applyUrl.includes(".")) return applyUrl;
-  // 2. Exact match in our map
-  if (LINKS[name]) return LINKS[name];
-  // 3. Partial match
-  for (const [k,v] of Object.entries(LINKS)) {
-    if (name.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(name.toLowerCase())) return v;
+  const nameLow = (name||"").toLowerCase();
+
+  // Helper: build a reliable Google search that always works
+  function googleFallback(schoolName) {
+    // "apply [school name]" as a Google search — user sees actual apply page as first result
+    return "https://www.google.com/search?q=" + encodeURIComponent("apply " + schoolName + " undergraduate admissions");
   }
-  // 4. Smart fallback: search within .edu domain space (much better than raw Google)
-  return "https://www.google.com/search?q=" + encodeURIComponent(name + " undergraduate admissions apply") + "&as_sitesearch=.edu";
+
+  // 1. Check AI-provided URL — but only trust it if it looks like a real path (not just a root domain)
+  //    e.g. reject "https://hofstra.edu" but accept "https://admissions.hofstra.edu/apply"
+  if (applyUrl && applyUrl.startsWith("http")) {
+    try {
+      const u = new URL(applyUrl);
+      // Must have a path beyond just "/" and the domain must be .edu or .ca
+      if ((u.hostname.endsWith(".edu") || u.hostname.endsWith(".ca")) && u.pathname.length > 2) {
+        return applyUrl;
+      }
+    } catch(e) {}
+  }
+
+  // 2. Exact match in our hardcoded LINKS map
+  if (LINKS[name]) return LINKS[name];
+
+  // 3. Partial name match in LINKS
+  for (const [k,v] of Object.entries(LINKS)) {
+    if (nameLow.includes(k.toLowerCase()) || k.toLowerCase().includes(nameLow)) return v;
+  }
+
+  // 4. We know the domain — build a Google search scoped to that domain
+  //    This guarantees the user lands on the right school's site
+  if (DOMAINS[name]) {
+    return "https://www.google.com/search?q=" + encodeURIComponent("apply undergraduate admissions") + "&as_sitesearch=" + DOMAINS[name];
+  }
+  for (const [k,v] of Object.entries(DOMAINS)) {
+    if (nameLow.includes(k.toLowerCase()) || k.toLowerCase().includes(nameLow)) {
+      return "https://www.google.com/search?q=" + encodeURIComponent("apply undergraduate admissions") + "&as_sitesearch=" + v;
+    }
+  }
+
+  // 5. True fallback — Google search for the school by name, always works
+  return googleFallback(name);
 }
 
 const CAT = {
@@ -1476,6 +1640,26 @@ function SchoolCard({school, category, profile, onAnalyze, compareNames, onToggl
 // ========================================
 const LOGO_URI = "./logo.webp";
 
+const globalStyles = `
+  @keyframes nbspin { to { transform: rotate(360deg); } }
+  @keyframes nbpulse { 0%,100%{opacity:.5} 50%{opacity:1} }
+  @keyframes heroShimmer { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
+  @keyframes fypuFadeUp { from { opacity:0; transform:translateY(28px) scale(0.98); } to { opacity:1; transform:translateY(0) scale(1); } }
+  @keyframes musicFloat { 0%{transform:translateY(0px) rotate(-1.5deg)} 45%{transform:translateY(-10px) rotate(1.5deg)} 100%{transform:translateY(0px) rotate(-1.5deg)} }
+  .school-card-anim { animation: fypuFadeUp 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+  .school-card-anim:nth-child(1) { animation-delay: 0.05s; }
+  .school-card-anim:nth-child(2) { animation-delay: 0.12s; }
+  .school-card-anim:nth-child(3) { animation-delay: 0.19s; }
+  .school-card-anim:nth-child(4) { animation-delay: 0.26s; }
+  * { box-sizing:border-box; overflow-wrap:break-word; word-break:break-word; }
+  p { margin:0 0 8px; max-width:100%; }
+  select, input, textarea { color:#f0f0f0 !important; background:#0a0a0a; }
+  select option { background:#141414; color:#f0f0f0; }
+  input::placeholder, textarea::placeholder { color:#444444 !important; }
+  input:focus, textarea:focus, select:focus { border-color:rgba(192,48,42,0.80) !important; outline:none; }
+  ::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-track { background:#080808; } ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:3px; }
+`;
+
 function App() {
   const [province,setProvince]           = useState("");
   const [studentOrigin,setStudentOrigin] = useState("");
@@ -1522,8 +1706,8 @@ function App() {
   const [analysisTarget,setAnalysisTarget] = useState(null);
   const [compareList,setCompareList]     = useState([]);
   const [compareTarget,setCompareTarget] = useState(null);
-  const [page,setPage]                   = useState("form");
-  const [postGrad,setPostGrad]           = useState(false);
+  const [page,setPage] = useState("landing");
+  const [formStep,setFormStep] = useState(0);
   const [pgPathKey,setPgPathKey]         = useState(null);
   const pgPath = pgPathKey ? (POST_GRAD_PATHS.find(p=>p.key===pgPathKey)||null) : null;
 
@@ -1545,7 +1729,7 @@ function App() {
 
   const profile = {province,cumAvg,actScore,satScore,programs,ibScore,apCourses,awards,hsYear,intendedMajor,extras,postGrad:pgPathKey!==null,pgPathKey,studentOrigin};
 
-  function resetToForm() { setPage("form"); setResults(null); setCompareList([]); setCompareTarget(null); setAnalysisTarget(null); }
+  function resetToForm() { setPage("landing"); setFormStep(0); setResults(null); setCompareList([]); setCompareTarget(null); setAnalysisTarget(null); }
 
   function toggleCompare(school, category) {
     setCompareList(prev => {
@@ -1711,24 +1895,18 @@ function App() {
   if (analysisTarget) return <AnalysisPage school={analysisTarget.school} category={analysisTarget.category} profile={profile} onBack={()=>setAnalysisTarget(null)}/>;
 
   const inp = {width:"100%",background:"#0a0a0a",border:"1px solid rgba(192,48,42,0.35)",borderRadius:"10px",color:"#f0f0f0",padding:"11px 14px",fontSize:"14px",outline:"none",boxSizing:"border-box",fontFamily:"inherit"};
-  const hsInfo = HS_YEARS.find(y=>y.value===hsYear);
+  const hsInfo = HS_YEARS.find(y=>y.value===hsYear) || HS_YEARS[3];
 
   // ── RESULTS PAGE ──────────────────────────────────────────────────────────
   if (page==="results" && results) {
     return (
       <div style={{minHeight:"100vh",background:"#080808",backgroundImage:"radial-gradient(ellipse at 8% 5%,rgba(139,26,26,0.08) 0%,transparent 40%),radial-gradient(ellipse at 92% 95%,rgba(201,168,76,0.04) 0%,transparent 60%)",fontFamily:"sans-serif",color:"#d0d0d8"}}>
-        <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,900;1,6..96,400;1,6..96,900&family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-        <div style={{borderBottom:"1px solid rgba(255,255,255,0.06)",padding:"0 24px",height:"56px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"16px"}}>
-          <div style={{display:"flex",alignItems:"center",gap:"10px",flexShrink:0}}>
-            <img src={LOGO_URI} alt="FYPU" style={{height:"32px",width:"auto",mixBlendMode:"screen",opacity:0.9}}/>
-            <span style={{color:"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",letterSpacing:"0.18em"}}>FYPU</span>
-          </div>
-          <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
-            <button onClick={resetToForm} style={{background:"none",border:"1px solid rgba(255,255,255,0.12)",color:"#9898a8",borderRadius:"8px",padding:"6px 14px",cursor:"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.06em"}}>← Edit</button>
-            <button onClick={()=>{setResults(null);setCompareList([]);setCompareTarget(null);setAnalysisTarget(null);generate();}} disabled={loading} style={{background:loading?"rgba(139,26,26,0.20)":"rgba(192,48,42,0.85)",border:"1px solid rgba(201,168,76,0.30)",color:loading?"#888":"#f0f0f0",borderRadius:"8px",padding:"6px 16px",cursor:loading?"not-allowed":"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",fontWeight:"600",letterSpacing:"0.06em"}}>
-              {loading ? "Regenerating..." : "↻ Regenerate"}
-            </button>
-          </div>
+        {sharedChrome}
+        <div style={{background:"rgba(8,8,8,0.95)",borderBottom:"1px solid rgba(255,255,255,0.06)",padding:"8px 24px",display:"flex",alignItems:"center",justifyContent:"flex-end",gap:"8px"}}>
+          <button onClick={()=>{setPage("form");setFormStep(3);}} style={{background:"none",border:"1px solid rgba(255,255,255,0.12)",color:"#9898a8",borderRadius:"8px",padding:"6px 14px",cursor:"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.06em"}}>← Edit</button>
+          <button onClick={()=>{setResults(null);setCompareList([]);setCompareTarget(null);setAnalysisTarget(null);generate();}} disabled={loading} style={{background:loading?"rgba(139,26,26,0.20)":"rgba(192,48,42,0.85)",border:"1px solid rgba(201,168,76,0.30)",color:loading?"#888":"#f0f0f0",borderRadius:"8px",padding:"6px 16px",cursor:loading?"not-allowed":"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",fontWeight:"600",letterSpacing:"0.06em"}}>
+            {loading ? "Regenerating..." : "↻ Regenerate"}
+          </button>
         </div>
 
         {compareList.length > 0 && (
@@ -1815,40 +1993,21 @@ function App() {
             FYPU gives you a personalized starting point based on your profile. Acceptance rates and program details are research-based estimates — confirm specifics directly with universities before applying.
           </div>
         </div>
-        <style dangerouslySetInnerHTML={{__html:`
-          @keyframes nbspin { to { transform: rotate(360deg); } }
-          @keyframes nbpulse { 0%,100%{opacity:.5} 50%{opacity:1} }
-          @keyframes fypuFadeUp { from { opacity:0; transform:translateY(28px) scale(0.98); } to { opacity:1; transform:translateY(0) scale(1); } }
-          .school-card-anim { animation: fypuFadeUp 0.45s cubic-bezier(0.22,1,0.36,1) both; }
-          .school-card-anim:nth-child(1) { animation-delay: 0.05s; }
-          .school-card-anim:nth-child(2) { animation-delay: 0.12s; }
-          .school-card-anim:nth-child(3) { animation-delay: 0.19s; }
-          .school-card-anim:nth-child(4) { animation-delay: 0.26s; }
-          * { box-sizing:border-box; overflow-wrap:break-word; word-break:break-word; }
-          p { margin:0 0 8px; max-width:100%; }
-          select, input, textarea { color:#f0f0f0 !important; background:#0a0a0a; }
-          select option { background:#141414; color:#f0f0f0; }
-          input::placeholder, textarea::placeholder { color:#444444 !important; }
-          input:focus, textarea:focus, select:focus { border-color:rgba(192,48,42,0.80) !important; outline:none; }
-          ::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-track { background:#080808; } ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:3px; }
-        `}}/>
+        <style dangerouslySetInnerHTML={{__html:globalStyles}}/>
       </div>
     );
   }
 
-  // ── FORM PAGE ─────────────────────────────────────────────────────────────
-  return (
-    <div style={{minHeight:"100vh",background:"#080808",backgroundImage:"radial-gradient(ellipse at 8% 5%,rgba(139,26,26,0.08) 0%,transparent 40%),radial-gradient(ellipse at 92% 95%,rgba(201,168,76,0.04) 0%,transparent 60%)",fontFamily:"sans-serif",color:"#d0d0d8"}}>
+  // ── SHARED CHROME (header + modals + floating buttons) ───────────────────
+  const sharedChrome = (
+    <>
       <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,900;1,6..96,400;1,6..96,900&family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-
-      <div style={{borderBottom:"1px solid rgba(255,255,255,0.06)",padding:"0 32px",height:"56px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-        <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
+      <div style={{borderBottom:"1px solid rgba(255,255,255,0.06)",padding:"0 32px",height:"56px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"relative",zIndex:10}}>
+        <div style={{display:"flex",alignItems:"center",gap:"10px",cursor:"pointer"}} onClick={()=>setPage("landing")}>
           <img src={LOGO_URI} alt="FYPU" style={{height:"36px",width:"auto",mixBlendMode:"screen",opacity:0.9}}/>
           <span style={{color:"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",letterSpacing:"0.18em"}}>FYPU</span>
         </div>
-        <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
-          <button onClick={()=>setHowItWorksOpen(true)} style={{background:"none",border:"none",color:"#9898a8",cursor:"pointer",fontSize:"11px",fontWeight:"600",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.10em",padding:"6px 0"}}>HOW IT WORKS</button>
-        </div>
+        <button onClick={()=>setHowItWorksOpen(true)} style={{background:"none",border:"none",color:"#9898a8",cursor:"pointer",fontSize:"11px",fontWeight:"600",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.10em",padding:"6px 0"}}>HOW IT WORKS</button>
       </div>
 
       {howItWorksOpen && (
@@ -1858,7 +2017,7 @@ function App() {
             <div style={{color:"#c9a84c",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.15em",marginBottom:"8px"}}>FYPU</div>
             <div style={{color:"#f0f0f0",fontFamily:"'DM Serif Display',serif",fontSize:"26px",fontWeight:"700",marginBottom:"24px"}}>How It Works</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",marginBottom:"24px"}}>
-              {[{step:"01",title:"Enter Your Profile",desc:"Fill in your grades, test scores, extracurriculars, and intended major. Takes about 60 seconds.",icon:"📋"},{step:"02",title:"Get Your List",desc:"Get 12 personalized schools across reach, target, and safety tiers instantly.",icon:"🎓"},{step:"03",title:"Deep Dive",desc:"Click Analyze for risk analysis and timeline. Use Compare for side-by-side breakdowns.",icon:"🔍"}].map(s=>(
+              {[{step:"01",title:"Tell Us About You",desc:"Answer a few quick questions about your grades, major, and background. Takes under 60 seconds.",icon:"📋"},{step:"02",title:"Get Your List",desc:"Get 12 personalized schools across reach, target, and safety tiers instantly.",icon:"🎓"},{step:"03",title:"Deep Dive",desc:"Click Analyze for risk analysis and timeline. Use Compare for side-by-side breakdowns.",icon:"🔍"}].map(s=>(
                 <div key={s.step} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(201,168,76,0.12)",borderRadius:"14px",padding:"18px",textAlign:"center"}}>
                   <div style={{fontSize:"24px",marginBottom:"8px"}}>{s.icon}</div>
                   <div style={{color:"#c9a84c",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.15em",marginBottom:"6px"}}>STEP {s.step}</div>
@@ -1869,215 +2028,298 @@ function App() {
             </div>
             <div style={{background:"rgba(139,26,26,0.08)",border:"1px solid rgba(201,168,76,0.15)",borderRadius:"12px",padding:"16px 18px"}}>
               <div style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700",letterSpacing:"0.12em",marginBottom:"8px"}}>ABOUT THE DATA</div>
-              <div style={{color:"#9898a8",fontSize:"12px",lineHeight:"1.7"}}>FYPU draws on data from <strong style={{color:"#d0d0d8"}}>Common Data Sets</strong>, <strong style={{color:"#d0d0d8"}}>university admissions pages</strong>, <strong style={{color:"#d0d0d8"}}>College Board</strong>, and <strong style={{color:"#d0d0d8"}}>IPEDS</strong>. Think of it as your first conversation with a college advisor — use it to build your list, then confirm details directly with universities.</div>
+              <div style={{color:"#9898a8",fontSize:"12px",lineHeight:"1.7"}}>FYPU draws on data from <strong style={{color:"#d0d0d8"}}>Common Data Sets</strong>, <strong style={{color:"#d0d0d8"}}>university admissions pages</strong>, <strong style={{color:"#d0d0d8"}}>College Board</strong>, and <strong style={{color:"#d0d0d8"}}>IPEDS</strong>. Think of it as your first conversation with a college advisor — confirm specifics directly with universities.</div>
             </div>
           </div>
         </div>
       )}
 
-      <div style={{maxWidth:"860px",margin:"0 auto",padding:"40px 20px",position:"relative",zIndex:1}}>
-        <div style={{textAlign:"center",marginBottom:"48px",paddingTop:"24px"}}>
-          <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.22em",marginBottom:"28px"}}>AI-POWERED UNIVERSITY ADVISOR</div>
-          <h1 style={{fontFamily:"'Bodoni Moda',serif",fontSize:"clamp(36px,5.5vw,64px)",fontWeight:"900",lineHeight:"1.08",letterSpacing:"-0.01em",color:"#f0f0f0",marginBottom:"10px"}}>Find Your Perfect</h1>
-          <div style={{fontFamily:"'Great Vibes',cursive",fontSize:"clamp(48px,8vw,88px)",fontWeight:"400",background:"linear-gradient(135deg,#c0302a 0%,#c9a84c 30%,#f0e090 50%,#c9a84c 70%,#c0302a 100%)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",lineHeight:"1.1",marginBottom:"28px",animation:"heroShimmer 4s linear infinite"}}>University</div>
-          <p style={{color:"#9898a8",fontSize:"13px",maxWidth:"440px",margin:"0 auto",lineHeight:"1.75",letterSpacing:"0.01em"}}>Enter your grades and profile. Get a personalized list with acceptance odds, risk analysis, and a step-by-step roadmap — in under 60 seconds.</p>
-          <div style={{marginTop:"36px",marginBottom:"8px"}}>
-            <button onClick={()=>setDemoOpen(true)} style={{background:"none",border:"none",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"10px",padding:"10px 20px",borderRadius:"100px",border:"1px solid rgba(255,255,255,0.1)",transition:"all 0.2s"}} onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(201,168,76,0.4)";e.currentTarget.style.background="rgba(201,168,76,0.04)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.1)";e.currentTarget.style.background="none";}}>
-              <div style={{width:"28px",height:"28px",borderRadius:"50%",background:"linear-gradient(135deg,#c0302a,#c9a84c)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><span style={{color:"#fff",fontSize:"11px",marginLeft:"2px"}}>▶</span></div>
-              <span style={{color:"#9898a8",fontSize:"12px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.06em"}}>Watch live demo</span>
-            </button>
-            {demoOpen && (
-              <div onClick={()=>setDemoOpen(false)} style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
-                <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:"860px",borderRadius:"16px",overflow:"hidden",border:"1px solid rgba(201,168,76,0.3)",position:"relative"}}>
-                  <button onClick={()=>setDemoOpen(false)} style={{position:"absolute",top:"12px",right:"12px",background:"rgba(0,0,0,0.6)",border:"1px solid rgba(255,255,255,0.2)",color:"#f0f0f0",borderRadius:"50%",width:"32px",height:"32px",cursor:"pointer",fontSize:"18px",zIndex:10,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>x</button>
-                  <video src="./demo_finals.mp4" controls autoPlay playsInline style={{width:"100%",display:"block",background:"#0a0a0a"}}/>
-                </div>
-              </div>
-            )}
+      {demoOpen && (
+        <div onClick={()=>setDemoOpen(false)} style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}}>
+          <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:"860px",borderRadius:"16px",overflow:"hidden",border:"1px solid rgba(201,168,76,0.3)",position:"relative"}}>
+            <button onClick={()=>setDemoOpen(false)} style={{position:"absolute",top:"12px",right:"12px",background:"rgba(0,0,0,0.6)",border:"1px solid rgba(255,255,255,0.2)",color:"#f0f0f0",borderRadius:"50%",width:"32px",height:"32px",cursor:"pointer",fontSize:"18px",zIndex:10,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>x</button>
+            <video src="./demo_finals.mp4" controls autoPlay playsInline style={{width:"100%",display:"block",background:"#0a0a0a"}}/>
           </div>
-          <div style={{textAlign:"center",marginTop:"16px"}}>
-            <a href="/dreamlist" style={{color:"#555",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",textDecoration:"none",letterSpacing:"0.08em"}}>
-              Already have schools in mind? <span style={{color:"#c9a84c"}}>Analyze your dream list →</span>
-            </a>
+        </div>
+      )}
+
+      {/* Floating buttons — demo pill + music player */}
+      <div style={{position:"fixed",bottom:"28px",right:"28px",zIndex:9000,display:"flex",flexDirection:"column",alignItems:"flex-end",gap:"10px"}}>
+        {/* Demo pill */}
+        <button onClick={()=>setDemoOpen(true)} style={{background:"linear-gradient(135deg,#0d0d0d,#111)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:"100px",padding:"8px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:"8px",boxShadow:"0 4px 20px rgba(0,0,0,0.5)",transition:"border-color 0.2s"}} onMouseEnter={e=>e.currentTarget.style.borderColor="rgba(201,168,76,0.5)"} onMouseLeave={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"}>
+          <div style={{width:"20px",height:"20px",borderRadius:"50%",background:"linear-gradient(135deg,#c0302a,#c9a84c)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><span style={{color:"#fff",fontSize:"9px",marginLeft:"1px"}}>▶</span></div>
+          <span style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.05em",whiteSpace:"nowrap"}}>Watch demo</span>
+        </button>
+
+        {/* Music player */}
+        <div style={{animation:"musicFloat 4.5s ease-in-out infinite",transformOrigin:"bottom center"}}>
+          {musicOpen ? (
+            <div style={{background:"#0a0a0a",border:"1px solid rgba(201,168,76,0.35)",borderRadius:"18px",overflow:"hidden",boxShadow:"0 16px 60px rgba(0,0,0,0.75)",width:"300px"}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 15px 10px",background:"linear-gradient(135deg,rgba(201,168,76,0.08),rgba(192,48,42,0.06))"}}>
+                <div style={{display:"flex",alignItems:"center",gap:"9px"}}>
+                  <div style={{width:"28px",height:"28px",borderRadius:"8px",background:"linear-gradient(135deg,#c9a84c,#e8c96a)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"13px",flexShrink:0}}>🎵</div>
+                  <div>
+                    <div style={{color:"#c9a84c",fontSize:"10px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em"}}>FYPU PLAYLIST</div>
+                    <div style={{color:"#9898a8",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",fontStyle:"italic"}}>for the big decisions</div>
+                  </div>
+                </div>
+                <button onClick={()=>setMusicOpen(false)} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",color:"#9898a8",width:"22px",height:"22px",borderRadius:"50%",cursor:"pointer",fontSize:"11px",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>x</button>
+              </div>
+              <iframe src="https://open.spotify.com/embed/playlist/3cLzuKClIdVVUl44kNARF5?utm_source=generator&theme=0" width="300" height="460" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style={{display:"block"}}/>
+            </div>
+          ) : (
+            <button onClick={()=>setMusicOpen(true)} style={{background:"linear-gradient(135deg,#0d0d0d,#111)",border:"1px solid rgba(201,168,76,0.40)",borderRadius:"14px",padding:"11px 16px",cursor:"pointer",display:"flex",alignItems:"center",gap:"10px",boxShadow:"0 8px 32px rgba(0,0,0,0.6)",transition:"border-color 0.25s"}} onMouseEnter={e=>e.currentTarget.style.borderColor="rgba(201,168,76,0.8)"} onMouseLeave={e=>e.currentTarget.style.borderColor="rgba(201,168,76,0.40)"}>
+              <div style={{width:"34px",height:"34px",borderRadius:"10px",background:"linear-gradient(135deg,#c9a84c,#e8c96a)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",flexShrink:0}}>🎵</div>
+              <div style={{textAlign:"left"}}>
+                <div style={{color:"#c9a84c",fontSize:"11px",fontWeight:"700",whiteSpace:"nowrap"}}>FYPU Playlist</div>
+                <div style={{color:"#9898a8",fontSize:"10px",whiteSpace:"nowrap",fontStyle:"italic"}}>for the big decisions ✨</div>
+              </div>
+            </button>
+          )}
+        </div>
+      </div>
+    </>
+  );
+
+  // ── LANDING PAGE ───────────────────────────────────────────────────────────
+  if (page==="landing" || page==="form") {
+    // if page===form, skip landing and show stepped form directly
+    if (page==="landing") return (
+      <div style={{minHeight:"100vh",background:"#080808",backgroundImage:"radial-gradient(ellipse at 8% 5%,rgba(139,26,26,0.08) 0%,transparent 40%),radial-gradient(ellipse at 92% 95%,rgba(201,168,76,0.04) 0%,transparent 60%)",fontFamily:"sans-serif",color:"#d0d0d8"}}>
+        {sharedChrome}
+        <div style={{maxWidth:"600px",margin:"0 auto",padding:"0 20px",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:"calc(100vh - 56px)",textAlign:"center",paddingBottom:"120px"}}>
+          <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.22em",marginBottom:"24px"}}>AI-POWERED UNIVERSITY ADVISOR</div>
+          <h1 style={{fontFamily:"'Bodoni Moda',serif",fontSize:"clamp(36px,5.5vw,64px)",fontWeight:"900",lineHeight:"1.08",letterSpacing:"-0.01em",color:"#f0f0f0",marginBottom:"8px"}}>Find Your Perfect</h1>
+          <div style={{fontFamily:"'Great Vibes',cursive",fontSize:"clamp(48px,8vw,88px)",fontWeight:"400",background:"linear-gradient(135deg,#c0302a 0%,#c9a84c 30%,#f0e090 50%,#c9a84c 70%,#c0302a 100%)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",lineHeight:"1.1",marginBottom:"32px",animation:"heroShimmer 4s linear infinite"}}>University</div>
+          <p style={{color:"#9898a8",fontSize:"14px",maxWidth:"400px",lineHeight:"1.8",marginBottom:"52px"}}>Your personalized list — reach, target, and safety schools — in under 60 seconds.</p>
+
+          <div style={{display:"flex",flexDirection:"column",gap:"14px",width:"100%",maxWidth:"380px"}}>
+            <button onClick={()=>{ const isLocal = window.location.hostname==="localhost" || window.location.protocol==="file:"; window.location.href = isLocal ? "./dreamlist.html" : "/dreamlist"; }} style={{width:"100%",padding:"18px 24px",borderRadius:"16px",cursor:"pointer",border:"1px solid rgba(201,168,76,0.45)",background:"rgba(201,168,76,0.07)",color:"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"13px",fontWeight:"700",letterSpacing:"0.08em",textAlign:"center",transition:"all 0.2s",lineHeight:"1.4"}} onMouseEnter={e=>{e.currentTarget.style.background="rgba(201,168,76,0.13)";e.currentTarget.style.borderColor="rgba(201,168,76,0.75)";}} onMouseLeave={e=>{e.currentTarget.style.background="rgba(201,168,76,0.07)";e.currentTarget.style.borderColor="rgba(201,168,76,0.45)";}}>
+              <div style={{fontSize:"22px",marginBottom:"6px"}}>🎯</div>
+              I already have schools in mind
+              <div style={{color:"#705858",fontSize:"10px",fontWeight:"400",marginTop:"4px",letterSpacing:"0.04em"}}>Analyze and compare your dream list</div>
+            </button>
+
+            <button onClick={()=>setPage("form")} style={{width:"100%",padding:"18px 24px",borderRadius:"16px",cursor:"pointer",border:"1px solid rgba(192,48,42,0.5)",background:"rgba(139,26,26,0.12)",color:"#f0f0f0",fontFamily:"'Montserrat',sans-serif",fontSize:"13px",fontWeight:"700",letterSpacing:"0.08em",textAlign:"center",transition:"all 0.2s",lineHeight:"1.4"}} onMouseEnter={e=>{e.currentTarget.style.background="rgba(139,26,26,0.22)";e.currentTarget.style.borderColor="rgba(192,48,42,0.8)";}} onMouseLeave={e=>{e.currentTarget.style.background="rgba(139,26,26,0.12)";e.currentTarget.style.borderColor="rgba(192,48,42,0.5)";}}>
+              <div style={{fontSize:"22px",marginBottom:"6px"}}>✨</div>
+              I don't have schools in mind yet
+              <div style={{color:"#705858",fontSize:"10px",fontWeight:"400",marginTop:"4px",letterSpacing:"0.04em"}}>Build your personalized list from scratch</div>
+            </button>
+          </div>
+        </div>
+        <style dangerouslySetInnerHTML={{__html:globalStyles}}/>
+        <Footer/>
+      </div>
+    );
+  }
+
+  // ── STEPPED FORM ───────────────────────────────────────────────────────────
+  // Steps: 0=origin+location, 1=major+hsYear, 2=grades+tests, 3=ecs+awards
+
+  const STEPS = [
+    { label:"Where are you from?", hint:"Step 1 of 4" },
+    { label:"What do you want to study?", hint:"Step 2 of 4" },
+    { label:"Your academic scores", hint:"Step 3 of 4" },
+    { label:"Your activities & awards", hint:"Step 4 of 4" },
+  ];
+
+  function canAdvance() {
+    if (formStep===0) return !!(studentOrigin && province);
+    if (formStep===1) return !!(intendedMajor && hsYear);
+    if (formStep===2) return !!cumAvg;
+    return true;
+  }
+
+  function handleNext() {
+    if (formStep < 3) { setFormStep(s=>s+1); }
+    else { generate(); }
+  }
+
+  return (
+    <div style={{minHeight:"100vh",background:"#080808",backgroundImage:"radial-gradient(ellipse at 8% 5%,rgba(139,26,26,0.08) 0%,transparent 40%),radial-gradient(ellipse at 92% 95%,rgba(201,168,76,0.04) 0%,transparent 60%)",fontFamily:"sans-serif",color:"#d0d0d8"}}>
+      {sharedChrome}
+
+      <div style={{maxWidth:"520px",margin:"0 auto",padding:"40px 20px 160px",position:"relative",zIndex:1}}>
+
+        {/* Progress bar */}
+        <div style={{marginBottom:"36px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
+            <span style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.14em"}}>{STEPS[formStep].hint}</span>
+            <button onClick={()=>setPage("landing")} style={{background:"none",border:"none",color:"#705858",cursor:"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>← Back</button>
+          </div>
+          <div style={{height:"2px",background:"rgba(255,255,255,0.06)",borderRadius:"2px",overflow:"hidden"}}>
+            <div style={{height:"100%",width:((formStep+1)/4*100)+"%",background:"linear-gradient(90deg,#c0302a,#c9a84c)",borderRadius:"2px",transition:"width 0.4s cubic-bezier(0.22,1,0.36,1)"}}/>
           </div>
         </div>
 
-        <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(180,140,60,0.18)",borderRadius:"20px",padding:"28px",marginBottom:"32px"}}>
-          <div style={{marginBottom:"18px"}}>
-            <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>WHERE ARE YOU FROM? *</label>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"8px"}}>
-              {[{key:"canada",label:"🇨🇦 Canada"},{key:"us",label:"🇺🇸 United States"},{key:"other",label:"🌎 Other Country"}].map(o=>{
-                const sel = studentOrigin===o.key;
-                return (
-                  <button key={o.key} onClick={()=>{setStudentOrigin(o.key);setProvince("");}} style={{padding:"12px 8px",borderRadius:"12px",cursor:"pointer",border:"1px solid "+(sel?"rgba(201,168,76,0.6)":"rgba(201,168,76,0.07)"),background:sel?"rgba(201,168,76,0.12)":"rgba(255,255,255,0.03)",color:sel?"#c9a84c":"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"700",textAlign:"center",transition:"all 0.18s"}}>
-                    {o.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"18px",marginBottom:"18px"}}>
-            <div>
-              <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"7px"}}>{studentOrigin==="us"?"YOUR STATE *":studentOrigin==="canada"?"YOUR PROVINCE *":"YOUR LOCATION *"}</label>
-              <select value={province} onChange={e=>setProvince(e.target.value)} style={Object.assign({},inp,{cursor:"pointer",appearance:"none"})} disabled={!studentOrigin}>
-                <option value="" disabled>{!studentOrigin?"Select origin first":studentOrigin==="us"?"Select state":studentOrigin==="canada"?"Select province":"Select country/region"}</option>
-                {studentOrigin==="canada" && PROVINCES.map(p=><option key={p} value={p} style={{background:"#0c0c0c"}}>{p}</option>)}
-                {studentOrigin==="us" && US_STATES.map(s=><option key={s} value={s} style={{background:"#0c0c0c"}}>{s}</option>)}
-                {studentOrigin==="other" && OTHER_COUNTRIES.map(c=><option key={c} value={c} style={{background:"#0c0c0c"}}>{c}</option>)}
-              </select>
-            </div>
-            <div>
-              <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"7px"}}>{studentOrigin==="us"?"GPA *":"CUMULATIVE AVERAGE *"}{province?" ("+((GRADE_SYSTEMS[province]||{}).scale||")")+"":" "}</label>
-              <input value={cumAvg} onChange={e=>setCumAvg(e.target.value)} placeholder={province?((GRADE_SYSTEMS[province]||{}).example||"Enter average"):studentOrigin==="us"?"Select state first":"Select location first"} style={inp}/>
-            </div>
-          </div>
-          <div style={{marginBottom:"18px"}}>
-            <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>HIGH SCHOOL YEAR *</label>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:"8px"}}>
-              {HS_YEARS.map(y=>{
-                const sel = hsYear===y.value;
-                const col = y.value==="grade12"?"#c9a84c":y.value==="grade11"?"#e8c96a":"#5aba6a";
-                return (
-                  <button key={y.value} onClick={()=>setHsYear(y.value)} style={{padding:"12px 8px",borderRadius:"12px",cursor:"pointer",border:"1px solid "+(sel?col+"90":"rgba(201,168,76,0.07)"),background:sel?col+"14":"rgba(255,255,255,0.03)",color:sel?col:"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",textAlign:"center",transition:"all 0.18s",lineHeight:"1.4"}}>
-                    {y.label}
-                    <span style={{display:"block",fontSize:"9px",fontWeight:"400",marginTop:"3px",opacity:sel?0.9:0.5}}>{y.tag}</span>
-                  </button>
-                );
-              })}
-            </div>
-            {hsYear==="grade12" && (
-              <div style={{marginTop:"8px",background:"rgba(255,159,67,0.10)",border:"1px solid rgba(255,159,67,0.22)",borderRadius:"8px",padding:"8px 12px",display:"flex",gap:"8px",alignItems:"center"}}>
-                <span style={{color:"#c9a84c",fontSize:"11px",flexShrink:0}}>&#9888;</span>
-                <span style={{color:"#c9a84c",fontSize:"11px"}}>Grade 12 detected - timeline and SAT advice adjusted for immediate application.</span>
-              </div>
-            )}
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"18px",marginBottom:"18px"}}>
-            <div>
-              <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"7px"}}>SAT SCORE (optional)</label>
-              <input value={satScore} onChange={e=>setSatScore(e.target.value)} placeholder="e.g. 1480  (400-1600)" style={inp}/>
-            </div>
-            <div>
-              <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"7px"}}>ACT SCORE (optional)</label>
-              <input value={actScore} onChange={e=>setActScore(e.target.value)} placeholder="e.g. 33  (1-36)" style={inp}/>
-            </div>
-          </div>
-          <div style={{marginBottom:"18px"}}>
-            <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"7px"}}>INTENDED MAJOR *</label>
-            <MajorSelect value={intendedMajor} onChange={v=>{setIntendedMajor(v);setPgPathKey(null);}}/>
-          </div>
-          {intendedMajor.trim() && (()=>{
-            const suggestions = getGradSuggestions(intendedMajor);
-            const selectedPg = POST_GRAD_PATHS.find(p => p.key === (pgPathKey||"")) || null;
-            return (
-              <div style={{marginBottom:"18px"}}>
-                <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>POST-GRADUATE PLANS</label>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px",marginBottom:"8px"}}>
-                  <button onClick={()=>setPgPathKey(null)} style={{padding:"12px 14px",borderRadius:"12px",cursor:"pointer",textAlign:"left",border:"1px solid "+(pgPathKey===null?"rgba(255,255,255,0.4)":"rgba(201,168,76,0.07)"),background:pgPathKey===null?"rgba(255,255,255,0.04)":"rgba(255,255,255,0.03)",color:pgPathKey===null?"#f0f0f0":"#9898a8",transition:"all 0.15s"}}>
-                    <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",marginBottom:"2px"}}>Bachelor's Only</div>
-                    <div style={{fontSize:"10px",opacity:0.65}}>Career outcomes after undergrad</div>
-                  </button>
-                  {suggestions.slice(0,3).map(pg=>(
-                    <button key={pg.key} onClick={()=>setPgPathKey(pg.key)} style={{padding:"12px 14px",borderRadius:"12px",cursor:"pointer",textAlign:"left",border:"1px solid "+(pgPathKey===pg.key?pg.color:"rgba(201,168,76,0.07)"),background:pgPathKey===pg.key?pg.color+"12":"rgba(255,255,255,0.03)",color:pgPathKey===pg.key?pg.color:"#9898a8",transition:"all 0.15s"}}>
-                      <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",marginBottom:"2px"}}>{pg.label}</div>
-                      <div style={{fontSize:"10px",opacity:0.75}}>{pg.abbr} &middot; {pg.testLabel}</div>
+        {/* Step heading */}
+        <div style={{marginBottom:"32px",animation:"fypuFadeUp 0.35s cubic-bezier(0.22,1,0.36,1) both"}}>
+          <h2 style={{fontFamily:"'DM Serif Display',serif",fontSize:"28px",fontWeight:"700",color:"#f0f0f0",marginBottom:"6px",lineHeight:"1.2"}}>{STEPS[formStep].label}</h2>
+        </div>
+
+        {/* STEP 0 — origin + location */}
+        {formStep===0 && (
+          <div style={{animation:"fypuFadeUp 0.35s cubic-bezier(0.22,1,0.36,1) both"}}>
+            <div style={{marginBottom:"24px"}}>
+              <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>WHERE ARE YOU FROM?</label>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"8px"}}>
+                {[{key:"canada",label:"🇨🇦",sub:"Canada"},{key:"us",label:"🇺🇸",sub:"United States"},{key:"other",label:"🌎",sub:"Other Country"}].map(o=>{
+                  const sel = studentOrigin===o.key;
+                  return (
+                    <button key={o.key} onClick={()=>{setStudentOrigin(o.key);setProvince("");}} style={{padding:"16px 8px",borderRadius:"14px",cursor:"pointer",border:"1px solid "+(sel?"rgba(201,168,76,0.65)":"rgba(255,255,255,0.07)"),background:sel?"rgba(201,168,76,0.12)":"rgba(255,255,255,0.03)",color:sel?"#c9a84c":"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",textAlign:"center",transition:"all 0.18s",lineHeight:"1.5"}}>
+                      <div style={{fontSize:"26px",marginBottom:"6px"}}>{o.label}</div>
+                      {o.sub}
                     </button>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
-            );
-          })()}
-          <div style={{marginBottom:"18px"}}>
-            <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>ACADEMIC PROGRAMS (optional)</label>
-            <div style={{display:"flex",gap:"10px",marginBottom:"10px"}}>
-              {[{key:"ib",label:"IB Programme",sub:"International Baccalaureate",col:"#c9a84c"},{key:"ap",label:"AP Courses",sub:"Advanced Placement",col:"#c9a84c"}].map(pg=>(
-                <button key={pg.key} onClick={()=>setPrograms(p=>Object.assign({},p,{[pg.key]:!p[pg.key]}))} style={{flex:1,padding:"12px 14px",borderRadius:"12px",cursor:"pointer",border:"1px solid "+(programs[pg.key]?pg.col+"80":"rgba(201,168,76,0.07)"),background:programs[pg.key]?pg.col+"14":"rgba(255,255,255,0.03)",color:programs[pg.key]?pg.col:"#9898a8",textAlign:"left",transition:"all 0.18s"}}>
-                  <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700"}}>{pg.label}</div>
-                  <div style={{fontSize:"10px",opacity:0.7,marginTop:"2px"}}>{pg.sub}</div>
-                </button>
-              ))}
             </div>
-            {programs.ib && (
-              <div style={{background:"rgba(167,139,250,0.07)",border:"1px solid rgba(167,139,250,0.25)",borderRadius:"10px",padding:"14px 16px",marginBottom:"10px"}}>
-                <label style={{display:"block",color:"#c9a84c",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"8px"}}>IB PREDICTED SCORE (optional)</label>
-                <input value={ibScore} onChange={e=>setIbScore(e.target.value)} placeholder="e.g. 38  (scored out of 45)" style={Object.assign({},inp,{border:"1px solid rgba(167,139,250,0.3)"})}/>
+            {studentOrigin && (
+              <div style={{animation:"fypuFadeUp 0.3s cubic-bezier(0.22,1,0.36,1) both"}}>
+                <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>{studentOrigin==="us"?"YOUR STATE":studentOrigin==="canada"?"YOUR PROVINCE":"YOUR COUNTRY / REGION"}</label>
+                <select value={province} onChange={e=>setProvince(e.target.value)} style={Object.assign({},inp,{cursor:"pointer",appearance:"none"})}>
+                  <option value="" disabled>{studentOrigin==="us"?"Select your state":studentOrigin==="canada"?"Select your province":"Select your country"}</option>
+                  {studentOrigin==="canada" && PROVINCES.map(p=><option key={p} value={p}>{p}</option>)}
+                  {studentOrigin==="us" && US_STATES.map(s=><option key={s} value={s}>{s}</option>)}
+                  {studentOrigin==="other" && OTHER_COUNTRIES.map(c=><option key={c} value={c}>{c}</option>)}
+                </select>
               </div>
             )}
-            {programs.ap && (
-              <div style={{background:"rgba(96,165,250,0.07)",border:"1px solid rgba(96,165,250,0.25)",borderRadius:"10px",padding:"14px 16px",marginBottom:"10px"}}>
-                <label style={{display:"block",color:"#c9a84c",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"8px"}}>AP COURSES & SCORES (optional)</label>
-                <textarea value={apCourses} onChange={e=>setApCourses(e.target.value)} placeholder="e.g. AP Calculus BC (5), AP Physics C (5), AP CS (4)..." rows={2} style={Object.assign({},inp,{resize:"vertical",border:"1px solid rgba(96,165,250,0.3)"})}/>
-              </div>
-            )}
           </div>
-          <div style={{marginBottom:"14px"}}>
-            <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"7px"}}>EXTRACURRICULARS (optional)</label>
-            <textarea value={extras} onChange={e=>setExtras(e.target.value)} placeholder="e.g. Captain of debate team, varsity soccer, robotics club president..." rows={3} style={Object.assign({},inp,{resize:"vertical"})}/>
-          </div>
-          <div style={{marginBottom:"22px"}}>
-            <label style={{display:"block",color:"#9898a8",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",marginBottom:"7px"}}>AWARDS & ACCOMPLISHMENTS (optional)</label>
-            <textarea value={awards} onChange={e=>setAwards(e.target.value)} placeholder="e.g. 1st place Canadian Math Kangaroo, Schulich Leader nominee, DECA provincials finalist..." rows={3} style={Object.assign({},inp,{resize:"vertical",borderColor:"rgba(201,168,76,0.3)"})}/>
-          </div>
+        )}
 
-          {error && <div style={{color:"#c0302a",fontSize:"13px",marginBottom:"14px",padding:"10px 14px",background:"rgba(139,26,26,0.12)",borderRadius:"8px"}}>{error}</div>}
-          <div style={{display:"flex",gap:"8px",marginBottom:"12px"}}>
-            <button onClick={saveProfile} style={{flex:1,padding:"10px",borderRadius:"10px",cursor:"pointer",border:"1px solid rgba(201,168,76,0.35)",background:profileSaved?"rgba(90,186,106,0.12)":"rgba(201,168,76,0.07)",color:profileSaved?"#5aba6a":"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",letterSpacing:"0.08em",transition:"all 0.2s"}}>
-              {profileSaved ? "✓ PROFILE SAVED" : "💾 SAVE PROFILE"}
-            </button>
-            <button onClick={clearProfile} style={{padding:"10px 16px",borderRadius:"10px",cursor:"pointer",border:"1px solid rgba(255,255,255,0.08)",background:"transparent",color:"#705858",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",letterSpacing:"0.08em"}}>CLEAR</button>
+        {/* STEP 1 — major + hs year */}
+        {formStep===1 && (
+          <div style={{animation:"fypuFadeUp 0.35s cubic-bezier(0.22,1,0.36,1) both"}}>
+            <div style={{marginBottom:"28px"}}>
+              <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>INTENDED MAJOR</label>
+              <MajorSelect value={intendedMajor} onChange={v=>{setIntendedMajor(v);setPgPathKey(null);}}/>
+            </div>
+            {intendedMajor && (()=>{
+              const suggestions = getGradSuggestions(intendedMajor);
+              return (
+                <div style={{marginBottom:"28px",animation:"fypuFadeUp 0.3s cubic-bezier(0.22,1,0.36,1) both"}}>
+                  <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>POST-GRAD PLANS <span style={{color:"#705858",fontWeight:"400"}}>(optional)</span></label>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
+                    <button onClick={()=>setPgPathKey(null)} style={{padding:"12px",borderRadius:"12px",cursor:"pointer",textAlign:"left",border:"1px solid "+(pgPathKey===null?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.07)"),background:pgPathKey===null?"rgba(255,255,255,0.05)":"rgba(255,255,255,0.02)",color:pgPathKey===null?"#f0f0f0":"#9898a8",transition:"all 0.15s"}}>
+                      <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",marginBottom:"2px"}}>Bachelor's Only</div>
+                      <div style={{fontSize:"10px",opacity:0.6}}>Career after undergrad</div>
+                    </button>
+                    {suggestions.slice(0,3).map(pg=>(
+                      <button key={pg.key} onClick={()=>setPgPathKey(pg.key)} style={{padding:"12px",borderRadius:"12px",cursor:"pointer",textAlign:"left",border:"1px solid "+(pgPathKey===pg.key?pg.color:"rgba(255,255,255,0.07)"),background:pgPathKey===pg.key?pg.color+"12":"rgba(255,255,255,0.02)",color:pgPathKey===pg.key?pg.color:"#9898a8",transition:"all 0.15s"}}>
+                        <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",marginBottom:"2px"}}>{pg.label}</div>
+                        <div style={{fontSize:"10px",opacity:0.7}}>{pg.abbr}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+            <div>
+              <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>CURRENT YEAR OF HIGH SCHOOL</label>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
+                {HS_YEARS.map(y=>{
+                  const sel = hsYear===y.value;
+                  const col = y.value==="grade12"?"#c9a84c":y.value==="grade11"?"#e8c96a":"#5aba6a";
+                  return (
+                    <button key={y.value} onClick={()=>setHsYear(y.value)} style={{padding:"14px 16px",borderRadius:"14px",cursor:"pointer",border:"1px solid "+(sel?col+"90":"rgba(255,255,255,0.07)"),background:sel?col+"14":"rgba(255,255,255,0.03)",color:sel?col:"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"700",textAlign:"left",transition:"all 0.18s",lineHeight:"1.4"}}>
+                      {y.label}
+                      <span style={{display:"block",fontSize:"10px",fontWeight:"400",marginTop:"2px",opacity:0.65}}>{y.tag}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {hsYear==="grade12" && (
+                <div style={{marginTop:"10px",background:"rgba(255,159,67,0.08)",border:"1px solid rgba(255,159,67,0.22)",borderRadius:"8px",padding:"8px 12px",display:"flex",gap:"8px",alignItems:"center"}}>
+                  <span style={{color:"#c9a84c",fontSize:"11px",flexShrink:0}}>⚠</span>
+                  <span style={{color:"#c9a84c",fontSize:"11px"}}>Applying this cycle — timeline advice adjusted.</span>
+                </div>
+              )}
+            </div>
           </div>
-          <button onClick={generate} disabled={loading} style={{width:"100%",background:loading?"rgba(201,168,76,0.3)":"linear-gradient(135deg,#6b9fe4,#2a2a44)",color:"#080808",border:"none",borderRadius:"12px",padding:"14px",fontSize:"14px",fontWeight:"700",letterSpacing:"0.1em",cursor:loading?"not-allowed":"pointer",fontFamily:"'Montserrat',sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:"8px"}}>
-            {loading ? (<><span style={{display:"inline-block",animation:"nbspin 1s linear infinite"}}>o</span> FINDING YOUR SCHOOLS...</>) : "GENERATE MY UNIVERSITY LIST"}
+        )}
+
+        {/* STEP 2 — grades + tests */}
+        {formStep===2 && (
+          <div style={{animation:"fypuFadeUp 0.35s cubic-bezier(0.22,1,0.36,1) both"}}>
+            <div style={{marginBottom:"24px"}}>
+              <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>
+                {studentOrigin==="us"?"GPA":"CUMULATIVE AVERAGE"}
+                {province && <span style={{color:"#705858",fontWeight:"400"}}> — {(GRADE_SYSTEMS[province]||{}).scale||""}</span>}
+              </label>
+              <input value={cumAvg} onChange={e=>setCumAvg(e.target.value)} placeholder={province?((GRADE_SYSTEMS[province]||{}).example||"Enter your average"):"Enter your average"} style={inp} autoFocus/>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"14px",marginBottom:"24px"}}>
+              <div>
+                <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>SAT <span style={{color:"#705858",fontWeight:"400"}}>(optional)</span></label>
+                <input value={satScore} onChange={e=>setSatScore(e.target.value)} placeholder="e.g. 1480" style={inp}/>
+              </div>
+              <div>
+                <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>ACT <span style={{color:"#705858",fontWeight:"400"}}>(optional)</span></label>
+                <input value={actScore} onChange={e=>setActScore(e.target.value)} placeholder="e.g. 33" style={inp}/>
+              </div>
+            </div>
+            <div style={{marginBottom:"10px"}}>
+              <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>ACADEMIC PROGRAMS <span style={{color:"#705858",fontWeight:"400"}}>(optional)</span></label>
+              <div style={{display:"flex",gap:"10px",marginBottom:"10px"}}>
+                {[{key:"ib",label:"IB Programme",sub:"International Baccalaureate"},{key:"ap",label:"AP Courses",sub:"Advanced Placement"}].map(pg=>(
+                  <button key={pg.key} onClick={()=>setPrograms(p=>Object.assign({},p,{[pg.key]:!p[pg.key]}))} style={{flex:1,padding:"12px",borderRadius:"12px",cursor:"pointer",border:"1px solid "+(programs[pg.key]?"rgba(201,168,76,0.6)":"rgba(255,255,255,0.07)"),background:programs[pg.key]?"rgba(201,168,76,0.10)":"rgba(255,255,255,0.02)",color:programs[pg.key]?"#c9a84c":"#9898a8",textAlign:"left",transition:"all 0.18s"}}>
+                    <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700"}}>{pg.label}</div>
+                    <div style={{fontSize:"10px",opacity:0.65,marginTop:"2px"}}>{pg.sub}</div>
+                  </button>
+                ))}
+              </div>
+              {programs.ib && <input value={ibScore} onChange={e=>setIbScore(e.target.value)} placeholder="IB predicted score (e.g. 38 / 45)" style={Object.assign({},inp,{marginBottom:"8px",border:"1px solid rgba(201,168,76,0.3)"})}/>}
+              {programs.ap && <textarea value={apCourses} onChange={e=>setApCourses(e.target.value)} placeholder="AP courses & scores (e.g. Calc BC (5), Physics C (5)...)" rows={2} style={Object.assign({},inp,{resize:"vertical",border:"1px solid rgba(201,168,76,0.3)"})}/>}
+            </div>
+          </div>
+        )}
+
+        {/* STEP 3 — ECs + awards */}
+        {formStep===3 && (
+          <div style={{animation:"fypuFadeUp 0.35s cubic-bezier(0.22,1,0.36,1) both"}}>
+            <div style={{marginBottom:"24px"}}>
+              <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>EXTRACURRICULARS <span style={{color:"#705858",fontWeight:"400"}}>(optional but important)</span></label>
+              <textarea value={extras} onChange={e=>setExtras(e.target.value)} placeholder="e.g. Captain of debate team, varsity soccer, robotics club president, volunteer at hospital..." rows={4} style={Object.assign({},inp,{resize:"vertical"})} autoFocus/>
+              <div style={{color:"#705858",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginTop:"6px"}}>The more detail, the better your list. Top schools weight this heavily.</div>
+            </div>
+            <div style={{marginBottom:"24px"}}>
+              <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>AWARDS & ACCOMPLISHMENTS <span style={{color:"#705858",fontWeight:"400"}}>(optional)</span></label>
+              <textarea value={awards} onChange={e=>setAwards(e.target.value)} placeholder="e.g. 1st place Canadian Math Kangaroo, Schulich Leader nominee, DECA provincials finalist..." rows={3} style={Object.assign({},inp,{resize:"vertical",borderColor:"rgba(201,168,76,0.3)"})}/>
+            </div>
+            <div style={{display:"flex",gap:"8px",marginBottom:"4px"}}>
+              <button onClick={saveProfile} style={{flex:1,padding:"10px",borderRadius:"10px",cursor:"pointer",border:"1px solid rgba(201,168,76,0.35)",background:profileSaved?"rgba(90,186,106,0.12)":"rgba(201,168,76,0.06)",color:profileSaved?"#5aba6a":"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"10px",fontWeight:"700",letterSpacing:"0.08em",transition:"all 0.2s"}}>
+                {profileSaved ? "✓ SAVED" : "💾 SAVE PROFILE"}
+              </button>
+              <button onClick={clearProfile} style={{padding:"10px 14px",borderRadius:"10px",cursor:"pointer",border:"1px solid rgba(255,255,255,0.07)",background:"transparent",color:"#705858",fontFamily:"'Montserrat',sans-serif",fontSize:"10px",fontWeight:"700"}}>CLEAR</button>
+            </div>
+          </div>
+        )}
+
+        {/* Error */}
+        {error && <div style={{color:"#c0302a",fontSize:"12px",marginTop:"12px",padding:"10px 14px",background:"rgba(139,26,26,0.12)",borderRadius:"8px"}}>{error}</div>}
+
+        {/* Nav buttons */}
+        <div style={{display:"flex",gap:"10px",marginTop:"32px"}}>
+          {formStep > 0 && (
+            <button onClick={()=>setFormStep(s=>s-1)} style={{padding:"14px 20px",borderRadius:"12px",cursor:"pointer",border:"1px solid rgba(255,255,255,0.08)",background:"transparent",color:"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"700"}}>← Back</button>
+          )}
+          <button onClick={handleNext} disabled={loading || !canAdvance()} style={{flex:1,background:loading?"rgba(201,168,76,0.3)":canAdvance()?"linear-gradient(135deg,#c0302a,#8b1a1a)":"rgba(255,255,255,0.05)",color:canAdvance()&&!loading?"#f0f0f0":"#555",border:"none",borderRadius:"12px",padding:"14px",fontSize:"13px",fontWeight:"700",letterSpacing:"0.08em",cursor:loading||!canAdvance()?"not-allowed":"pointer",fontFamily:"'Montserrat',sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:"8px",transition:"all 0.2s"}}>
+            {loading ? (<><span style={{display:"inline-block",animation:"nbspin 1s linear infinite"}}>o</span> Finding your schools...</>) : formStep===3 ? "Generate My List ✨" : "Continue →"}
           </button>
         </div>
+
+        {/* Step dots */}
+        <div style={{display:"flex",justifyContent:"center",gap:"6px",marginTop:"24px"}}>
+          {[0,1,2,3].map(i=>(
+            <div key={i} style={{width:i===formStep?"20px":"6px",height:"6px",borderRadius:"3px",background:i===formStep?"#c9a84c":i<formStep?"rgba(201,168,76,0.4)":"rgba(255,255,255,0.1)",transition:"all 0.3s"}}/>
+          ))}
+        </div>
+
       </div>
 
-      <style dangerouslySetInnerHTML={{__html:`
-        @keyframes nbspin { to { transform: rotate(360deg); } }
-        @keyframes heroShimmer { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
-        @keyframes fypuFadeUp { from { opacity:0; transform:translateY(28px) scale(0.98); } to { opacity:1; transform:translateY(0) scale(1); } }
-        .school-card-anim { animation: fypuFadeUp 0.45s cubic-bezier(0.22,1,0.36,1) both; }
-        .school-card-anim:nth-child(1) { animation-delay: 0.05s; }
-        .school-card-anim:nth-child(2) { animation-delay: 0.12s; }
-        .school-card-anim:nth-child(3) { animation-delay: 0.19s; }
-        .school-card-anim:nth-child(4) { animation-delay: 0.26s; }
-        * { box-sizing:border-box; overflow-wrap:break-word; word-break:break-word; }
-        p { margin:0 0 8px; max-width:100%; }
-        select, input, textarea { color:#f0f0f0 !important; background:#0a0a0a; }
-        select option { background:#141414; color:#f0f0f0; }
-        input::placeholder, textarea::placeholder { color:#444444 !important; }
-        input:focus, textarea:focus, select:focus { border-color:rgba(192,48,42,0.80) !important; outline:none; }
-        ::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-track { background:#080808; } ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:3px; }
-        @keyframes musicFloat { 0%{transform:translateY(0px) rotate(-1.5deg) skewX(0.5deg)} 15%{transform:translateY(-4px) rotate(0.8deg) skewX(-0.8deg)} 30%{transform:translateY(-8px) rotate(-0.4deg) skewX(1deg)} 45%{transform:translateY(-11px) rotate(1.8deg) skewX(-0.5deg)} 60%{transform:translateY(-7px) rotate(-1deg) skewX(0.8deg)} 75%{transform:translateY(-3px) rotate(0.5deg) skewX(-0.3deg)} 100%{transform:translateY(0px) rotate(-1.5deg) skewX(0.5deg)} }
-      `}}/>
-
+      <style dangerouslySetInnerHTML={{__html:globalStyles}}/>
       <Footer/>
-
-      <div style={{position:"fixed",bottom:"28px",right:"28px",zIndex:9000,animation:"musicFloat 4.5s ease-in-out infinite",transformOrigin:"top center"}}>
-        {musicOpen ? (
-          <div style={{background:"#0a0a0a",border:"1px solid rgba(201,168,76,0.35)",borderRadius:"18px",overflow:"hidden",boxShadow:"0 16px 60px rgba(0,0,0,0.75)",width:"300px"}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 15px 10px",background:"linear-gradient(135deg,rgba(201,168,76,0.08),rgba(192,48,42,0.06))"}}>
-              <div style={{display:"flex",alignItems:"center",gap:"9px"}}>
-                <div style={{width:"28px",height:"28px",borderRadius:"8px",background:"linear-gradient(135deg,#c9a84c,#e8c96a)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"13px",flexShrink:0}}>🎵</div>
-                <div>
-                  <div style={{color:"#c9a84c",fontSize:"10px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em"}}>FYPU PLAYLIST</div>
-                  <div style={{color:"#9898a8",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",fontStyle:"italic"}}>for the big decisions</div>
-                </div>
-              </div>
-              <button onClick={()=>setMusicOpen(false)} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",color:"#9898a8",width:"22px",height:"22px",borderRadius:"50%",cursor:"pointer",fontSize:"11px",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>x</button>
-            </div>
-            <iframe src="https://open.spotify.com/embed/playlist/3cLzuKClIdVVUl44kNARF5?utm_source=generator&theme=0" width="300" height="460" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style={{display:"block"}}/>
-          </div>
-        ) : (
-          <button onClick={()=>setMusicOpen(true)} style={{background:"linear-gradient(135deg,#0d0d0d,#111)",border:"1px solid rgba(201,168,76,0.40)",borderRadius:"14px",padding:"11px 16px",cursor:"pointer",display:"flex",alignItems:"center",gap:"10px",boxShadow:"0 8px 32px rgba(0,0,0,0.6)",transition:"all 0.25s"}} onMouseEnter={e=>e.currentTarget.style.borderColor="rgba(201,168,76,0.8)"} onMouseLeave={e=>e.currentTarget.style.borderColor="rgba(201,168,76,0.40)"}>
-            <div style={{width:"34px",height:"34px",borderRadius:"10px",background:"linear-gradient(135deg,#c9a84c,#e8c96a)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",flexShrink:0}}>🎵</div>
-            <div style={{textAlign:"left"}}>
-              <div style={{color:"#c9a84c",fontSize:"11px",fontWeight:"700",whiteSpace:"nowrap"}}>FYPU Playlist</div>
-              <div style={{color:"#9898a8",fontSize:"10px",whiteSpace:"nowrap",fontStyle:"italic"}}>for the big decisions ✨</div>
-            </div>
-          </button>
-        )}
-      </div>
     </div>
   );
 }
