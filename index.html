@@ -2330,6 +2330,7 @@ function App() {
 
 function Footer() {
   const [feedback, setFeedback] = React.useState("");
+  const [replyEmail, setReplyEmail] = React.useState("");
   const [feedbackType, setFeedbackType] = React.useState("general");
   const [submitted, setSubmitted] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
@@ -2340,7 +2341,7 @@ function Footer() {
     try {
       await fetch("https://formspree.io/f/xwvwljgk", {
         method: "POST", headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ type: feedbackType, message: feedback })
+        body: JSON.stringify({ type: feedbackType, message: feedback, email: replyEmail || "not provided" })
       });
     } catch(e) {}
     setSubmitting(false);
@@ -2377,7 +2378,8 @@ function Footer() {
                   </button>
                 ))}
               </div>
-              <textarea value={feedback} onChange={e=>setFeedback(e.target.value)} placeholder="Tell us what you think, what's missing, or what could be better..." rows={4} style={{width:"100%",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"10px",padding:"12px 14px",color:"#f0f0f0",fontSize:"13px",fontFamily:"'Montserrat',sans-serif",resize:"vertical",outline:"none",boxSizing:"border-box",marginBottom:"12px"}}/>
+              <textarea value={feedback} onChange={e=>setFeedback(e.target.value)} placeholder="Tell us what you think, what's missing, or what could be better..." rows={4} style={{width:"100%",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"10px",padding:"12px 14px",color:"#f0f0f0",fontSize:"13px",fontFamily:"'Montserrat',sans-serif",resize:"vertical",outline:"none",boxSizing:"border-box",marginBottom:"10px"}}/>
+              <input value={replyEmail} onChange={e=>setReplyEmail(e.target.value)} placeholder="Your email (optional — only if you want a reply)" type="email" style={{width:"100%",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:"10px",padding:"11px 14px",color:"#f0f0f0",fontSize:"13px",fontFamily:"'Montserrat',sans-serif",outline:"none",boxSizing:"border-box",marginBottom:"12px"}}/>
               <button onClick={submitFeedback} disabled={submitting||!feedback.trim()} style={{padding:"10px 24px",borderRadius:"10px",cursor:feedback.trim()?"pointer":"not-allowed",border:"none",background:feedback.trim()?"linear-gradient(135deg,#c9a84c,#e8c96a)":"rgba(255,255,255,0.05)",color:feedback.trim()?"#080808":"#555",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"700",letterSpacing:"0.08em"}}>
                 {submitting?"SENDING...":"SEND FEEDBACK"}
               </button>
