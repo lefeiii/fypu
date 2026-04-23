@@ -345,13 +345,13 @@ function App() {
 
     var postgradSchema = '{"salaryEarly":"$XX,XXX","salaryMid":"$XX,XXX","salaryNote":"currency note eg CAD or USD","careerOverview":"2 sentence overview of career after completing grad school","careerOutcomes":[{"role":"e.g. Attending Physician","salary":"$X-Y range","note":"specialty/context"},{"role":"role2","salary":"range","note":"note"},{"role":"role3","salary":"range","note":"note"}],"schoolStrength":"2 sentences on how well this school positions students for this grad path","gradAcceptRate":"XX% from this school","gradGPA":"X.X+ required","gradAdmissionsNote":"2 sentences on what it takes to get in from this school","feederPrograms":[{"name":"Program name","type":"MD|JD|MBA|MS|PhD","note":"brief note"},{"name":"prog2","type":"type","note":"note"},{"name":"prog3","type":"type","note":"note"}]}';
 
-    var schemaEntry = '{"school":"exact school name","program":"program name","location":"City, Province/State, Country","annualCost":"$XX,XXX","totalCost":"$XXX,XXX (4yr)","gradPath":"GRAD_PATH_KEY","gradPathLabel":"GRAD_PATH_LABEL",' +
-      '"roi":{"salary1yr":"$XX,XXX","salary5yr":"$XX,XXX","currency":"USD or CAD","breakEven":"X years","employmentRate":"XX%","inFieldRate":"XX%","analysis":"2 sentences on ROI given tuition. For Canadian schools use CAD. Cross-check with known NACE/Stats Canada data."},' +
-      '"jobs":{"topEmployers":[{"name":"Real employer name","type":"Tech|Finance|Consulting|Healthcare|Gov|Other","recruiting":"On-Campus|Target|General"},{"name":"E2","type":"Finance","recruiting":"Target"},{"name":"E3","type":"Consulting","recruiting":"General"},{"name":"E4","type":"Tech","recruiting":"On-Campus"},{"name":"E5","type":"Other","recruiting":"General"}],"networkStrength":"2 sentences on alumni network and recruiting for this major. Name real companies. For Canadian schools name Canadian employers first."},' +
-      '"grad":{"topPrograms":[{"name":"Real program name","type":"MBA|Law|Med|PhD|MS","note":"acceptance rate or note"},{"name":"P2","type":"MS","note":"note"},{"name":"P3","type":"PhD","note":"note"}],"analysis":"2 sentences on grad school pipeline. Be specific with real acceptance data."},' +
-      '"postgrad":' + postgradSchema + ',' +
-      '"campus":{"undergradSize":"X,XXX students","avgClassSize":"XX students","greekLife":"Strong|Moderate|None","campusSafetyRating":"X/5","diversityRating":"X/5","forumInsights":[{"quote":"real student quote about campus culture from Reddit/forums","source":"Reddit r/college or similar","topic":"Social life|Safety|Greek life|Class size|Housing"},{"quote":"quote2","source":"source2","topic":"topic2"},{"quote":"quote3","source":"source3","topic":"topic3"}],"socialOverview":"3 sentences on campus social scene, Greek life presence, safety reputation, and vibe based on student reviews. Be specific to this school."},' +
-      '"verdict":{"valueScore":8,"prestigeScore":7,"honest":"2 sentence brutally honest take on this offer given the tuition, program, and post-grad plan","bestFor":"type of student this offer is best for"}}';
+    var schemaEntry = '{"school":"exact school name","program":"program name","location":"City, State/Province, Country","annualCost":"$XX,XXX","totalCost":"$XXX,XXX (4yr)","gradPath":"GRAD_PATH_KEY","gradPathLabel":"GRAD_PATH_LABEL",' +
+      '"roi":{"salary1yr":"$XX,XXX","salary5yr":"$XX,XXX","currency":"USD or CAD","breakEven":"X yrs","employmentRate":"XX%","inFieldRate":"XX%","analysis":"2 sentence ROI analysis using NACE or Stats Canada data"},' +
+      '"jobs":{"topEmployers":[{"name":"Real company","type":"Tech|Finance|Consulting|Healthcare|Gov|Other","recruiting":"On-Campus|Target|General"},{"name":"E2","type":"Finance","recruiting":"Target"},{"name":"E3","type":"Consulting","recruiting":"General"},{"name":"E4","type":"Tech","recruiting":"On-Campus"},{"name":"E5","type":"Other","recruiting":"General"}],"networkStrength":"2 sentences naming real companies that recruit here"},' +
+      '"grad":{"topPrograms":[{"name":"Real program","type":"MBA|Law|Med|PhD|MS","note":"note"},{"name":"P2","type":"MS","note":"note"},{"name":"P3","type":"PhD","note":"note"}],"analysis":"2 sentence grad pipeline analysis"},' +
+      '"postgrad":{"salaryEarly":"$XX,XXX","salaryMid":"$XX,XXX","salaryNote":"CAD or USD","careerOverview":"2 sentences on career after completing this grad path","careerOutcomes":[{"role":"career title","salary":"$X-Xk","note":"context"},{"role":"r2","salary":"range","note":"n"},{"role":"r3","salary":"range","note":"n"}],"schoolStrength":"2 sentences on how this school feeds this grad path","gradAcceptRate":"XX% acceptance from here","gradGPA":"X.X+ GPA required","gradAdmissionsNote":"2 sentences on admissions from this school","feederPrograms":[{"name":"Real program","type":"MD|JD|MBA|MS|PhD","note":"note"},{"name":"p2","type":"type","note":"n"},{"name":"p3","type":"type","note":"n"}]},' +
+      '"campus":{"undergradSize":"XX,XXX","avgClassSize":"~XX","greekLife":"Strong|Moderate|Minimal|None","campusSafetyRating":"X/5","diversityRating":"X/5","forumInsights":[{"quote":"student quote from Reddit or forums","source":"Reddit r/school or College Confidential","topic":"Social|Safety|Greek|Housing|Academics"},{"quote":"q2","source":"s2","topic":"t2"},{"quote":"q3","source":"s3","topic":"t3"}],"socialOverview":"3 sentences on campus vibe, social scene and safety based on real student reviews"},' +
+      '"verdict":{"valueScore":8,"prestigeScore":7,"honest":"2 sentence honest assessment","bestFor":"ideal student profile"}}';
 
     var schemaArr = filledOffers.map(function(o){
       var gp = GRAD_PATHS.filter(function(g){ return g.key===o.gradPath; })[0];
@@ -387,10 +387,16 @@ function App() {
           if (json.error) throw new Error(json.error.message||"API error");
           var raw = (json.content||[]).map(function(b){ return b.text||""; }).join("").trim();
           var cleaned = raw.replace(/```json|```/g,"").replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').trim();
+          // Detect API error text returned as plain string (not JSON error object)
+          if (cleaned.slice(0,20).match(/^(An error|Error|Sorry|I cannot|I am unable)/i)) {
+            throw new Error("API returned: " + cleaned.slice(0,80));
+          }
           var first = cleaned.indexOf("{"), last = cleaned.lastIndexOf("}");
-          if (first===-1||last===-1) throw new Error("No results returned");
-          var parsed = JSON.parse(cleaned.slice(first,last+1));
-          if (!parsed.offers||parsed.offers.length===0) throw new Error("No offer data returned");
+          if (first===-1||last===-1) throw new Error("Response was not valid JSON. Please try again.");
+          var parsed;
+          try { parsed = JSON.parse(cleaned.slice(first,last+1)); }
+          catch(parseErr) { throw new Error("Could not parse response. Please try again."); }
+          if (!parsed.offers||parsed.offers.length===0) throw new Error("No offer data returned. Please try again.");
           parsed.offers[0].overallVerdict = parsed.overallVerdict;
           succeeded = true;
           setProgress(100);
