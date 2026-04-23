@@ -161,17 +161,17 @@
             {tab==="roi" && (
               <div>
                 <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"10px",marginBottom:"16px"}}>
-                  <StatBox label="MEDIAN SALARY 1YR" value={result.roi?.salary1yr} color={col}/>
-                  <StatBox label="MEDIAN SALARY 5YR" value={result.roi?.salary5yr} color={col}/>
-                  <StatBox label="BREAK-EVEN" value={result.roi?.breakEven} color={col}/>
+                  <StatBox label="MEDIAN SALARY 1YR" value={result.roi && result.roi.salary1yr} color={col}/>
+                  <StatBox label="MEDIAN SALARY 5YR" value={result.roi && result.roi.salary5yr} color={col}/>
+                  <StatBox label="BREAK-EVEN" value={result.roi && result.roi.breakEven} color={col}/>
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"14px"}}>
-                  <StatBox label="EMPLOYMENT RATE 6MO" value={result.roi?.employmentRate} color={col}/>
-                  <StatBox label="EMPLOYED IN FIELD" value={result.roi?.inFieldRate} color={col}/>
+                  <StatBox label="EMPLOYMENT RATE 6MO" value={result.roi && result.roi.employmentRate} color={col}/>
+                  <StatBox label="EMPLOYED IN FIELD" value={result.roi && result.roi.inFieldRate} color={col}/>
                 </div>
                 <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px"}}>
                   <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>ROI ANALYSIS</div>
-                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{result.roi?.analysis}</p>
+                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{result.roi && result.roi.analysis}</p>
                 </div>
               </div>
             )}
@@ -182,7 +182,7 @@
                 <div style={{marginBottom:"14px"}}>
                   <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"10px"}}>TOP EMPLOYERS THAT RECRUIT HERE</div>
                   <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
-                    {(result.jobs?.topEmployers||[]).map((e,i)=>(
+                    {((result.jobs && result.jobs.topEmployers)||[]).map((e,i)=>(
                       <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",background:"rgba(255,255,255,0.05)",borderRadius:"8px",padding:"10px 12px"}}>
                         <div style={{background:col+"22",color:col,borderRadius:"50%",width:"22px",height:"22px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"10px",fontWeight:"700",flexShrink:0}}>{i+1}</div>
                         <div>
@@ -195,7 +195,7 @@
                 </div>
                 <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px"}}>
                   <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>CAREER NETWORK STRENGTH</div>
-                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{result.jobs?.networkStrength}</p>
+                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{result.jobs && result.jobs.networkStrength}</p>
                 </div>
               </div>
             )}
@@ -206,7 +206,7 @@
                 <div style={{marginBottom:"14px"}}>
                   <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"10px"}}>GRAD SCHOOL PIPELINE</div>
                   <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
-                    {(result.grad?.topPrograms||[]).map((g,i)=>(
+                    {((result.grad && result.grad.topPrograms)||[]).map((g,i)=>(
                       <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",background:"rgba(255,255,255,0.05)",borderRadius:"8px",padding:"10px 12px"}}>
                         <div style={{background:col+"22",color:col,borderRadius:"50%",width:"22px",height:"22px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"10px",fontWeight:"700",flexShrink:0}}>{i+1}</div>
                         <div>
@@ -219,7 +219,7 @@
                 </div>
                 <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px"}}>
                   <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>GRAD SCHOOL STRENGTH</div>
-                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{result.grad?.analysis}</p>
+                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{result.grad && result.grad.analysis}</p>
                 </div>
               </div>
             )}
@@ -228,16 +228,16 @@
             {tab==="verdict" && (
               <div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"14px"}}>
-                  <StatBox label="VALUE SCORE" value={result.verdict?.valueScore+"/10"} color={col}/>
-                  <StatBox label="PRESTIGE SCORE" value={result.verdict?.prestigeScore+"/10"} color={col}/>
+                  <StatBox label="VALUE SCORE" value={(result.verdict && result.verdict.valueScore) ? result.verdict.valueScore+"/10" : "—"} color={col}/>
+                  <StatBox label="PRESTIGE SCORE" value={(result.verdict && result.verdict.prestigeScore) ? result.verdict.prestigeScore+"/10" : "—"} color={col}/>
                 </div>
                 <div style={{background:"linear-gradient(135deg,"+col+"18,"+col+"08)",border:"1px solid "+col+"35",borderRadius:"12px",padding:"16px 18px",marginBottom:"12px"}}>
                   <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"8px"}}>HONEST ASSESSMENT</div>
-                  <p style={{color:"#f0f0f0",fontSize:"14px",lineHeight:"1.7",margin:0,fontFamily:"'DM Serif Display',serif",fontStyle:"italic"}}>{result.verdict?.honest}</p>
+                  <p style={{color:"#f0f0f0",fontSize:"14px",lineHeight:"1.7",margin:0,fontFamily:"'DM Serif Display',serif",fontStyle:"italic"}}>{result.verdict && result.verdict.honest}</p>
                 </div>
                 <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px"}}>
                   <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>BEST FOR</div>
-                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{result.verdict?.bestFor}</p>
+                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{result.verdict && result.verdict.bestFor}</p>
                 </div>
               </div>
             )}
@@ -251,8 +251,8 @@
 
       // Find winner by value score
       const sorted = [...results].sort((a,b) => {
-        const aScore = parseFloat((a.verdict?.valueScore||0));
-        const bScore = parseFloat((b.verdict?.valueScore||0));
+        const aScore = parseFloat((a.verdict && a.verdict.valueScore)||0);
+        const bScore = parseFloat((b.verdict && b.verdict.valueScore)||0);
         return bScore - aScore;
       });
       const winner = sorted[0];
