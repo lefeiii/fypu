@@ -3,508 +3,361 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FYPU — Offer Comparison</title>
-  <meta name="description" content="You got in. Now figure out which offer is actually worth it — ROI, job prospects, grad school paths, and an honest verdict."/>
+  <title>FYPU - Offer Comparison</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,900&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,900&family=Great+Vibes&family=Montserrat:wght@400;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #080808; color: #d0d0d8; font-family: sans-serif; }
-    input, select { color: #f0f0f0 !important; background: #0d0d0d; }
-    input::placeholder { color: #555 !important; }
-    input:focus, select:focus { outline: none; border-color: rgba(90,186,106,0.7) !important; }
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: #080808; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes shimmer { 0%{background-position:0% center} 100%{background-position:200% center} }
-    .fade-up { animation: fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:#080808;color:#d0d0d8;font-family:sans-serif;}
+    input,select{color:#f0f0f0!important;background:#111;}
+    input::placeholder{color:#555!important;}
+    input:focus,select:focus{outline:none;border-color:rgba(90,186,106,0.7)!important;}
+    ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:#080808;}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:3px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes shimmer{0%{background-position:0% center}100%{background-position:200% center}}
+    .fade-up{animation:fadeUp 0.4s ease both;}
   </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="text/babel" data-presets="react">
-    const { useState, useEffect } = React;
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+var useState = React.useState;
 
-    const LOGO_URI = "./logo.webp";
-    const IS_LOCAL = window.location.hostname === "localhost" ||
-                     window.location.hostname === "127.0.0.1" ||
-                     window.location.protocol === "file:";
-    const HOME_URL  = IS_LOCAL ? "./index.html" : "/";
-    const API_URL   = IS_LOCAL ? "https://api.anthropic.com/v1/messages" : "/api/claude";
+var LOGO_URI = "./logo.webp";
+var IS_LOCAL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:";
+var HOME_URL = IS_LOCAL ? "./index.html" : "/";
+var API_URL  = IS_LOCAL ? "https://api.anthropic.com/v1/messages" : "/api/claude";
 
-    const MAJORS = [
-      "Computer Science","Software Engineering","Data Science","Electrical Engineering",
-      "Mechanical Engineering","Civil Engineering","Chemical Engineering","Biomedical Engineering",
-      "Aerospace Engineering","Industrial Engineering","Biology","Biochemistry","Neuroscience",
-      "Pre-Med / Health Sciences","Nursing","Public Health","Psychology","Sociology",
-      "Business Administration","Finance","Accounting","Economics","Marketing","Management",
-      "Entrepreneurship","International Business","Political Science","International Relations",
-      "Public Policy","Law (Pre-Law)","English Literature","History","Philosophy","Linguistics",
-      "Communications","Journalism","Mathematics","Statistics","Physics","Chemistry",
-      "Environmental Science","Architecture","Graphic Design","Film & Media Studies",
-      "Fine Arts","Music","Education","Social Work","Other"
-    ];
+var MAJORS = ["Computer Science","Software Engineering","Data Science","Electrical Engineering","Mechanical Engineering","Civil Engineering","Chemical Engineering","Biomedical Engineering","Biology","Biochemistry","Neuroscience","Pre-Med / Health Sciences","Nursing","Public Health","Psychology","Business Administration","Finance","Accounting","Economics","Marketing","Management","Entrepreneurship","International Business","Political Science","International Relations","Law (Pre-Law)","English Literature","History","Philosophy","Communications","Journalism","Mathematics","Statistics","Physics","Chemistry","Environmental Science","Architecture","Graphic Design","Fine Arts","Music","Education","Social Work","Other"];
 
-    function SchoolOfferInput({ offer, index, onChange, onRemove, canRemove }) {
-      return (
-        <div className="fade-up" style={{animationDelay:index*0.06+"s",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(90,186,106,0.2)",borderRadius:"16px",padding:"20px 22px",marginBottom:"14px"}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"16px"}}>
-            <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-              <div style={{width:"28px",height:"28px",borderRadius:"50%",background:"rgba(90,186,106,0.15)",border:"1px solid rgba(90,186,106,0.35)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                <span style={{color:"#5aba6a",fontSize:"12px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif"}}>{index+1}</span>
-              </div>
-              <span style={{color:"#b0b0bc",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em"}}>OFFER {index+1}</span>
-            </div>
-            {canRemove && (
-              <button onClick={onRemove} style={{background:"none",border:"none",color:"#555",cursor:"pointer",fontSize:"18px",padding:"2px 6px",lineHeight:1}}>×</button>
-            )}
-          </div>
+function emptyOffer() { return {school:"", major:"", tuition:"", notes:""}; }
 
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"12px"}}>
-            <div style={{gridColumn:"1/-1"}}>
-              <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"6px"}}>SCHOOL NAME *</label>
-              <input
-                value={offer.school}
-                onChange={e=>onChange({...offer,school:e.target.value})}
-                placeholder="e.g. University of Michigan"
-                style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"10px",padding:"11px 14px",fontSize:"13px",color:"#f0f0f0",boxSizing:"border-box"}}
-              />
-            </div>
-            <div>
-              <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"6px"}}>PROGRAM / MAJOR *</label>
-              <select
-                value={offer.major}
-                onChange={e=>onChange({...offer,major:e.target.value})}
-                style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"10px",padding:"11px 14px",fontSize:"13px",color:offer.major?"#f0f0f0":"#555",cursor:"pointer",appearance:"none",boxSizing:"border-box"}}
-              >
-                <option value="" disabled style={{background:"#111"}}>Select major...</option>
-                {MAJORS.map(m=><option key={m} value={m} style={{background:"#111"}}>{m}</option>)}
-              </select>
-            </div>
-            <div>
-              <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"6px"}}>ANNUAL TUITION (AFTER AID)</label>
-              <input
-                value={offer.tuition}
-                onChange={e=>onChange({...offer,tuition:e.target.value})}
-                placeholder="e.g. $28,000 or $55,000"
-                style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"10px",padding:"11px 14px",fontSize:"13px",color:"#f0f0f0",boxSizing:"border-box"}}
-              />
-            </div>
-          </div>
+function StatBox(props) {
+  var label = props.label, value = props.value, color = props.color;
+  return (
+    <div style={{background:"rgba(255,255,255,0.06)",borderRadius:"10px",padding:"14px",textAlign:"center"}}>
+      <div style={{color:color||"#f0f0f0",fontSize:"18px",fontWeight:"800",fontFamily:"'Montserrat',sans-serif",lineHeight:"1.1"}}>{value||"--"}</div>
+      <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginTop:"5px",letterSpacing:"0.08em"}}>{label}</div>
+    </div>
+  );
+}
 
-          <div>
-            <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"6px"}}>SCHOLARSHIP / AID NOTES <span style={{color:"#555",fontWeight:"400"}}>(optional)</span></label>
-            <input
-              value={offer.notes}
-              onChange={e=>onChange({...offer,notes:e.target.value})}
-              placeholder="e.g. Dean's scholarship $12k/yr, renewable"
-              style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"10px",padding:"11px 14px",fontSize:"13px",color:"#f0f0f0",boxSizing:"border-box"}}
-            />
-          </div>
+function OfferCard(props) {
+  var result = props.result, index = props.index;
+  var tabState = useState("roi");
+  var tab = tabState[0], setTab = tabState[1];
+  var colors = ["#5aba6a","#c9a84c","#c0302a","#6b9fe4"];
+  var col = colors[index % 4];
+  var roi = result.roi || {};
+  var jobs = result.jobs || {};
+  var grad = result.grad || {};
+  var verdict = result.verdict || {};
+  var employers = jobs.topEmployers || [];
+  var programs = grad.topPrograms || [];
+  return (
+    <div className="fade-up" style={{animationDelay:(index*0.1)+"s",background:"rgba(255,255,255,0.04)",border:"1px solid "+col+"44",borderRadius:"16px",overflow:"hidden",marginBottom:"20px"}}>
+      <div style={{background:"rgba(0,0,0,0.3)",borderBottom:"1px solid "+col+"30",padding:"18px 22px",display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:"10px"}}>
+        <div>
+          <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.14em",marginBottom:"4px"}}>OFFER {index+1}</div>
+          <div style={{color:"#f0f0f0",fontFamily:"'DM Serif Display',serif",fontSize:"20px",fontWeight:"700"}}>{result.school}</div>
+          <div style={{color:"#b0b0bc",fontSize:"12px",marginTop:"3px"}}>{result.program} &middot; {result.location}</div>
         </div>
-      );
-    }
-
-    function StatBox({ label, value, color, sub }) {
-      return (
-        <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"12px",padding:"14px",textAlign:"center"}}>
-          <div style={{color:color||"#f0f0f0",fontSize:"20px",fontWeight:"800",fontFamily:"'Montserrat',sans-serif",lineHeight:1.1}}>{value||"—"}</div>
-          {sub && <div style={{color:color||"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginTop:"3px",opacity:0.75}}>{sub}</div>}
-          <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginTop:"4px",letterSpacing:"0.08em"}}>{label}</div>
-        </div>
-      );
-    }
-
-    function OfferCard({ result, index }) {
-      const [tab, setTab] = useState("roi");
-      const colors = ["#5aba6a","#c9a84c","#c0302a","#6b9fe4"];
-      const col = colors[index % colors.length];
-
-      const tabs = [
-        {id:"roi", label:"ROI"},
-        {id:"jobs", label:"Job Prospects"},
-        {id:"grad", label:"Grad School"},
-        {id:"verdict", label:"Verdict"},
-      ];
-
-      return (
-        <div className="fade-up" style={{animationDelay:index*0.1+"s",background:"rgba(255,255,255,0.05)",border:"1px solid "+col+"44",borderRadius:"18px",overflow:"hidden",marginBottom:"20px"}}>
-          {/* Header */}
-          <div style={{background:"linear-gradient(135deg,"+col+"18,"+col+"08)",borderBottom:"1px solid "+col+"30",padding:"18px 22px",display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:"10px"}}>
-            <div>
-              <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.14em",marginBottom:"4px"}}>OFFER {index+1}</div>
-              <div style={{color:"#f0f0f0",fontFamily:"'DM Serif Display',serif",fontSize:"22px",fontWeight:"700"}}>{result.school}</div>
-              <div style={{color:"#b0b0bc",fontSize:"12px",fontFamily:"'Montserrat',sans-serif",marginTop:"3px"}}>{result.program} · {result.location}</div>
-            </div>
-            <div style={{textAlign:"right"}}>
-              <div style={{color:col,fontSize:"24px",fontWeight:"800",fontFamily:"'Montserrat',sans-serif"}}>{result.annualCost}</div>
-              <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.08em"}}>PER YEAR</div>
-              <div style={{color:"#b0b0bc",fontSize:"11px",marginTop:"2px"}}>{result.totalCost} total (4yr)</div>
-            </div>
-          </div>
-
-          {/* Tabs */}
-          <div style={{display:"flex",gap:"4px",padding:"12px 22px 0",borderBottom:"1px solid rgba(255,255,255,0.06)",overflowX:"auto"}}>
-            {tabs.map(t=>(
-              <button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"8px 16px",borderRadius:"8px 8px 0 0",cursor:"pointer",border:"none",background:tab===t.id?col+"22":"transparent",color:tab===t.id?col:"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",whiteSpace:"nowrap",borderBottom:tab===t.id?"2px solid "+col:"2px solid transparent",transition:"all 0.15s"}}>
-                {t.label}
-              </button>
-            ))}
-          </div>
-
-          <div style={{padding:"20px 22px"}}>
-            {/* ROI Tab */}
-            {tab==="roi" && (
-              <div>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"10px",marginBottom:"16px"}}>
-                  <StatBox label="MEDIAN SALARY 1YR" value={result.roi && result.roi.salary1yr} color={col}/>
-                  <StatBox label="MEDIAN SALARY 5YR" value={result.roi && result.roi.salary5yr} color={col}/>
-                  <StatBox label="BREAK-EVEN" value={result.roi && result.roi.breakEven} color={col}/>
-                </div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"14px"}}>
-                  <StatBox label="EMPLOYMENT RATE 6MO" value={result.roi && result.roi.employmentRate} color={col}/>
-                  <StatBox label="EMPLOYED IN FIELD" value={result.roi && result.roi.inFieldRate} color={col}/>
-                </div>
-                <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px"}}>
-                  <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>ROI ANALYSIS</div>
-                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{result.roi && result.roi.analysis}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Jobs Tab */}
-            {tab==="jobs" && (
-              <div>
-                <div style={{marginBottom:"14px"}}>
-                  <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"10px"}}>TOP EMPLOYERS THAT RECRUIT HERE</div>
-                  <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
-                    {((result.jobs && result.jobs.topEmployers)||[]).map((e,i)=>(
-                      <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",background:"rgba(255,255,255,0.05)",borderRadius:"8px",padding:"10px 12px"}}>
-                        <div style={{background:col+"22",color:col,borderRadius:"50%",width:"22px",height:"22px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"10px",fontWeight:"700",flexShrink:0}}>{i+1}</div>
-                        <div>
-                          <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700"}}>{e.name}</div>
-                          <div style={{color:"#b0b0bc",fontSize:"11px",marginTop:"2px"}}>{e.type} · {e.recruiting}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px"}}>
-                  <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>CAREER NETWORK STRENGTH</div>
-                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{result.jobs && result.jobs.networkStrength}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Grad School Tab */}
-            {tab==="grad" && (
-              <div>
-                <div style={{marginBottom:"14px"}}>
-                  <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"10px"}}>GRAD SCHOOL PIPELINE</div>
-                  <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
-                    {((result.grad && result.grad.topPrograms)||[]).map((g,i)=>(
-                      <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",background:"rgba(255,255,255,0.05)",borderRadius:"8px",padding:"10px 12px"}}>
-                        <div style={{background:col+"22",color:col,borderRadius:"50%",width:"22px",height:"22px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"10px",fontWeight:"700",flexShrink:0}}>{i+1}</div>
-                        <div>
-                          <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700"}}>{g.name}</div>
-                          <div style={{color:"#b0b0bc",fontSize:"11px",marginTop:"2px"}}>{g.type} · {g.note}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px"}}>
-                  <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>GRAD SCHOOL STRENGTH</div>
-                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{result.grad && result.grad.analysis}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Verdict Tab */}
-            {tab==="verdict" && (
-              <div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"14px"}}>
-                  <StatBox label="VALUE SCORE" value={(result.verdict && result.verdict.valueScore) ? result.verdict.valueScore+"/10" : "—"} color={col}/>
-                  <StatBox label="PRESTIGE SCORE" value={(result.verdict && result.verdict.prestigeScore) ? result.verdict.prestigeScore+"/10" : "—"} color={col}/>
-                </div>
-                <div style={{background:"linear-gradient(135deg,"+col+"18,"+col+"08)",border:"1px solid "+col+"35",borderRadius:"12px",padding:"16px 18px",marginBottom:"12px"}}>
-                  <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"8px"}}>HONEST ASSESSMENT</div>
-                  <p style={{color:"#f0f0f0",fontSize:"14px",lineHeight:"1.7",margin:0,fontFamily:"'DM Serif Display',serif",fontStyle:"italic"}}>{result.verdict && result.verdict.honest}</p>
-                </div>
-                <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px"}}>
-                  <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>BEST FOR</div>
-                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{result.verdict && result.verdict.bestFor}</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    }
-
-    function WinnerBanner({ results }) {
-      if (!results || results.length < 2) return null;
-
-      // Find winner by value score
-      const sorted = [...results].sort((a,b) => {
-        const aScore = parseFloat((a.verdict && a.verdict.valueScore)||0);
-        const bScore = parseFloat((b.verdict && b.verdict.valueScore)||0);
-        return bScore - aScore;
-      });
-      const winner = sorted[0];
-      const col = ["#5aba6a","#c9a84c","#c0302a","#6b9fe4"][results.indexOf(winner) % 4];
-
-      return (
-        <div className="fade-up" style={{background:"linear-gradient(135deg,rgba(201,168,76,0.12),rgba(201,168,76,0.05))",border:"1px solid rgba(201,168,76,0.4)",borderRadius:"18px",padding:"24px 28px",marginBottom:"28px",textAlign:"center"}}>
-          <div style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.18em",marginBottom:"8px"}}>FYPU RECOMMENDATION</div>
-          <div style={{color:"#f0f0f0",fontFamily:"'DM Serif Display',serif",fontSize:"clamp(20px,3vw,28px)",fontWeight:"700",marginBottom:"6px"}}>Go with {winner.school}</div>
-          <div style={{color:"#b0b0bc",fontSize:"13px",fontFamily:"'Montserrat',sans-serif",marginBottom:"14px"}}>{winner.program} · {winner.annualCost}/yr</div>
-          <p style={{color:"#d0d0d8",fontSize:"14px",lineHeight:"1.7",maxWidth:"580px",margin:"0 auto",fontFamily:"'DM Serif Display',serif",fontStyle:"italic"}}>{results[0].overallVerdict}</p>
-        </div>
-      );
-    }
-
-    function App() {
-      const emptyOffer = () => ({school:"",major:"",tuition:"",notes:""});
-      const [offers, setOffers] = useState([emptyOffer(), emptyOffer()]);
-      const [careerGoal, setCareerGoal] = useState("");
-      const [results, setResults] = useState(null);
-      const [loading, setLoading] = useState(false);
-      const [error, setError] = useState("");
-      const [progress, setProgress] = useState(0);
-
-      function updateOffer(i, val) { setOffers(prev => prev.map((o,j) => j===i ? val : o)); }
-      function addOffer() { if(offers.length < 4) setOffers(prev => [...prev, emptyOffer()]); }
-      function removeOffer(i) { setOffers(prev => prev.filter((_,j) => j!==i)); }
-
-      const filledOffers = offers.filter(o => o.school.trim() && o.major);
-
-      async function analyze() {
-        if (filledOffers.length < 2) { setError("Please enter at least 2 offers to compare."); return; }
-        setError(""); setLoading(true); setResults(null); setProgress(0);
-
-        const offerSummaries = filledOffers.map(function(o,i) {
-          return "Offer " + (i+1) + ": " + o.school + ", " + o.major + ", tuition: " + (o.tuition||"unknown") + ", aid notes: " + (o.notes||"none");
-        }).join(". ");
-
-        var schemaEntry = '{"school":"school name","program":"program name","location":"City, State","annualCost":"$XX,XXX","totalCost":"$XXX,XXX",' +
-          '"roi":{"salary1yr":"$XX,XXX","salary5yr":"$XX,XXX","breakEven":"X years","employmentRate":"XX%","inFieldRate":"XX%","analysis":"2 sentences on ROI for this major at this school given the tuition"},' +
-          '"jobs":{"topEmployers":[{"name":"Company","type":"Tech|Finance|Consulting|Healthcare|Gov|Other","recruiting":"On-Campus|Target|General"},{"name":"Company2","type":"Finance","recruiting":"Target"},{"name":"Company3","type":"Consulting","recruiting":"General"},{"name":"Company4","type":"Tech","recruiting":"On-Campus"},{"name":"Company5","type":"Other","recruiting":"General"}],"networkStrength":"2 sentences on alumni network and recruiting strength for this major"},' +
-          '"grad":{"topPrograms":[{"name":"Program Name","type":"MBA|Law|Med|PhD|MS","note":"brief note"},{"name":"Program2","type":"MS","note":"note"},{"name":"Program3","type":"PhD","note":"note"}],"analysis":"2 sentences on grad school pipeline strength"},' +
-          '"verdict":{"valueScore":8,"prestigeScore":7,"honest":"1-2 sentence brutally honest take on this offer given the tuition and program","bestFor":"type of student this offer is best for"}}';
-
-        var schemaArr = filledOffers.map(function() { return schemaEntry; }).join(",");
-
-        const prompt =
-          "You are a brutally honest university career and financial advisor. " +
-          "A student has received these college admission offers: " + offerSummaries + ". " +
-          (careerGoal ? "Their career goal: " + careerGoal + ". " : "") +
-          "For EACH offer, provide detailed analysis. Be specific with real data. Use actual company names, real salary figures, real grad programs. " +
-          "CRITICAL: Return ONLY valid JSON, no markdown, no apostrophes in string values. " +
-          '{"offers":[' + schemaArr + '],"overallVerdict":"3 sentence recommendation comparing all offers, naming which to pick and why, considering tuition, career outcomes, and the student career goal"}';
-
-        let interval = null;
-        let succeeded = false;
-        for (let attempt = 1; attempt <= 2; attempt++) {
-          if (succeeded) break;
-          try {
-            let p = 0;
-            interval = setInterval(() => {
-              p = Math.min(p + Math.random() * 6, 88);
-              setProgress(Math.round(p));
-            }, 500);
-
-            const headers = {"Content-Type":"application/json"};
-            if (IS_LOCAL) headers["anthropic-dangerous-direct-browser-access"] = "true";
-
-            const res = await fetch(API_URL, {
-              method: "POST", headers,
-              body: JSON.stringify({
-                model: "claude-sonnet-4-20250514",
-                max_tokens: 4000,
-                messages: [{ role: "user", content: prompt }]
-              })
-            });
-
-            const json = await res.json();
-            if (json.error) throw new Error(json.error.message || "API error");
-
-            const raw = (json.content||[]).map(b=>b.text||"").join("").trim();
-            const cleaned = raw
-              .replace(/```json|```/g, "")
-              .replace(/[\u2018\u2019]/g, "'")
-              .replace(/[\u201C\u201D]/g, '"')
-              .trim();
-
-            const first = cleaned.indexOf("{"), last = cleaned.lastIndexOf("}");
-            if (first === -1 || last === -1) throw new Error("No results returned");
-
-            const parsed = JSON.parse(cleaned.slice(first, last+1));
-            if (!parsed.offers || parsed.offers.length === 0) throw new Error("No offer analysis returned");
-
-            // Attach overallVerdict to first offer for WinnerBanner
-            parsed.offers[0].overallVerdict = parsed.overallVerdict;
-
-            succeeded = true;
-            setProgress(100);
-            setTimeout(() => { setResults(parsed.offers); setLoading(false); }, 300);
-
-          } catch(e) {
-            if (interval) clearInterval(interval);
-            console.error("Attempt "+attempt+" failed:", e.message);
-            if (attempt === 2) {
-              setError("Analysis failed: " + e.message + ". Please try again.");
-              setLoading(false);
-              setProgress(0);
-            } else {
-              await new Promise(r => setTimeout(r, 800));
-            }
-          } finally {
-            if (interval) clearInterval(interval);
-          }
-        }
-      }
-
-      return (
-        <div style={{minHeight:"100vh",background:"#080808",backgroundImage:"radial-gradient(ellipse at 10% 0%,rgba(90,186,106,0.07) 0%,transparent 50%),radial-gradient(ellipse at 90% 100%,rgba(201,168,76,0.04) 0%,transparent 50%)"}}>
-
-          {/* Header */}
-          <div style={{borderBottom:"1px solid rgba(255,255,255,0.06)",padding:"0 32px",height:"56px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-            <a href={HOME_URL} style={{display:"flex",alignItems:"center",gap:"10px",textDecoration:"none"}}>
-              <img src={LOGO_URI} alt="FYPU" style={{height:"36px",width:"auto",mixBlendMode:"screen",opacity:0.9}}/>
-              <span style={{color:"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",letterSpacing:"0.18em"}}>FYPU</span>
-            </a>
-            <a href={HOME_URL} style={{color:"#b0b0bc",fontSize:"11px",fontWeight:"600",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.10em",textDecoration:"none"}}>
-              ← BACK
-            </a>
-          </div>
-
-          <div style={{maxWidth:"780px",margin:"0 auto",padding:"52px 24px 80px"}}>
-
-            {/* Hero — only show before results */}
-            {!results && !loading && (
-              <div style={{textAlign:"center",marginBottom:"52px"}}>
-                <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.22em",marginBottom:"20px"}}>OFFER COMPARISON TOOL</div>
-                <h1 style={{fontFamily:"'Bodoni Moda',serif",fontSize:"clamp(30px,5vw,52px)",fontWeight:"900",color:"#f0f0f0",lineHeight:"1.08",marginBottom:"10px"}}>
-                  You Got In.
-                </h1>
-                <div style={{fontFamily:"'Great Vibes',cursive",fontSize:"clamp(36px,6vw,60px)",background:"linear-gradient(135deg,#5aba6a 0%,#c9a84c 40%,#f0e090 60%,#c9a84c 80%,#5aba6a 100%)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:"22px",lineHeight:"1.3",animation:"shimmer 4s linear infinite"}}>
-                  Now Make the Smart Choice.
-                </div>
-                <p style={{color:"#b0b0bc",fontSize:"13px",maxWidth:"460px",margin:"0 auto",lineHeight:"1.8"}}>
-                  Enter your offers. FYPU breaks down the real ROI, job prospects, and grad school pipeline for each one — then tells you which to pick.
-                </p>
-              </div>
-            )}
-
-            {/* Results header */}
-            {results && (
-              <div style={{marginBottom:"28px",display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:"12px"}}>
-                <div>
-                  <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.18em",marginBottom:"6px"}}>OFFER ANALYSIS</div>
-                  <h2 style={{color:"#f0f0f0",fontFamily:"'Bodoni Moda',serif",fontSize:"28px",fontWeight:"900"}}>{results.length} Offers Analyzed</h2>
-                </div>
-                <button onClick={()=>{setResults(null);setProgress(0);}}
-                  style={{background:"none",border:"1px solid rgba(255,255,255,0.12)",color:"#b0b0bc",borderRadius:"8px",padding:"8px 16px",cursor:"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.08em"}}>
-                  ← Edit Offers
-                </button>
-              </div>
-            )}
-
-            {/* Loading */}
-            {loading && (
-              <div style={{textAlign:"center",padding:"80px 20px"}}>
-                <div style={{width:"52px",height:"52px",border:"2px solid rgba(255,255,255,0.06)",borderTop:"2px solid #5aba6a",borderRadius:"50%",animation:"spin 0.8s linear infinite",margin:"0 auto 28px"}}/>
-                <div style={{color:"#f0f0f0",fontFamily:"'DM Serif Display',serif",fontSize:"20px",marginBottom:"8px"}}>Analyzing your offers...</div>
-                <div style={{color:"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",marginBottom:"28px"}}>Comparing ROI, career paths, and grad school outcomes</div>
-                <div style={{maxWidth:"320px",margin:"0 auto"}}>
-                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:"6px"}}>
-                    <span style={{color:"#555",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>Progress</span>
-                    <span style={{color:"#5aba6a",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>{progress}%</span>
-                  </div>
-                  <div style={{height:"3px",background:"rgba(255,255,255,0.06)",borderRadius:"2px",overflow:"hidden"}}>
-                    <div style={{width:progress+"%",height:"100%",background:"linear-gradient(90deg,#5aba6a,#c9a84c)",borderRadius:"2px",transition:"width 0.4s ease"}}/>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Results */}
-            {results && !loading && (
-              <div>
-                <WinnerBanner results={results}/>
-                {results.map((r,i) => <OfferCard key={i} result={r} index={i}/>)}
-                <div style={{marginTop:"20px",padding:"12px 16px",background:"rgba(255,255,255,0.05)",borderRadius:"10px",color:"#555",fontSize:"11px",lineHeight:"1.7",fontFamily:"'Montserrat',sans-serif"}}>
-                  Analysis is AI-generated based on real labor market and admissions data. Verify salary figures and employer recruiting status directly with each institution before making your decision.
-                </div>
-              </div>
-            )}
-
-            {/* Form */}
-            {!results && !loading && (
-              <div>
-                {/* Offers */}
-                <div style={{marginBottom:"24px"}}>
-                  <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.18em",marginBottom:"16px"}}>YOUR OFFERS *</label>
-                  {offers.map((o,i) => (
-                    <SchoolOfferInput
-                      key={i} offer={o} index={i}
-                      onChange={v=>updateOffer(i,v)}
-                      onRemove={()=>removeOffer(i)}
-                      canRemove={offers.length > 2}
-                    />
-                  ))}
-                  {offers.length < 4 && (
-                    <button onClick={addOffer}
-                      style={{background:"none",border:"1px dashed rgba(90,186,106,0.3)",color:"#5aba6a",borderRadius:"12px",padding:"12px 18px",cursor:"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",fontWeight:"600",letterSpacing:"0.08em",width:"100%",transition:"all 0.2s"}}
-                      onMouseEnter={e=>e.currentTarget.style.borderColor="rgba(90,186,106,0.7)"}
-                      onMouseLeave={e=>e.currentTarget.style.borderColor="rgba(90,186,106,0.3)"}>
-                      + Add another offer ({offers.length}/4)
-                    </button>
-                  )}
-                </div>
-
-                {/* Career goal */}
-                <div style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:"14px",padding:"20px 22px",marginBottom:"22px"}}>
-                  <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.18em",marginBottom:"8px"}}>YOUR CAREER GOAL <span style={{color:"#555",fontWeight:"400"}}>(optional but helps a lot)</span></label>
-                  <input
-                    value={careerGoal}
-                    onChange={e=>setCareerGoal(e.target.value)}
-                    placeholder="e.g. Software engineer at a top tech company, or pre-med aiming for med school, or investment banking..."
-                    style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"10px",padding:"11px 14px",fontSize:"13px",color:"#f0f0f0",boxSizing:"border-box"}}
-                  />
-                </div>
-
-                {error && (
-                  <div style={{color:"#c0302a",fontSize:"13px",marginBottom:"14px",padding:"10px 14px",background:"rgba(139,26,26,0.12)",borderRadius:"8px"}}>{error}</div>
-                )}
-
-                <button onClick={analyze} disabled={loading||filledOffers.length<2}
-                  style={{width:"100%",background:filledOffers.length<2?"rgba(255,255,255,0.05)":"linear-gradient(135deg,#2d6e3a,#5aba6a)",color:filledOffers.length<2?"#555":"#080808",border:"none",borderRadius:"12px",padding:"16px",fontSize:"13px",fontWeight:"700",letterSpacing:"0.12em",cursor:filledOffers.length<2?"not-allowed":"pointer",fontFamily:"'Montserrat',sans-serif",transition:"opacity 0.2s"}}>
-                  ANALYZE MY OFFERS ({filledOffers.length} offer{filledOffers.length!==1?"s":""})
-                </button>
-
-                <div style={{textAlign:"center",marginTop:"16px"}}>
-                  <a href={HOME_URL} style={{color:"#555",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",textDecoration:"none",letterSpacing:"0.08em"}}>
-                    Still deciding where to apply? ← Back to FYPU
-                  </a>
-                </div>
-              </div>
-            )}
-          </div>
+        <div style={{textAlign:"right"}}>
+          <div style={{color:col,fontSize:"22px",fontWeight:"800",fontFamily:"'Montserrat',sans-serif"}}>{result.annualCost}</div>
+          <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>PER YEAR</div>
+          <div style={{color:"#b0b0bc",fontSize:"11px",marginTop:"2px"}}>{result.totalCost} total</div>
         </div>
       </div>
+      <div style={{display:"flex",gap:"2px",padding:"10px 22px 0",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+        {["roi","jobs","grad","verdict"].map(function(t) {
+          var labels = {roi:"ROI",jobs:"Job Prospects",grad:"Grad School",verdict:"Verdict"};
+          return (
+            <button key={t} onClick={function(){setTab(t);}} style={{padding:"7px 14px",borderRadius:"6px 6px 0 0",cursor:"pointer",border:"none",background:tab===t?(col+"22"):"transparent",color:tab===t?col:"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",borderBottom:tab===t?("2px solid "+col):"2px solid transparent"}}>
+              {labels[t]}
+            </button>
+          );
+        })}
+      </div>
+      <div style={{padding:"20px 22px"}}>
+        {tab === "roi" && (
+          <div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"10px",marginBottom:"12px"}}>
+              <StatBox label="SALARY 1YR" value={roi.salary1yr} color={col}/>
+              <StatBox label="SALARY 5YR" value={roi.salary5yr} color={col}/>
+              <StatBox label="BREAK-EVEN" value={roi.breakEven} color={col}/>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"12px"}}>
+              <StatBox label="EMPLOYED 6MO" value={roi.employmentRate} color={col}/>
+              <StatBox label="IN FIELD" value={roi.inFieldRate} color={col}/>
+            </div>
+            <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px"}}>
+              <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>ROI ANALYSIS</div>
+              <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{roi.analysis}</p>
+            </div>
+          </div>
+        )}
+        {tab === "jobs" && (
+          <div>
+            <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"10px"}}>TOP EMPLOYERS</div>
+            {employers.map(function(e,i) {
+              return (
+                <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",background:"rgba(255,255,255,0.05)",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px"}}>
+                  <div style={{background:(col+"22"),color:col,borderRadius:"50%",width:"22px",height:"22px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"10px",fontWeight:"700",flexShrink:0}}>{i+1}</div>
+                  <div>
+                    <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700"}}>{e.name}</div>
+                    <div style={{color:"#b0b0bc",fontSize:"11px",marginTop:"2px"}}>{e.type} &middot; {e.recruiting}</div>
+                  </div>
+                </div>
+              );
+            })}
+            <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px",marginTop:"4px"}}>
+              <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>NETWORK STRENGTH</div>
+              <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{jobs.networkStrength}</p>
+            </div>
+          </div>
+        )}
+        {tab === "grad" && (
+          <div>
+            <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"10px"}}>GRAD SCHOOL PIPELINE</div>
+            {programs.map(function(g,i) {
+              return (
+                <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",background:"rgba(255,255,255,0.05)",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px"}}>
+                  <div style={{background:(col+"22"),color:col,borderRadius:"50%",width:"22px",height:"22px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"10px",fontWeight:"700",flexShrink:0}}>{i+1}</div>
+                  <div>
+                    <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700"}}>{g.name}</div>
+                    <div style={{color:"#b0b0bc",fontSize:"11px",marginTop:"2px"}}>{g.type} &middot; {g.note}</div>
+                  </div>
+                </div>
+              );
+            })}
+            <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px",marginTop:"4px"}}>
+              <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>GRAD SCHOOL STRENGTH</div>
+              <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{grad.analysis}</p>
+            </div>
+          </div>
+        )}
+        {tab === "verdict" && (
+          <div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"12px"}}>
+              <StatBox label="VALUE SCORE" value={(verdict.valueScore || "--") + "/10"} color={col}/>
+              <StatBox label="PRESTIGE" value={(verdict.prestigeScore || "--") + "/10"} color={col}/>
+            </div>
+            <div style={{background:"rgba(0,0,0,0.3)",border:"1px solid "+col+"35",borderRadius:"12px",padding:"16px 18px",marginBottom:"12px"}}>
+              <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"8px"}}>HONEST TAKE</div>
+              <p style={{color:"#f0f0f0",fontSize:"14px",lineHeight:"1.7",margin:0,fontFamily:"'DM Serif Display',serif",fontStyle:"italic"}}>{verdict.honest}</p>
+            </div>
+            <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px"}}>
+              <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>BEST FOR</div>
+              <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{verdict.bestFor}</p>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
-      );
-    }
+  );
+}
 
-    const root = ReactDOM.createRoot(document.getElementById("root"));
-    root.render(React.createElement(App));
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
+function WinnerBanner(props) {
+  var results = props.results;
+  if (!results || results.length < 2) return null;
+  var winner = results[0];
+  var col = "#5aba6a";
+  return (
+    <div className="fade-up" style={{background:"rgba(201,168,76,0.08)",border:"1px solid rgba(201,168,76,0.4)",borderRadius:"16px",padding:"24px 28px",marginBottom:"28px",textAlign:"center"}}>
+      <div style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.18em",marginBottom:"8px"}}>FYPU RECOMMENDATION</div>
+      <div style={{color:"#f0f0f0",fontFamily:"'DM Serif Display',serif",fontSize:"26px",fontWeight:"700",marginBottom:"6px"}}>Go with {winner.school}</div>
+      <div style={{color:"#b0b0bc",fontSize:"12px",fontFamily:"'Montserrat',sans-serif",marginBottom:"14px"}}>{winner.program} &middot; {winner.annualCost}/yr</div>
+      <p style={{color:"#d0d0d8",fontSize:"14px",lineHeight:"1.7",maxWidth:"560px",margin:"0 auto",fontFamily:"'DM Serif Display',serif",fontStyle:"italic"}}>{winner.overallVerdict}</p>
+    </div>
+  );
+}
+
+function App() {
+  var offersState = useState([emptyOffer(), emptyOffer()]);
+  var offers = offersState[0], setOffers = offersState[1];
+  var careerState = useState("");
+  var careerGoal = careerState[0], setCareerGoal = careerState[1];
+  var resultsState = useState(null);
+  var results = resultsState[0], setResults = resultsState[1];
+  var loadingState = useState(false);
+  var loading = loadingState[0], setLoading = loadingState[1];
+  var errorState = useState("");
+  var error = errorState[0], setError = errorState[1];
+  var progressState = useState(0);
+  var progress = progressState[0], setProgress = progressState[1];
+
+  function updateOffer(i, val) {
+    setOffers(function(prev) { return prev.map(function(o,j){ return j===i?val:o; }); });
+  }
+  function addOffer() {
+    if (offers.length < 4) setOffers(function(prev){ return prev.concat([emptyOffer()]); });
+  }
+  function removeOffer(i) {
+    setOffers(function(prev){ return prev.filter(function(_,j){ return j!==i; }); });
+  }
+
+  var filledOffers = offers.filter(function(o){ return o.school.trim() && o.major; });
+
+  function analyze() {
+    if (filledOffers.length < 2) { setError("Please enter at least 2 offers to compare."); return; }
+    setError(""); setLoading(true); setResults(null); setProgress(0);
+    var offerSummaries = filledOffers.map(function(o,i) {
+      return "Offer "+(i+1)+": "+o.school+", "+o.major+", tuition: "+(o.tuition||"unknown")+", aid: "+(o.notes||"none");
+    }).join(". ");
+    var schemaEntry = '{"school":"school name","program":"program name","location":"City, State","annualCost":"$XX,XXX","totalCost":"$XXX,XXX","roi":{"salary1yr":"$XX,XXX","salary5yr":"$XX,XXX","breakEven":"X years","employmentRate":"XX%","inFieldRate":"XX%","analysis":"2 sentence ROI analysis"},"jobs":{"topEmployers":[{"name":"Employer","type":"Tech","recruiting":"On-Campus"},{"name":"E2","type":"Finance","recruiting":"Target"},{"name":"E3","type":"Consulting","recruiting":"General"},{"name":"E4","type":"Tech","recruiting":"On-Campus"},{"name":"E5","type":"Other","recruiting":"General"}],"networkStrength":"2 sentence network analysis"},"grad":{"topPrograms":[{"name":"Program","type":"MBA","note":"note"},{"name":"P2","type":"MS","note":"note"},{"name":"P3","type":"PhD","note":"note"}],"analysis":"2 sentence grad analysis"},"verdict":{"valueScore":8,"prestigeScore":7,"honest":"1-2 sentence honest take","bestFor":"type of student"}}';
+    var schemaArr = filledOffers.map(function(){ return schemaEntry; }).join(",");
+    var prompt = "You are a brutally honest university career and financial advisor. A student received these college offers: "+offerSummaries+". "+(careerGoal?"Career goal: "+careerGoal+". ":"")+"For EACH offer provide detailed analysis with real salary figures and real employer names. No apostrophes in string values. Return ONLY valid JSON: {\"offers\":["+schemaArr+"],\"overallVerdict\":\"3 sentence comparison recommending which offer to pick and why\"}";
+    var interval = null;
+    var succeeded = false;
+    var attempt = 0;
+    function doAttempt() {
+      attempt++;
+      var p = 0;
+      interval = setInterval(function() {
+        p = Math.min(p + Math.random()*6, 88);
+        setProgress(Math.round(p));
+      }, 500);
+      var headers = {"Content-Type":"application/json"};
+      if (IS_LOCAL) headers["anthropic-dangerous-direct-browser-access"] = "true";
+      fetch(API_URL, {method:"POST",headers:headers,body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:4000,messages:[{role:"user",content:prompt}]})})
+        .then(function(res){ return res.json(); })
+        .then(function(json) {
+          clearInterval(interval);
+          if (json.error) throw new Error(json.error.message||"API error");
+          var raw = (json.content||[]).map(function(b){ return b.text||""; }).join("").trim();
+          var cleaned = raw.replace(/```json|```/g,"").replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').trim();
+          var first = cleaned.indexOf("{"), last = cleaned.lastIndexOf("}");
+          if (first===-1||last===-1) throw new Error("No results returned");
+          var parsed = JSON.parse(cleaned.slice(first,last+1));
+          if (!parsed.offers||parsed.offers.length===0) throw new Error("No offer data returned");
+          parsed.offers[0].overallVerdict = parsed.overallVerdict;
+          succeeded = true;
+          setProgress(100);
+          setTimeout(function(){ setResults(parsed.offers); setLoading(false); }, 300);
+        })
+        .catch(function(e) {
+          clearInterval(interval);
+          if (!succeeded && attempt < 2) {
+            setTimeout(doAttempt, 800);
+          } else {
+            setError("Analysis failed: "+e.message);
+            setLoading(false);
+            setProgress(0);
+          }
+        });
+    }
+    doAttempt();
+  }
+
+  return (
+    <div style={{minHeight:"100vh",background:"#080808",backgroundImage:"radial-gradient(ellipse at 10% 0%,rgba(90,186,106,0.07) 0%,transparent 50%)"}}>
+      <div style={{borderBottom:"1px solid rgba(255,255,255,0.06)",padding:"0 24px",height:"56px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+        <a href={HOME_URL} style={{display:"flex",alignItems:"center",gap:"10px",textDecoration:"none"}}>
+          <img src={LOGO_URI} alt="FYPU" style={{height:"36px",width:"auto",mixBlendMode:"screen",opacity:0.9}}/>
+          <span style={{color:"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",letterSpacing:"0.18em"}}>FYPU</span>
+        </a>
+        <a href={HOME_URL} style={{color:"#b0b0bc",fontSize:"11px",fontWeight:"600",fontFamily:"'Montserrat',sans-serif",textDecoration:"none"}}>BACK</a>
+      </div>
+      <div style={{maxWidth:"780px",margin:"0 auto",padding:"48px 24px 80px"}}>
+        {!results && !loading && (
+          <div style={{textAlign:"center",marginBottom:"48px"}}>
+            <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.22em",marginBottom:"20px"}}>OFFER COMPARISON TOOL</div>
+            <h1 style={{fontFamily:"'Bodoni Moda',serif",fontSize:"clamp(30px,5vw,52px)",fontWeight:"900",color:"#f0f0f0",lineHeight:"1.08",marginBottom:"10px"}}>You Got In.</h1>
+            <div style={{fontFamily:"'Great Vibes',cursive",fontSize:"clamp(28px,5vw,44px)",background:"linear-gradient(135deg,#5aba6a,#c9a84c,#f0e090,#5aba6a)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:"20px",lineHeight:"1.4",animation:"shimmer 4s linear infinite"}}>Now Make the Smart Choice.</div>
+            <p style={{color:"#b0b0bc",fontSize:"13px",maxWidth:"420px",margin:"0 auto",lineHeight:"1.8"}}>Enter your offers. FYPU breaks down ROI, job prospects and grad school paths for each one.</p>
+          </div>
+        )}
+        {results && !loading && (
+          <div style={{marginBottom:"24px",display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:"12px"}}>
+            <h2 style={{color:"#f0f0f0",fontFamily:"'Bodoni Moda',serif",fontSize:"28px",fontWeight:"900"}}>{results.length} Offers Analyzed</h2>
+            <button onClick={function(){ setResults(null); setProgress(0); }} style={{background:"none",border:"1px solid rgba(255,255,255,0.12)",color:"#b0b0bc",borderRadius:"8px",padding:"8px 16px",cursor:"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>Edit Offers</button>
+          </div>
+        )}
+        {loading && (
+          <div style={{textAlign:"center",padding:"80px 20px"}}>
+            <div style={{width:"50px",height:"50px",border:"2px solid rgba(255,255,255,0.06)",borderTop:"2px solid #5aba6a",borderRadius:"50%",animation:"spin 0.8s linear infinite",margin:"0 auto 24px"}}></div>
+            <div style={{color:"#f0f0f0",fontFamily:"'DM Serif Display',serif",fontSize:"20px",marginBottom:"8px"}}>Analyzing your offers...</div>
+            <div style={{color:"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",marginBottom:"24px"}}>Comparing ROI, career paths and grad school outcomes</div>
+            <div style={{maxWidth:"280px",margin:"0 auto"}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:"6px"}}>
+                <span style={{color:"#555",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>Progress</span>
+                <span style={{color:"#5aba6a",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>{progress}%</span>
+              </div>
+              <div style={{height:"3px",background:"rgba(255,255,255,0.06)",borderRadius:"2px",overflow:"hidden"}}>
+                <div style={{width:progress+"%",height:"100%",background:"linear-gradient(90deg,#5aba6a,#c9a84c)",borderRadius:"2px",transition:"width 0.4s ease"}}></div>
+              </div>
+            </div>
+          </div>
+        )}
+        {results && !loading && (
+          <div>
+            <WinnerBanner results={results}/>
+            {results.map(function(r,i){ return <OfferCard key={i} result={r} index={i}/>; })}
+            <div style={{marginTop:"16px",padding:"12px 16px",background:"rgba(255,255,255,0.04)",borderRadius:"10px",color:"#555",fontSize:"11px",lineHeight:"1.7",fontFamily:"'Montserrat',sans-serif"}}>
+              Analysis is AI-generated. Verify salary figures and employer recruiting directly with each institution before deciding.
+            </div>
+          </div>
+        )}
+        {!results && !loading && (
+          <div>
+            <div style={{marginBottom:"18px"}}>
+              <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.18em",marginBottom:"12px"}}>YOUR OFFERS *</label>
+              {offers.map(function(o,i) {
+                return (
+                  <div key={i} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(90,186,106,0.2)",borderRadius:"12px",padding:"16px 18px",marginBottom:"10px"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"12px"}}>
+                      <span style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em"}}>OFFER {i+1}</span>
+                      {offers.length > 2 && (
+                        <button onClick={function(){ removeOffer(i); }} style={{background:"none",border:"none",color:"#555",cursor:"pointer",fontSize:"18px",lineHeight:1}}>x</button>
+                      )}
+                    </div>
+                    <div style={{marginBottom:"10px"}}>
+                      <input value={o.school} onChange={function(e){ updateOffer(i,{school:e.target.value,major:o.major,tuition:o.tuition,notes:o.notes}); }} placeholder="School name e.g. University of Michigan" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"8px",padding:"10px 12px",fontSize:"13px",color:"#f0f0f0",boxSizing:"border-box",marginBottom:"8px"}}/>
+                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
+                        <select value={o.major} onChange={function(e){ updateOffer(i,{school:o.school,major:e.target.value,tuition:o.tuition,notes:o.notes}); }} style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"8px",padding:"10px 12px",fontSize:"13px",color:o.major?"#f0f0f0":"#555",cursor:"pointer",boxSizing:"border-box"}}>
+                          <option value="" disabled style={{background:"#111"}}>Select major...</option>
+                          {MAJORS.map(function(m){ return <option key={m} value={m} style={{background:"#111"}}>{m}</option>; })}
+                        </select>
+                        <input value={o.tuition} onChange={function(e){ updateOffer(i,{school:o.school,major:o.major,tuition:e.target.value,notes:o.notes}); }} placeholder="Tuition e.g. $28,000" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"8px",padding:"10px 12px",fontSize:"13px",color:"#f0f0f0",boxSizing:"border-box"}}/>
+                      </div>
+                    </div>
+                    <input value={o.notes} onChange={function(e){ updateOffer(i,{school:o.school,major:o.major,tuition:o.tuition,notes:e.target.value}); }} placeholder="Scholarship notes (optional)" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"8px",padding:"10px 12px",fontSize:"13px",color:"#f0f0f0",boxSizing:"border-box"}}/>
+                  </div>
+                );
+              })}
+              {offers.length < 4 && (
+                <button onClick={addOffer} style={{background:"none",border:"1px dashed rgba(90,186,106,0.3)",color:"#5aba6a",borderRadius:"10px",padding:"12px 18px",cursor:"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",fontWeight:"600",width:"100%"}}>
+                  + Add another offer ({offers.length}/4)
+                </button>
+              )}
+            </div>
+            <div style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"12px",padding:"16px 18px",marginBottom:"16px"}}>
+              <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.18em",marginBottom:"8px"}}>YOUR CAREER GOAL <span style={{color:"#555",fontWeight:"400"}}>(optional)</span></label>
+              <input value={careerGoal} onChange={function(e){ setCareerGoal(e.target.value); }} placeholder="e.g. Software engineer, pre-med, investment banking..." style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"8px",padding:"10px 12px",fontSize:"13px",color:"#f0f0f0",boxSizing:"border-box"}}/>
+            </div>
+            {error && (
+              <div style={{color:"#c0302a",fontSize:"13px",marginBottom:"12px",padding:"10px 14px",background:"rgba(139,26,26,0.12)",borderRadius:"8px"}}>{error}</div>
+            )}
+            <button onClick={analyze} disabled={loading||filledOffers.length<2} style={{width:"100%",background:filledOffers.length<2?"rgba(255,255,255,0.05)":"linear-gradient(135deg,#2d6e3a,#5aba6a)",color:filledOffers.length<2?"#555":"#080808",border:"none",borderRadius:"10px",padding:"15px",fontSize:"13px",fontWeight:"700",letterSpacing:"0.1em",cursor:filledOffers.length<2?"not-allowed":"pointer",fontFamily:"'Montserrat',sans-serif",marginBottom:"14px"}}>
+              ANALYZE MY OFFERS ({filledOffers.length} offer{filledOffers.length!==1?"s":""})
+            </button>
+            <div style={{textAlign:"center"}}>
+              <a href={HOME_URL} style={{color:"#555",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",textDecoration:"none"}}>Still deciding where to apply? Back to FYPU</a>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+var root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(React.createElement(App));
+
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
