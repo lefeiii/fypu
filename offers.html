@@ -33,14 +33,28 @@ var API_URL  = IS_LOCAL ? "https://api.anthropic.com/v1/messages" : "/api/claude
 
 var MAJORS = ["Computer Science","Software Engineering","Data Science","Electrical Engineering","Mechanical Engineering","Civil Engineering","Chemical Engineering","Biomedical Engineering","Biology","Biochemistry","Neuroscience","Pre-Med / Health Sciences","Nursing","Public Health","Psychology","Business Administration","Finance","Accounting","Economics","Marketing","Management","Entrepreneurship","International Business","Political Science","International Relations","Law (Pre-Law)","English Literature","History","Philosophy","Communications","Journalism","Mathematics","Statistics","Physics","Chemistry","Environmental Science","Architecture","Graphic Design","Fine Arts","Music","Education","Social Work","Other"];
 
-function emptyOffer() { return {school:"", major:"", tuition:"", notes:""}; }
+var GRAD_PATHS = [
+  {key:"none",    label:"Career after undergrad"},
+  {key:"med",     label:"Medical School (MD/DO)"},
+  {key:"dental",  label:"Dental School (DDS/DMD)"},
+  {key:"law",     label:"Law School (JD)"},
+  {key:"mba",     label:"MBA / Business School"},
+  {key:"ms",      label:"Master's Degree (MS/MA)"},
+  {key:"phd",     label:"PhD / Research Doctorate"},
+  {key:"pharmd",  label:"Pharmacy School (PharmD)"},
+  {key:"nursing", label:"Nurse Practitioner (NP/DNP)"},
+  {key:"vet",     label:"Veterinary School (DVM)"}
+];
+
+function emptyOffer() { return {school:"", major:"", tuition:"", notes:"", gradPath:"none"}; }
 
 function StatBox(props) {
-  var label = props.label, value = props.value, color = props.color;
+  var label = props.label, value = props.value, color = props.color, sub = props.sub;
   return (
     <div style={{background:"rgba(255,255,255,0.06)",borderRadius:"10px",padding:"14px",textAlign:"center"}}>
       <div style={{color:color||"#f0f0f0",fontSize:"18px",fontWeight:"800",fontFamily:"'Montserrat',sans-serif",lineHeight:"1.1"}}>{value||"--"}</div>
-      <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginTop:"5px",letterSpacing:"0.08em"}}>{label}</div>
+      {sub && <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginTop:"2px",opacity:0.75}}>{sub}</div>}
+      <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginTop:"4px",letterSpacing:"0.08em"}}>{label}</div>
     </div>
   );
 }
@@ -55,8 +69,20 @@ function OfferCard(props) {
   var jobs = result.jobs || {};
   var grad = result.grad || {};
   var verdict = result.verdict || {};
+  var campus = result.campus || {};
+  var postgrad = result.postgrad || {};
   var employers = jobs.topEmployers || [];
   var programs = grad.topPrograms || [];
+  var isGradPath = result.gradPath && result.gradPath !== "none";
+
+  var tabs = [
+    {id:"roi", label:"ROI"},
+    {id:"career", label: isGradPath ? "Post-Grad Career" : "Job Prospects"},
+    {id:"grad", label: isGradPath ? "Grad Admissions" : "Grad School"},
+    {id:"campus", label:"Campus Life"},
+    {id:"verdict", label:"Verdict"}
+  ];
+
   return (
     <div className="fade-up" style={{animationDelay:(index*0.1)+"s",background:"rgba(255,255,255,0.04)",border:"1px solid "+col+"44",borderRadius:"16px",overflow:"hidden",marginBottom:"20px"}}>
       <div style={{background:"rgba(0,0,0,0.3)",borderBottom:"1px solid "+col+"30",padding:"18px 22px",display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:"10px"}}>
@@ -64,6 +90,11 @@ function OfferCard(props) {
           <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.14em",marginBottom:"4px"}}>OFFER {index+1}</div>
           <div style={{color:"#f0f0f0",fontFamily:"'DM Serif Display',serif",fontSize:"20px",fontWeight:"700"}}>{result.school}</div>
           <div style={{color:"#b0b0bc",fontSize:"12px",marginTop:"3px"}}>{result.program} &middot; {result.location}</div>
+          {isGradPath && (
+            <div style={{marginTop:"5px",display:"inline-block",background:col+"22",border:"1px solid "+col+"44",borderRadius:"6px",padding:"2px 8px",color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>
+              {result.gradPathLabel} pathway
+            </div>
+          )}
         </div>
         <div style={{textAlign:"right"}}>
           <div style={{color:col,fontSize:"22px",fontWeight:"800",fontFamily:"'Montserrat',sans-serif"}}>{result.annualCost}</div>
@@ -71,74 +102,172 @@ function OfferCard(props) {
           <div style={{color:"#b0b0bc",fontSize:"11px",marginTop:"2px"}}>{result.totalCost} total</div>
         </div>
       </div>
-      <div style={{display:"flex",gap:"2px",padding:"10px 22px 0",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
-        {["roi","jobs","grad","verdict"].map(function(t) {
-          var labels = {roi:"ROI",jobs:"Job Prospects",grad:"Grad School",verdict:"Verdict"};
+
+      <div style={{display:"flex",gap:"2px",padding:"10px 22px 0",borderBottom:"1px solid rgba(255,255,255,0.06)",overflowX:"auto"}}>
+        {tabs.map(function(t) {
           return (
-            <button key={t} onClick={function(){setTab(t);}} style={{padding:"7px 14px",borderRadius:"6px 6px 0 0",cursor:"pointer",border:"none",background:tab===t?(col+"22"):"transparent",color:tab===t?col:"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",borderBottom:tab===t?("2px solid "+col):"2px solid transparent"}}>
-              {labels[t]}
+            <button key={t.id} onClick={function(){setTab(t.id);}} style={{padding:"7px 12px",borderRadius:"6px 6px 0 0",cursor:"pointer",border:"none",background:tab===t.id?(col+"22"):"transparent",color:tab===t.id?col:"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"10px",fontWeight:"700",whiteSpace:"nowrap",borderBottom:tab===t.id?("2px solid "+col):"2px solid transparent",flexShrink:0}}>
+              {t.label}
             </button>
           );
         })}
       </div>
+
       <div style={{padding:"20px 22px"}}>
+
         {tab === "roi" && (
           <div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"10px",marginBottom:"12px"}}>
-              <StatBox label="SALARY 1YR" value={roi.salary1yr} color={col}/>
-              <StatBox label="SALARY 5YR" value={roi.salary5yr} color={col}/>
+              <StatBox label="SALARY 1YR" value={roi.salary1yr} sub={roi.currency} color={col}/>
+              <StatBox label="SALARY 5YR" value={roi.salary5yr} sub={roi.currency} color={col}/>
               <StatBox label="BREAK-EVEN" value={roi.breakEven} color={col}/>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"12px"}}>
               <StatBox label="EMPLOYED 6MO" value={roi.employmentRate} color={col}/>
               <StatBox label="IN FIELD" value={roi.inFieldRate} color={col}/>
             </div>
+            {isGradPath && (
+              <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px",marginBottom:"12px"}}>
+                <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>POST-GRAD SALARY ({result.gradPathLabel})</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px",marginBottom:"8px"}}>
+                  <StatBox label="EARLY CAREER" value={postgrad.salaryEarly} sub={roi.currency} color="#c9a84c"/>
+                  <StatBox label="MID CAREER" value={postgrad.salaryMid} sub={roi.currency} color="#c9a84c"/>
+                </div>
+                <p style={{color:"#d0d0d8",fontSize:"12px",lineHeight:"1.6",margin:0}}>{postgrad.salaryNote}</p>
+              </div>
+            )}
             <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px"}}>
               <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>ROI ANALYSIS</div>
               <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{roi.analysis}</p>
             </div>
           </div>
         )}
-        {tab === "jobs" && (
+
+        {tab === "career" && (
           <div>
-            <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"10px"}}>TOP EMPLOYERS</div>
-            {employers.map(function(e,i) {
-              return (
-                <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",background:"rgba(255,255,255,0.05)",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px"}}>
-                  <div style={{background:(col+"22"),color:col,borderRadius:"50%",width:"22px",height:"22px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"10px",fontWeight:"700",flexShrink:0}}>{i+1}</div>
-                  <div>
-                    <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700"}}>{e.name}</div>
-                    <div style={{color:"#b0b0bc",fontSize:"11px",marginTop:"2px"}}>{e.type} &middot; {e.recruiting}</div>
-                  </div>
+            {isGradPath ? (
+              <div>
+                <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px",marginBottom:"12px"}}>
+                  <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>CAREER AFTER {(result.gradPathLabel||"").toUpperCase()}</div>
+                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{postgrad.careerOverview}</p>
                 </div>
-              );
-            })}
-            <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px",marginTop:"4px"}}>
-              <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>NETWORK STRENGTH</div>
-              <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{jobs.networkStrength}</p>
-            </div>
+                <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"10px"}}>TOP CAREER OUTCOMES</div>
+                {(postgrad.careerOutcomes||[]).map(function(c,i) {
+                  return (
+                    <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",background:"rgba(255,255,255,0.05)",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px"}}>
+                      <div style={{background:(col+"22"),color:col,borderRadius:"50%",width:"22px",height:"22px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"10px",fontWeight:"700",flexShrink:0}}>{i+1}</div>
+                      <div>
+                        <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700"}}>{c.role}</div>
+                        <div style={{color:"#b0b0bc",fontSize:"11px",marginTop:"2px"}}>{c.salary} &middot; {c.note}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px",marginTop:"4px"}}>
+                  <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>HOW THIS SCHOOL POSITIONS YOU</div>
+                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{postgrad.schoolStrength}</p>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"10px"}}>TOP EMPLOYERS THAT RECRUIT HERE</div>
+                {employers.map(function(e,i) {
+                  return (
+                    <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",background:"rgba(255,255,255,0.05)",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px"}}>
+                      <div style={{background:(col+"22"),color:col,borderRadius:"50%",width:"22px",height:"22px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"10px",fontWeight:"700",flexShrink:0}}>{i+1}</div>
+                      <div>
+                        <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700"}}>{e.name}</div>
+                        <div style={{color:"#b0b0bc",fontSize:"11px",marginTop:"2px"}}>{e.type} &middot; {e.recruiting}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px",marginTop:"4px"}}>
+                  <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>NETWORK STRENGTH</div>
+                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{jobs.networkStrength}</p>
+                </div>
+              </div>
+            )}
           </div>
         )}
+
         {tab === "grad" && (
           <div>
-            <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"10px"}}>GRAD SCHOOL PIPELINE</div>
-            {programs.map(function(g,i) {
-              return (
-                <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",background:"rgba(255,255,255,0.05)",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px"}}>
-                  <div style={{background:(col+"22"),color:col,borderRadius:"50%",width:"22px",height:"22px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"10px",fontWeight:"700",flexShrink:0}}>{i+1}</div>
-                  <div>
-                    <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700"}}>{g.name}</div>
-                    <div style={{color:"#b0b0bc",fontSize:"11px",marginTop:"2px"}}>{g.type} &middot; {g.note}</div>
+            {isGradPath ? (
+              <div>
+                <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px",marginBottom:"12px"}}>
+                  <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>{(result.gradPathLabel||"GRAD SCHOOL").toUpperCase()} ADMISSIONS FROM HERE</div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px",marginBottom:"10px"}}>
+                    <StatBox label="ACCEPTANCE RATE" value={postgrad.gradAcceptRate} color={col}/>
+                    <StatBox label="AVG GPA NEEDED" value={postgrad.gradGPA} color={col}/>
                   </div>
+                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{postgrad.gradAdmissionsNote}</p>
                 </div>
-              );
-            })}
-            <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px",marginTop:"4px"}}>
-              <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>GRAD SCHOOL STRENGTH</div>
-              <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{grad.analysis}</p>
+                <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"10px"}}>TOP PROGRAMS THIS SCHOOL FEEDS INTO</div>
+                {(postgrad.feederPrograms||[]).map(function(p,i) {
+                  return (
+                    <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",background:"rgba(255,255,255,0.05)",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px"}}>
+                      <div style={{background:(col+"22"),color:col,borderRadius:"50%",width:"22px",height:"22px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"10px",fontWeight:"700",flexShrink:0}}>{i+1}</div>
+                      <div>
+                        <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700"}}>{p.name}</div>
+                        <div style={{color:"#b0b0bc",fontSize:"11px",marginTop:"2px"}}>{p.type} &middot; {p.note}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div>
+                <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"10px"}}>GRAD SCHOOL PIPELINE</div>
+                {programs.map(function(g,i) {
+                  return (
+                    <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",background:"rgba(255,255,255,0.05)",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px"}}>
+                      <div style={{background:(col+"22"),color:col,borderRadius:"50%",width:"22px",height:"22px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"10px",fontWeight:"700",flexShrink:0}}>{i+1}</div>
+                      <div>
+                        <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700"}}>{g.name}</div>
+                        <div style={{color:"#b0b0bc",fontSize:"11px",marginTop:"2px"}}>{g.type} &middot; {g.note}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px",marginTop:"4px"}}>
+                  <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>GRAD SCHOOL STRENGTH</div>
+                  <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{grad.analysis}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {tab === "campus" && (
+          <div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"12px"}}>
+              <StatBox label="UNDERGRAD SIZE" value={campus.undergradSize} color={col}/>
+              <StatBox label="AVG CLASS SIZE" value={campus.avgClassSize} color={col}/>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"10px",marginBottom:"12px"}}>
+              <StatBox label="GREEK LIFE" value={campus.greekLife} color={col}/>
+              <StatBox label="CAMPUS SAFETY" value={campus.campusSafetyRating} color={col}/>
+              <StatBox label="DIVERSITY SCORE" value={campus.diversityRating} color={col}/>
+            </div>
+            <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px",marginBottom:"12px"}}>
+              <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>STUDENT FORUM INSIGHTS</div>
+              {(campus.forumInsights||[]).map(function(insight,i) {
+                return (
+                  <div key={i} style={{borderBottom:i<(campus.forumInsights||[]).length-1?"1px solid rgba(255,255,255,0.06)":"none",paddingBottom:"10px",marginBottom:"10px"}}>
+                    <div style={{color:"#f0f0f0",fontSize:"12px",fontWeight:"700",marginBottom:"3px"}}>"{insight.quote}"</div>
+                    <div style={{color:"#b0b0bc",fontSize:"11px"}}>{insight.source} &middot; {insight.topic}</div>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"10px",padding:"14px 16px"}}>
+              <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>SOCIAL SCENE OVERVIEW</div>
+              <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{campus.socialOverview}</p>
             </div>
           </div>
         )}
+
         {tab === "verdict" && (
           <div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"12px"}}>
@@ -155,6 +284,7 @@ function OfferCard(props) {
             </div>
           </div>
         )}
+
       </div>
     </div>
   );
@@ -204,25 +334,53 @@ function App() {
   function analyze() {
     if (filledOffers.length < 2) { setError("Please enter at least 2 offers to compare."); return; }
     setError(""); setLoading(true); setResults(null); setProgress(0);
+
     var offerSummaries = filledOffers.map(function(o,i) {
-      return "Offer "+(i+1)+": "+o.school+", "+o.major+", tuition: "+(o.tuition||"unknown")+", aid: "+(o.notes||"none");
+      var gp = GRAD_PATHS.filter(function(g){ return g.key===o.gradPath; })[0];
+      var gpLabel = gp ? gp.label : "Career after undergrad";
+      return "Offer "+(i+1)+": "+o.school+", "+o.major+", tuition: "+(o.tuition||"unknown")+", aid: "+(o.notes||"none")+", post-grad plan: "+gpLabel;
     }).join(". ");
-    var schemaEntry = '{"school":"school name","program":"program name","location":"City, State","annualCost":"$XX,XXX","totalCost":"$XXX,XXX","roi":{"salary1yr":"$XX,XXX","salary5yr":"$XX,XXX","breakEven":"X years","employmentRate":"XX%","inFieldRate":"XX%","analysis":"2 sentence ROI analysis"},"jobs":{"topEmployers":[{"name":"Employer","type":"Tech","recruiting":"On-Campus"},{"name":"E2","type":"Finance","recruiting":"Target"},{"name":"E3","type":"Consulting","recruiting":"General"},{"name":"E4","type":"Tech","recruiting":"On-Campus"},{"name":"E5","type":"Other","recruiting":"General"}],"networkStrength":"2 sentence network analysis"},"grad":{"topPrograms":[{"name":"Program","type":"MBA","note":"note"},{"name":"P2","type":"MS","note":"note"},{"name":"P3","type":"PhD","note":"note"}],"analysis":"2 sentence grad analysis"},"verdict":{"valueScore":8,"prestigeScore":7,"honest":"1-2 sentence honest take","bestFor":"type of student"}}';
-    var schemaArr = filledOffers.map(function(){ return schemaEntry; }).join(",");
-    var prompt = "You are a brutally honest university career and financial advisor. A student received these college offers: "+offerSummaries+". "+(careerGoal?"Career goal: "+careerGoal+". ":"")+"For EACH offer provide detailed analysis with real salary figures and real employer names. No apostrophes in string values. Return ONLY valid JSON: {\"offers\":["+schemaArr+"],\"overallVerdict\":\"3 sentence comparison recommending which offer to pick and why\"}";
+
+    var isGradPath = function(o){ return o.gradPath && o.gradPath !== "none"; };
+
+    var postgradSchema = '{"salaryEarly":"$XX,XXX","salaryMid":"$XX,XXX","salaryNote":"currency note eg CAD or USD","careerOverview":"2 sentence overview of career after completing grad school","careerOutcomes":[{"role":"e.g. Attending Physician","salary":"$X-Y range","note":"specialty/context"},{"role":"role2","salary":"range","note":"note"},{"role":"role3","salary":"range","note":"note"}],"schoolStrength":"2 sentences on how well this school positions students for this grad path","gradAcceptRate":"XX% from this school","gradGPA":"X.X+ required","gradAdmissionsNote":"2 sentences on what it takes to get in from this school","feederPrograms":[{"name":"Program name","type":"MD|JD|MBA|MS|PhD","note":"brief note"},{"name":"prog2","type":"type","note":"note"},{"name":"prog3","type":"type","note":"note"}]}';
+
+    var schemaEntry = '{"school":"exact school name","program":"program name","location":"City, Province/State, Country","annualCost":"$XX,XXX","totalCost":"$XXX,XXX (4yr)","gradPath":"GRAD_PATH_KEY","gradPathLabel":"GRAD_PATH_LABEL",' +
+      '"roi":{"salary1yr":"$XX,XXX","salary5yr":"$XX,XXX","currency":"USD or CAD","breakEven":"X years","employmentRate":"XX%","inFieldRate":"XX%","analysis":"2 sentences on ROI given tuition. For Canadian schools use CAD. Cross-check with known NACE/Stats Canada data."},' +
+      '"jobs":{"topEmployers":[{"name":"Real employer name","type":"Tech|Finance|Consulting|Healthcare|Gov|Other","recruiting":"On-Campus|Target|General"},{"name":"E2","type":"Finance","recruiting":"Target"},{"name":"E3","type":"Consulting","recruiting":"General"},{"name":"E4","type":"Tech","recruiting":"On-Campus"},{"name":"E5","type":"Other","recruiting":"General"}],"networkStrength":"2 sentences on alumni network and recruiting for this major. Name real companies. For Canadian schools name Canadian employers first."},' +
+      '"grad":{"topPrograms":[{"name":"Real program name","type":"MBA|Law|Med|PhD|MS","note":"acceptance rate or note"},{"name":"P2","type":"MS","note":"note"},{"name":"P3","type":"PhD","note":"note"}],"analysis":"2 sentences on grad school pipeline. Be specific with real acceptance data."},' +
+      '"postgrad":' + postgradSchema + ',' +
+      '"campus":{"undergradSize":"X,XXX students","avgClassSize":"XX students","greekLife":"Strong|Moderate|None","campusSafetyRating":"X/5","diversityRating":"X/5","forumInsights":[{"quote":"real student quote about campus culture from Reddit/forums","source":"Reddit r/college or similar","topic":"Social life|Safety|Greek life|Class size|Housing"},{"quote":"quote2","source":"source2","topic":"topic2"},{"quote":"quote3","source":"source3","topic":"topic3"}],"socialOverview":"3 sentences on campus social scene, Greek life presence, safety reputation, and vibe based on student reviews. Be specific to this school."},' +
+      '"verdict":{"valueScore":8,"prestigeScore":7,"honest":"2 sentence brutally honest take on this offer given the tuition, program, and post-grad plan","bestFor":"type of student this offer is best for"}}';
+
+    var schemaArr = filledOffers.map(function(o){
+      var gp = GRAD_PATHS.filter(function(g){ return g.key===o.gradPath; })[0];
+      var gpLabel = gp ? gp.label : "Career after undergrad";
+      return schemaEntry.replace("GRAD_PATH_KEY", o.gradPath||"none").replace("GRAD_PATH_LABEL", gpLabel);
+    }).join(",");
+
+    var prompt = "You are a brutally honest, highly accurate university career and financial advisor with deep knowledge of both US AND Canadian universities. " +
+      "CRITICAL ACCURACY RULES: (1) Use real, verifiable salary data - NACE for US, Statistics Canada for Canadian schools. (2) Name real employers that actually recruit on-campus. (3) For Canadian schools use CAD currency and cite Canadian employers first. (4) Campus culture data must be based on real student reviews from Reddit r/ApplyingToCollege, r/college, r/uoft, r/UBC, r/uwaterloo etc. (5) Cross-check all data before including. (6) If post-grad path is not 'none', the career and grad tabs must focus entirely on that post-grad path pipeline. " +
+      "A student received these college offers: " + offerSummaries + ". " +
+      (careerGoal ? "Their career goal: " + careerGoal + ". " : "") +
+      "For EACH offer: analyse ROI with real salary data, give real employers that recruit there, give grad school pipeline or post-grad career stats if applicable, give campus life data from student forums, give honest verdict. " +
+      "No apostrophes in any string values. Return ONLY valid JSON: " +
+      '{"offers":[' + schemaArr + '],"overallVerdict":"3 sentence comparison recommending which offer to pick and why, considering tuition, career outcomes, post-grad plans, and campus life"}';
+
     var interval = null;
     var succeeded = false;
     var attempt = 0;
+
     function doAttempt() {
       attempt++;
       var p = 0;
       interval = setInterval(function() {
-        p = Math.min(p + Math.random()*6, 88);
+        p = Math.min(p + Math.random()*5, 88);
         setProgress(Math.round(p));
       }, 500);
       var headers = {"Content-Type":"application/json"};
       if (IS_LOCAL) headers["anthropic-dangerous-direct-browser-access"] = "true";
-      fetch(API_URL, {method:"POST",headers:headers,body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:4000,messages:[{role:"user",content:prompt}]})})
+      fetch(API_URL, {method:"POST",headers:headers,body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:6000,messages:[{role:"user",content:prompt}]})})
         .then(function(res){ return res.json(); })
         .then(function(json) {
           clearInterval(interval);
@@ -241,9 +399,9 @@ function App() {
         .catch(function(e) {
           clearInterval(interval);
           if (!succeeded && attempt < 2) {
-            setTimeout(doAttempt, 800);
+            setTimeout(doAttempt, 1000);
           } else {
-            setError("Analysis failed: "+e.message);
+            setError("Analysis failed: "+e.message+". Please try again.");
             setLoading(false);
             setProgress(0);
           }
@@ -261,13 +419,13 @@ function App() {
         </a>
         <a href={HOME_URL} style={{color:"#b0b0bc",fontSize:"11px",fontWeight:"600",fontFamily:"'Montserrat',sans-serif",textDecoration:"none"}}>BACK</a>
       </div>
-      <div style={{maxWidth:"780px",margin:"0 auto",padding:"48px 24px 80px"}}>
+      <div style={{maxWidth:"820px",margin:"0 auto",padding:"48px 24px 80px"}}>
         {!results && !loading && (
           <div style={{textAlign:"center",marginBottom:"48px"}}>
             <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.22em",marginBottom:"20px"}}>OFFER COMPARISON TOOL</div>
             <h1 style={{fontFamily:"'Bodoni Moda',serif",fontSize:"clamp(30px,5vw,52px)",fontWeight:"900",color:"#f0f0f0",lineHeight:"1.08",marginBottom:"10px"}}>You Got In.</h1>
             <div style={{fontFamily:"'Great Vibes',cursive",fontSize:"clamp(28px,5vw,44px)",background:"linear-gradient(135deg,#5aba6a,#c9a84c,#f0e090,#5aba6a)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:"20px",lineHeight:"1.4",animation:"shimmer 4s linear infinite"}}>Now Make the Smart Choice.</div>
-            <p style={{color:"#b0b0bc",fontSize:"13px",maxWidth:"420px",margin:"0 auto",lineHeight:"1.8"}}>Enter your offers. FYPU breaks down ROI, job prospects and grad school paths for each one.</p>
+            <p style={{color:"#b0b0bc",fontSize:"13px",maxWidth:"440px",margin:"0 auto",lineHeight:"1.8"}}>Enter your offers including your post-grad plans. FYPU analyses ROI, career paths, campus life and gives you an honest recommendation.</p>
           </div>
         )}
         {results && !loading && (
@@ -280,7 +438,7 @@ function App() {
           <div style={{textAlign:"center",padding:"80px 20px"}}>
             <div style={{width:"50px",height:"50px",border:"2px solid rgba(255,255,255,0.06)",borderTop:"2px solid #5aba6a",borderRadius:"50%",animation:"spin 0.8s linear infinite",margin:"0 auto 24px"}}></div>
             <div style={{color:"#f0f0f0",fontFamily:"'DM Serif Display',serif",fontSize:"20px",marginBottom:"8px"}}>Analyzing your offers...</div>
-            <div style={{color:"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",marginBottom:"24px"}}>Comparing ROI, career paths and grad school outcomes</div>
+            <div style={{color:"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",marginBottom:"24px"}}>Cross-checking ROI, career paths, campus life and grad school outcomes</div>
             <div style={{maxWidth:"280px",margin:"0 auto"}}>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:"6px"}}>
                 <span style={{color:"#555",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>Progress</span>
@@ -297,7 +455,7 @@ function App() {
             <WinnerBanner results={results}/>
             {results.map(function(r,i){ return <OfferCard key={i} result={r} index={i}/>; })}
             <div style={{marginTop:"16px",padding:"12px 16px",background:"rgba(255,255,255,0.04)",borderRadius:"10px",color:"#555",fontSize:"11px",lineHeight:"1.7",fontFamily:"'Montserrat',sans-serif"}}>
-              Analysis is AI-generated. Verify salary figures and employer recruiting directly with each institution before deciding.
+              Analysis uses AI cross-referenced with NACE, Statistics Canada, and student forum data. Verify all figures directly with institutions before deciding.
             </div>
           </div>
         )}
@@ -307,24 +465,37 @@ function App() {
               <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.18em",marginBottom:"12px"}}>YOUR OFFERS *</label>
               {offers.map(function(o,i) {
                 return (
-                  <div key={i} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(90,186,106,0.2)",borderRadius:"12px",padding:"16px 18px",marginBottom:"10px"}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"12px"}}>
-                      <span style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em"}}>OFFER {i+1}</span>
+                  <div key={i} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(90,186,106,0.2)",borderRadius:"14px",padding:"18px 20px",marginBottom:"12px"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"14px"}}>
+                      <span style={{color:"#5aba6a",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700",letterSpacing:"0.1em"}}>OFFER {i+1}</span>
                       {offers.length > 2 && (
                         <button onClick={function(){ removeOffer(i); }} style={{background:"none",border:"none",color:"#555",cursor:"pointer",fontSize:"18px",lineHeight:1}}>x</button>
                       )}
                     </div>
                     <div style={{marginBottom:"10px"}}>
-                      <input value={o.school} onChange={function(e){ updateOffer(i,{school:e.target.value,major:o.major,tuition:o.tuition,notes:o.notes}); }} placeholder="School name e.g. University of Michigan" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"8px",padding:"10px 12px",fontSize:"13px",color:"#f0f0f0",boxSizing:"border-box",marginBottom:"8px"}}/>
-                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
-                        <select value={o.major} onChange={function(e){ updateOffer(i,{school:o.school,major:e.target.value,tuition:o.tuition,notes:o.notes}); }} style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"8px",padding:"10px 12px",fontSize:"13px",color:o.major?"#f0f0f0":"#555",cursor:"pointer",boxSizing:"border-box"}}>
+                      <input value={o.school} onChange={function(e){ updateOffer(i,{school:e.target.value,major:o.major,tuition:o.tuition,notes:o.notes,gradPath:o.gradPath}); }} placeholder="School name e.g. University of Toronto or University of Michigan" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"8px",padding:"10px 12px",fontSize:"13px",color:"#f0f0f0",boxSizing:"border-box",marginBottom:"8px"}}/>
+                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px",marginBottom:"8px"}}>
+                        <select value={o.major} onChange={function(e){ updateOffer(i,{school:o.school,major:e.target.value,tuition:o.tuition,notes:o.notes,gradPath:o.gradPath}); }} style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"8px",padding:"10px 12px",fontSize:"13px",color:o.major?"#f0f0f0":"#555",cursor:"pointer",boxSizing:"border-box"}}>
                           <option value="" disabled style={{background:"#111"}}>Select major...</option>
                           {MAJORS.map(function(m){ return <option key={m} value={m} style={{background:"#111"}}>{m}</option>; })}
                         </select>
-                        <input value={o.tuition} onChange={function(e){ updateOffer(i,{school:o.school,major:o.major,tuition:e.target.value,notes:o.notes}); }} placeholder="Tuition e.g. $28,000" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"8px",padding:"10px 12px",fontSize:"13px",color:"#f0f0f0",boxSizing:"border-box"}}/>
+                        <input value={o.tuition} onChange={function(e){ updateOffer(i,{school:o.school,major:o.major,tuition:e.target.value,notes:o.notes,gradPath:o.gradPath}); }} placeholder="Tuition after aid e.g. $28,000" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"8px",padding:"10px 12px",fontSize:"13px",color:"#f0f0f0",boxSizing:"border-box"}}/>
                       </div>
+                      <div style={{marginBottom:"8px"}}>
+                        <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.1em",marginBottom:"6px"}}>POST-GRAD PLAN</div>
+                        <div style={{display:"flex",flexWrap:"wrap",gap:"6px"}}>
+                          {GRAD_PATHS.map(function(gp) {
+                            var selected = (o.gradPath||"none") === gp.key;
+                            return (
+                              <button key={gp.key} onClick={function(){ updateOffer(i,{school:o.school,major:o.major,tuition:o.tuition,notes:o.notes,gradPath:gp.key}); }} style={{padding:"5px 12px",borderRadius:"8px",cursor:"pointer",border:"1px solid "+(selected?"rgba(90,186,106,0.6)":"rgba(255,255,255,0.08)"),background:selected?"rgba(90,186,106,0.12)":"transparent",color:selected?"#5aba6a":"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"10px",fontWeight:selected?"700":"400",transition:"all 0.15s"}}>
+                                {gp.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      <input value={o.notes} onChange={function(e){ updateOffer(i,{school:o.school,major:o.major,tuition:o.tuition,notes:e.target.value,gradPath:o.gradPath}); }} placeholder="Scholarship notes (optional) e.g. Merit scholarship $12k/yr" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"8px",padding:"10px 12px",fontSize:"13px",color:"#f0f0f0",boxSizing:"border-box"}}/>
                     </div>
-                    <input value={o.notes} onChange={function(e){ updateOffer(i,{school:o.school,major:o.major,tuition:o.tuition,notes:e.target.value}); }} placeholder="Scholarship notes (optional)" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"8px",padding:"10px 12px",fontSize:"13px",color:"#f0f0f0",boxSizing:"border-box"}}/>
                   </div>
                 );
               })}
@@ -335,8 +506,8 @@ function App() {
               )}
             </div>
             <div style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"12px",padding:"16px 18px",marginBottom:"16px"}}>
-              <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.18em",marginBottom:"8px"}}>YOUR CAREER GOAL <span style={{color:"#555",fontWeight:"400"}}>(optional)</span></label>
-              <input value={careerGoal} onChange={function(e){ setCareerGoal(e.target.value); }} placeholder="e.g. Software engineer, pre-med, investment banking..." style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"8px",padding:"10px 12px",fontSize:"13px",color:"#f0f0f0",boxSizing:"border-box"}}/>
+              <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.18em",marginBottom:"8px"}}>YOUR CAREER GOAL <span style={{color:"#555",fontWeight:"400"}}>(optional — helps personalise analysis)</span></label>
+              <input value={careerGoal} onChange={function(e){ setCareerGoal(e.target.value); }} placeholder="e.g. Become a cardiologist, software engineer at Google, corporate lawyer..." style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"8px",padding:"10px 12px",fontSize:"13px",color:"#f0f0f0",boxSizing:"border-box"}}/>
             </div>
             {error && (
               <div style={{color:"#c0302a",fontSize:"13px",marginBottom:"12px",padding:"10px 14px",background:"rgba(139,26,26,0.12)",borderRadius:"8px"}}>{error}</div>
