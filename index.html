@@ -97,8 +97,8 @@ const POST_GRAD_PATHS = [
   {key:"ms_eng",  label:"Graduate School (M.S. Eng)",   abbr:"M.S./Ph.D.",   color:"#c9a84c", icon:"Eg", testLabel:"GRE",        desc:"M.S. or Ph.D. in Engineering"},
   {key:"ms_sci",  label:"Graduate School (M.S. Science)","abbr":"M.S./Ph.D.",  color:"#c9a84c", icon:"Sc", testLabel:"GRE",        desc:"M.S. or Ph.D. in Sciences"},
   {key:"psyd",    label:"Psychology / Clinical",        abbr:"Ph.D./Psy.D.", color:"#c9a84c", icon:"Ps", testLabel:"GRE",        desc:"Ph.D. or Psy.D. in Psychology"},
-  {key:"march",   label:"Graduate Architecture",        abbr:"M.Arch",       color:"#705858", icon:"Ax", testLabel:"GRE/portfolio", desc:"M.Arch or MUP graduate programs"},
-  {key:"grad",    label:"Graduate / Professional School","abbr":"Grad Degree", color:"#9898a8", icon:"Gd", testLabel:"GRE/GMAT",   desc:"Graduate or professional degree"},
+  {key:"march",   label:"Graduate Architecture",        abbr:"M.Arch",       color:"#8a7272", icon:"Ax", testLabel:"GRE/portfolio", desc:"M.Arch or MUP graduate programs"},
+  {key:"grad",    label:"Graduate / Professional School","abbr":"Grad Degree", color:"#b0b0bc", icon:"Gd", testLabel:"GRE/GMAT",   desc:"Graduate or professional degree"},
 ];
 
 const MAJOR_TO_GRAD_PATHS = {
@@ -748,7 +748,7 @@ const CAT = {
   safety: { label:"SAFETY", icon:"o", color:"#5aba6a", bg:"rgba(107,203,119,0.10)",  border:"rgba(107,203,119,0.3)",  desc:"Strong likelihood of admission - your backup foundation" },
 };
 
-function rCol(r){return{Critical:"#c0302a",High:"#c9a84c",Moderate:"#e8c96a",Low:"#5aba6a"}[r]||"#705858";}
+function rCol(r){return{Critical:"#c0302a",High:"#c9a84c",Moderate:"#e8c96a",Low:"#5aba6a"}[r]||"#8a7272";}
 function pCol(p){return{Critical:"#c0302a",High:"#c9a84c",Medium:"#e8c96a"}[p]||"#5aba6a";}
 
 function Tag({c, children}) {
@@ -761,9 +761,9 @@ function Tag({c, children}) {
 
 function SBox({label, value, color}) {
   return (
-    <div style={{background:"rgba(255,255,255,0.04)",borderRadius:"10px",padding:"12px",textAlign:"center"}}>
+    <div style={{background:"rgba(255,255,255,0.07)",borderRadius:"10px",padding:"12px",textAlign:"center"}}>
       <div style={{color:color,fontSize:"18px",fontWeight:"800"}}>{value}</div>
-      <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginTop:"3px"}}>{label}</div>
+      <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginTop:"3px"}}>{label}</div>
     </div>
   );
 }
@@ -777,7 +777,7 @@ function DCard({children}) {
 }
 
 function CLabel({children, color}) {
-  return <div style={{color:color||"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"14px"}}>{children}</div>;
+  return <div style={{color:color||"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",marginBottom:"14px"}}>{children}</div>;
 }
 
 function Dial({score, color}) {
@@ -800,11 +800,11 @@ function CBar({label, valA, valB, nameA, nameB, cA, cB, higher}) {
   const win = higher!==false ? (a>=b?"A":"B") : (a<=b?"A":"B");
   return (
     <div style={{marginBottom:"18px"}}>
-      <div style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",marginBottom:"8px"}}>{label}</div>
+      <div style={{color:"#b0b0bc",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",marginBottom:"8px"}}>{label}</div>
       {[{n:nameA,v:a,raw:valA,c:cA,s:"A"},{n:nameB,v:b,raw:valB,c:cB,s:"B"}].map(x=>(
         <div key={x.s} style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"6px"}}>
-          <div style={{width:"100px",fontSize:"10px",color:"#9898a8",fontFamily:"'Montserrat',sans-serif",textAlign:"right",flexShrink:0}}>{x.n.split(" ").slice(0,2).join(" ")}</div>
-          <div style={{flex:1,background:"rgba(255,255,255,0.04)",borderRadius:"4px",height:"24px",overflow:"hidden"}}>
+          <div style={{width:"100px",fontSize:"10px",color:"#b0b0bc",fontFamily:"'Montserrat',sans-serif",textAlign:"right",flexShrink:0}}>{x.n.split(" ").slice(0,2).join(" ")}</div>
+          <div style={{flex:1,background:"rgba(255,255,255,0.07)",borderRadius:"4px",height:"24px",overflow:"hidden"}}>
             <div style={{width:Math.max((x.v/mx)*100,8)+"%",height:"100%",background:x.c+(win===x.s?"":"88"),borderRadius:"4px",display:"flex",alignItems:"center",paddingLeft:"8px",minWidth:"30px"}}>
               <span style={{color:"#080808",fontSize:"10px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif",whiteSpace:"nowrap"}}>{x.raw}</span>
             </div>
@@ -818,8 +818,8 @@ function CBar({label, valA, valB, nameA, nameB, cA, cB, higher}) {
 
 function RRow({label, value, vc}) {
   return (
-    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",background:"rgba(255,255,255,0.03)",borderRadius:"6px",padding:"6px 10px",marginBottom:"6px"}}>
-      <span style={{color:"#9898a8",fontSize:"11px"}}>{label}</span>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",background:"rgba(255,255,255,0.06)",borderRadius:"6px",padding:"6px 10px",marginBottom:"6px"}}>
+      <span style={{color:"#b0b0bc",fontSize:"11px"}}>{label}</span>
       <span style={{color:vc||"#f0f0f0",fontSize:"11px",fontWeight:"600"}}>{value}</span>
     </div>
   );
@@ -847,9 +847,9 @@ function MajorSelect({value, onChange}) {
   },[]);
   return (
     <div ref={ref} style={{position:"relative"}}>
-      <div onClick={()=>setOpen(!open)} style={{width:"100%",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(107,159,228,0.20)",borderRadius:"10px",padding:"11px 14px",color:value?"#f0f0f0":"#9898a8",fontSize:"13px",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",userSelect:"none",boxSizing:"border-box"}}>
+      <div onClick={()=>setOpen(!open)} style={{width:"100%",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(107,159,228,0.20)",borderRadius:"10px",padding:"11px 14px",color:value?"#f0f0f0":"#b0b0bc",fontSize:"13px",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",userSelect:"none",boxSizing:"border-box"}}>
         <span>{value||"Select your intended major..."}</span>
-        <span style={{color:"#9898a8",fontSize:"10px",marginLeft:"8px"}}>{open?"▲":"▼"}</span>
+        <span style={{color:"#b0b0bc",fontSize:"10px",marginLeft:"8px"}}>{open?"▲":"▼"}</span>
       </div>
       {open && (
         <div style={{position:"absolute",top:"calc(100% + 4px)",left:0,right:0,zIndex:500,background:"#0c0c0c",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"10px",maxHeight:"320px",overflowY:"auto",boxShadow:"0 8px 32px rgba(0,0,0,0.6)"}}>
@@ -858,7 +858,7 @@ function MajorSelect({value, onChange}) {
               <div style={{padding:"8px 14px 4px",color:"#c9a84c",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em",fontWeight:"700",borderTop:"1px solid rgba(107,159,228,0.10)",background:"rgba(139,26,26,0.08)"}}>{g.label}</div>
               {g.options.map(opt=>(
                 <div key={opt} onClick={()=>{onChange(opt);setOpen(false);}} style={{padding:"9px 14px 9px 22px",color:value===opt?"#f15177":"#d0d0d8",fontSize:"13px",cursor:"pointer",background:value===opt?"rgba(139,26,26,0.10)":"transparent",transition:"background 0.12s"}}
-                  onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.04)"}
+                  onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.07)"}
                   onMouseLeave={e=>e.currentTarget.style.background=value===opt?"rgba(139,26,26,0.10)":"transparent"}>
                   {opt}
                 </div>
@@ -888,7 +888,7 @@ function InfoTip({text}) {
   const [show, setShow] = React.useState(false);
   return (
     <span style={{position:"relative",display:"inline-block",marginLeft:"5px",verticalAlign:"middle"}}>
-      <span onMouseEnter={()=>setShow(true)} onMouseLeave={()=>setShow(false)} onClick={()=>setShow(!show)} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:"14px",height:"14px",borderRadius:"50%",background:"rgba(201,168,76,0.07)",border:"1px solid rgba(255,255,255,0.12)",color:"#9898a8",fontSize:"9px",cursor:"pointer",fontFamily:"'Montserrat',sans-serif",fontWeight:"700",userSelect:"none",flexShrink:0}}>?</span>
+      <span onMouseEnter={()=>setShow(true)} onMouseLeave={()=>setShow(false)} onClick={()=>setShow(!show)} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:"14px",height:"14px",borderRadius:"50%",background:"rgba(201,168,76,0.07)",border:"1px solid rgba(255,255,255,0.12)",color:"#b0b0bc",fontSize:"9px",cursor:"pointer",fontFamily:"'Montserrat',sans-serif",fontWeight:"700",userSelect:"none",flexShrink:0}}>?</span>
       {show && (
         <span style={{position:"absolute",left:"18px",top:"-4px",zIndex:999,background:"#111111",border:"1px solid rgba(241,81,119,0.35)",borderRadius:"8px",padding:"8px 11px",fontSize:"11px",color:"#d0d0d8",lineHeight:"1.55",width:"220px",boxShadow:"0 4px 20px rgba(107,159,228,0.22)",pointerEvents:"none"}}>{text}</span>
       )}
@@ -1106,13 +1106,13 @@ function AnalysisPage({school, category, profile, onBack}) {
       {busy ? (
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",height:"70vh",gap:"20px"}}>
           <div style={{width:"48px",height:"48px",border:"3px solid rgba(107,159,228,0.10)",borderTop:"3px solid "+cfg.color,borderRadius:"50%",animation:"nbspin 0.8s linear infinite"}}/>
-          <div style={{color:"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"12px"}}>RUNNING DEEP ANALYSIS...</div>
+          <div style={{color:"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"12px"}}>RUNNING DEEP ANALYSIS...</div>
         </div>
       ) : data ? (
         <div style={{maxWidth:"860px",margin:"0 auto",padding:"28px 20px",overflow:"hidden",wordBreak:"break-word",overflowWrap:"break-word"}}>
           <div style={{display:"flex",gap:"6px",marginBottom:"24px",overflowX:"auto"}}>
             {tabs.map(t=>(
-              <button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"9px 18px",borderRadius:"10px",cursor:"pointer",border:"1px solid "+(tab===t.id?cfg.color:"rgba(201,168,76,0.07)"),background:tab===t.id?cfg.bg:"transparent",color:tab===t.id?cfg.color:"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",whiteSpace:"nowrap",transition:"all 0.18s"}}>
+              <button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"9px 18px",borderRadius:"10px",cursor:"pointer",border:"1px solid "+(tab===t.id?cfg.color:"rgba(201,168,76,0.07)"),background:tab===t.id?cfg.bg:"transparent",color:tab===t.id?cfg.color:"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",whiteSpace:"nowrap",transition:"all 0.18s"}}>
                 {t.label}
               </button>
             ))}
@@ -1121,51 +1121,51 @@ function AnalysisPage({school, category, profile, onBack}) {
           {tab==="risk" && data.riskAnalysis && (
             <div>
               <h2 style={{fontFamily:"'Anton',sans-serif",fontSize:"28px",fontWeight:"400",letterSpacing:"0.05em",color:"#f0f0f0",margin:"0 0 4px"}}>Risk Analysis</h2>
-              <p style={{color:"#9898a8",fontSize:"13px",margin:"0 0 20px"}}>For <strong style={{color:"#c9a84c"}}>{(school.targetProgram||{}).name||profile.intendedMajor}</strong> at {school.name}</p>
+              <p style={{color:"#b0b0bc",fontSize:"13px",margin:"0 0 20px"}}>For <strong style={{color:"#c9a84c"}}>{(school.targetProgram||{}).name||profile.intendedMajor}</strong> at {school.name}</p>
               {school.targetProgram && (
                 <div style={{background:"rgba(139,26,26,0.10)",border:"1px solid rgba(241,81,119,0.28)",borderRadius:"12px",padding:"16px 20px",marginBottom:"16px",display:"flex",gap:"20px",flexWrap:"wrap",alignItems:"center"}}>
                   <div>
                     <div style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"4px"}}>TARGET PROGRAM</div>
                     <div style={{color:"#f0f0f0",fontSize:"16px",fontWeight:"700",fontFamily:"'DM Serif Display',serif"}}>{school.targetProgram.name}</div>
-                    <div style={{color:"#9898a8",fontSize:"11px"}}>{school.targetProgram.degree||""}</div>
+                    <div style={{color:"#b0b0bc",fontSize:"11px"}}>{school.targetProgram.degree||""}</div>
                   </div>
                   <div style={{textAlign:"center"}}>
                     <div style={{color:"#c0302a",fontSize:"22px",fontWeight:"800"}}>{school.targetProgram.admRate}</div>
-                    <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>PROGRAM ADMIT RATE</div>
+                    <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>PROGRAM ADMIT RATE</div>
                   </div>
-                  {school.targetProgram.notes && <div style={{color:"#9898a8",fontSize:"12px",flex:1,lineHeight:"1.5"}}>{school.targetProgram.notes}</div>}
+                  {school.targetProgram.notes && <div style={{color:"#b0b0bc",fontSize:"12px",flex:1,lineHeight:"1.5"}}>{school.targetProgram.notes}</div>}
                 </div>
               )}
               <DCard>
                 <CLabel>ADMISSION TREND<InfoTip text="How acceptance rates have changed over the past 5 years."/></CLabel>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"10px",marginBottom:"12px"}}>
-                  <SBox label="2019 Rate" value={data.riskAnalysis.admissionTrend.rateIn2019} color="#705858"/>
+                  <SBox label="2019 Rate" value={data.riskAnalysis.admissionTrend.rateIn2019} color="#8a7272"/>
                   <SBox label="2024 Rate" value={data.riskAnalysis.admissionTrend.rateIn2024} color={cfg.color}/>
                   <SBox label="5yr Change" value={data.riskAnalysis.admissionTrend.absoluteChange} color={data.riskAnalysis.admissionTrend.direction==="tightening"?"#c0302a":"#5aba6a"}/>
                 </div>
                 <div style={{marginBottom:"8px"}}>
-                  <Tag c="#705858">Intl: {data.riskAnalysis.admissionTrend.intlSpecificRate}</Tag>
+                  <Tag c="#8a7272">Intl: {data.riskAnalysis.admissionTrend.intlSpecificRate}</Tag>
                   <Tag c={data.riskAnalysis.admissionTrend.direction==="tightening"?"#c0302a":"#5aba6a"}>{(data.riskAnalysis.admissionTrend.direction||"").toUpperCase()}</Tag>
                 </div>
-                <p style={{color:"#9898a8",fontSize:"12px",lineHeight:"1.7",margin:0}}>{data.riskAnalysis.admissionTrend.commentary}</p>
+                <p style={{color:"#b0b0bc",fontSize:"12px",lineHeight:"1.7",margin:0}}>{data.riskAnalysis.admissionTrend.commentary}</p>
               </DCard>
               <DCard>
                 <CLabel>YOUR NUMBERS VS PROGRAM MEDIAN<InfoTip text="Compares your GPA and SAT to the middle 50% of admitted students."/></CLabel>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"12px"}}>
-                  <div style={{background:"rgba(255,255,255,0.03)",borderRadius:"10px",padding:"12px"}}>
-                    <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>GPA</div>
+                  <div style={{background:"rgba(255,255,255,0.06)",borderRadius:"10px",padding:"12px"}}>
+                    <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>GPA</div>
                     <div style={{color:"#f0f0f0",fontSize:"20px",fontWeight:"800"}}>{data.riskAnalysis.gapAnalysis.studentGPA}</div>
-                    <div style={{color:"#9898a8",fontSize:"11px"}}>Median: {data.riskAnalysis.gapAnalysis.median50thGPA}</div>
+                    <div style={{color:"#b0b0bc",fontSize:"11px"}}>Median: {data.riskAnalysis.gapAnalysis.median50thGPA}</div>
                     <div style={{color:(data.riskAnalysis.gapAnalysis.medianGapPoints||"").includes("-")?"#c0302a":"#5aba6a",fontSize:"13px",fontWeight:"700",marginTop:"4px"}}>{data.riskAnalysis.gapAnalysis.medianGapPoints}</div>
                   </div>
-                  <div style={{background:"rgba(255,255,255,0.03)",borderRadius:"10px",padding:"12px"}}>
-                    <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>SAT RANGE</div>
-                    <div style={{color:"#9898a8",fontSize:"11px",marginBottom:"4px"}}>25th-75th: {data.riskAnalysis.gapAnalysis.sat25th}-{data.riskAnalysis.gapAnalysis.sat75th}</div>
+                  <div style={{background:"rgba(255,255,255,0.06)",borderRadius:"10px",padding:"12px"}}>
+                    <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>SAT RANGE</div>
+                    <div style={{color:"#b0b0bc",fontSize:"11px",marginBottom:"4px"}}>25th-75th: {data.riskAnalysis.gapAnalysis.sat25th}-{data.riskAnalysis.gapAnalysis.sat75th}</div>
                     <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"600"}}>{data.riskAnalysis.gapAnalysis.studentSATStatus}</div>
                     <div style={{color:cfg.color,fontSize:"12px",marginTop:"4px"}}>{data.riskAnalysis.gapAnalysis.satGapPoints}</div>
                   </div>
                 </div>
-                <p style={{color:"#9898a8",fontSize:"12px",lineHeight:"1.7",margin:0}}>{data.riskAnalysis.gapAnalysis.commentary}</p>
+                <p style={{color:"#b0b0bc",fontSize:"12px",lineHeight:"1.7",margin:0}}>{data.riskAnalysis.gapAnalysis.commentary}</p>
               </DCard>
               <DCard>
                 <CLabel>ADMISSIONS VOLATILITY<InfoTip text="How unpredictable this school's acceptance rate is year-to-year."/></CLabel>
@@ -1176,11 +1176,11 @@ function AnalysisPage({school, category, profile, onBack}) {
                   </div>
                   <div style={{flex:1}}>
                     <div style={{marginBottom:"8px"}}>
-                      <Tag c="#705858">Avg swing: {data.riskAnalysis.volatilityScore.yearOverYearSwing}</Tag>
+                      <Tag c="#8a7272">Avg swing: {data.riskAnalysis.volatilityScore.yearOverYearSwing}</Tag>
                       <Tag c="#c9a84c">Worst: {data.riskAnalysis.volatilityScore.mostVolatileYear}</Tag>
                     </div>
-                    <p style={{color:"#9898a8",fontSize:"12px",margin:"4px 0"}}><strong style={{color:"#d0d0d8"}}>Cause: </strong>{data.riskAnalysis.volatilityScore.causeOfVolatility}</p>
-                    <p style={{color:"#9898a8",fontSize:"12px",margin:0}}>{data.riskAnalysis.volatilityScore.implication}</p>
+                    <p style={{color:"#b0b0bc",fontSize:"12px",margin:"4px 0"}}><strong style={{color:"#d0d0d8"}}>Cause: </strong>{data.riskAnalysis.volatilityScore.causeOfVolatility}</p>
+                    <p style={{color:"#b0b0bc",fontSize:"12px",margin:0}}>{data.riskAnalysis.volatilityScore.implication}</p>
                   </div>
                 </div>
               </DCard>
@@ -1192,7 +1192,7 @@ function AnalysisPage({school, category, profile, onBack}) {
                       <div style={{color:"#5aba6a",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"3px"}}>DOMESTIC ADVANTAGE</div>
                       <div style={{color:"#d0d0d8",fontSize:"12px"}}>As a US domestic student you apply at domestic admission rates and are eligible for FAFSA, federal loans, merit aid, and need-based grants.</div>
                     </div>
-                    <p style={{color:"#9898a8",fontSize:"12px",margin:0}}><strong style={{color:"#d0d0d8"}}>Financial Aid: </strong>{data.riskAnalysis.internationalPenalty.financialAidRisk}</p>
+                    <p style={{color:"#b0b0bc",fontSize:"12px",margin:0}}><strong style={{color:"#d0d0d8"}}>Financial Aid: </strong>{data.riskAnalysis.internationalPenalty.financialAidRisk}</p>
                   </>
                 ) : (
                   <>
@@ -1206,7 +1206,7 @@ function AnalysisPage({school, category, profile, onBack}) {
                       <div style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"3px"}}>INTERNATIONAL NOTE</div>
                       <div style={{color:"#d0d0d8",fontSize:"12px"}}>{data.riskAnalysis.internationalPenalty.canadianSpecific}</div>
                     </div>
-                    <p style={{color:"#9898a8",fontSize:"12px",margin:0}}><strong style={{color:"#d0d0d8"}}>Financial Aid: </strong>{data.riskAnalysis.internationalPenalty.financialAidRisk}</p>
+                    <p style={{color:"#b0b0bc",fontSize:"12px",margin:0}}><strong style={{color:"#d0d0d8"}}>Financial Aid: </strong>{data.riskAnalysis.internationalPenalty.financialAidRisk}</p>
                   </>
                 )}
               </DCard>
@@ -1224,13 +1224,13 @@ function AnalysisPage({school, category, profile, onBack}) {
                 </div>
                 <div style={{background:"#101010",border:"1px solid "+cfg.border,borderRadius:"10px",padding:"12px",marginBottom:"10px"}}>
                   <div style={{color:cfg.color,fontSize:"12px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif",marginBottom:"4px"}}>INVEST {data.riskAnalysis.supplementalWeight.recommendedHours} HOURS</div>
-                  <div style={{color:"#705858",fontSize:"12px"}}>{data.riskAnalysis.supplementalWeight.hoursBreakdown}</div>
+                  <div style={{color:"#8a7272",fontSize:"12px"}}>{data.riskAnalysis.supplementalWeight.hoursBreakdown}</div>
                 </div>
-                <p style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",marginBottom:"8px",letterSpacing:"0.08em"}}>KNOWN PROMPTS</p>
+                <p style={{color:"#b0b0bc",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",marginBottom:"8px",letterSpacing:"0.08em"}}>KNOWN PROMPTS</p>
                 {(data.riskAnalysis.supplementalWeight.specificPrompts||[]).map((p,i)=>(
                   <div key={i} style={{display:"flex",gap:"8px",marginBottom:"6px"}}>
                     <span style={{color:cfg.color,flexShrink:0}}>&#9658;</span>
-                    <span style={{color:"#705858",fontSize:"12px"}}>{p}</span>
+                    <span style={{color:"#8a7272",fontSize:"12px"}}>{p}</span>
                   </div>
                 ))}
                 <div style={{background:"rgba(139,26,26,0.12)",border:"1px solid rgba(255,107,107,0.28)",borderRadius:"8px",padding:"10px 12px",marginTop:"10px"}}>
@@ -1239,7 +1239,7 @@ function AnalysisPage({school, category, profile, onBack}) {
                 {forumBusy && (
                   <div style={{marginTop:"16px",background:"rgba(139,26,26,0.08)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:"10px",padding:"16px",textAlign:"center"}}>
                     <div style={{width:"28px",height:"28px",border:"2px solid rgba(107,159,228,0.10)",borderTop:"2px solid #c0302a",borderRadius:"50%",animation:"nbspin 0.8s linear infinite",margin:"0 auto 8px"}}/>
-                    <div style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>Searching Reddit, College Confidential, and student forums...</div>
+                    <div style={{color:"#b0b0bc",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>Searching Reddit, College Confidential, and student forums...</div>
                   </div>
                 )}
                 {forumData && !forumData.error && (
@@ -1250,7 +1250,7 @@ function AnalysisPage({school, category, profile, onBack}) {
                       <div style={{flex:1,height:"1px",background:"rgba(201,168,76,0.10)"}}/>
                     </div>
                     {(forumData.forumQuestions||[]).map((q,i)=>(
-                      <div key={i} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(139,156,244,0.18)",borderRadius:"10px",padding:"13px 15px",marginBottom:"8px"}}>
+                      <div key={i} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(139,156,244,0.18)",borderRadius:"10px",padding:"13px 15px",marginBottom:"8px"}}>
                         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"8px",marginBottom:"6px"}}>
                           <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700",lineHeight:"1.4"}}>"{q.question}"</div>
                           <span style={{background:"rgba(139,26,26,0.10)",border:"1px solid rgba(139,156,244,0.25)",color:"#c9a84c",borderRadius:"5px",padding:"2px 7px",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",whiteSpace:"nowrap",flexShrink:0}}>{q.frequency}</span>
@@ -1259,7 +1259,7 @@ function AnalysisPage({school, category, profile, onBack}) {
                           <span style={{color:"#c9a84c",fontSize:"11px",flexShrink:0,marginTop:"1px"}}>&#8594;</span>
                           <span style={{color:"#d0d0d8",fontSize:"12px",lineHeight:"1.5"}}>{q.insight}</span>
                         </div>
-                        <div style={{color:"#705858",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginTop:"6px"}}>{q.source}</div>
+                        <div style={{color:"#8a7272",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginTop:"6px"}}>{q.source}</div>
                       </div>
                     ))}
                     {forumData.topTip && (
@@ -1271,7 +1271,7 @@ function AnalysisPage({school, category, profile, onBack}) {
                   </div>
                 )}
                 {forumData && forumData.error && (
-                  <div style={{marginTop:"12px",color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",textAlign:"center",padding:"10px"}}>Could not load forum data. Try again later.</div>
+                  <div style={{marginTop:"12px",color:"#b0b0bc",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",textAlign:"center",padding:"10px"}}>Could not load forum data. Try again later.</div>
                 )}
               </DCard>
             </div>
@@ -1280,28 +1280,28 @@ function AnalysisPage({school, category, profile, onBack}) {
           {tab==="weakness" && data.weaknessIdentification && (
             <div>
               <h2 style={{fontFamily:"'Anton',sans-serif",fontSize:"28px",fontWeight:"400",letterSpacing:"0.05em",color:"#f0f0f0",margin:"0 0 4px"}}>Weakness Identification</h2>
-              <p style={{color:"#9898a8",fontSize:"13px",margin:"0 0 16px"}}>Gaps vs {school.name} standards</p>
+              <p style={{color:"#b0b0bc",fontSize:"13px",margin:"0 0 16px"}}>Gaps vs {school.name} standards</p>
               <div style={{display:"inline-flex",alignItems:"center",gap:"12px",background:rCol(data.weaknessIdentification.overallRisk)+"15",border:"1px solid "+rCol(data.weaknessIdentification.overallRisk)+"40",borderRadius:"12px",padding:"12px 20px",marginBottom:"20px"}}>
                 <div style={{width:"12px",height:"12px",borderRadius:"50%",background:rCol(data.weaknessIdentification.overallRisk),flexShrink:0}}/>
                 <div>
                   <div style={{color:rCol(data.weaknessIdentification.overallRisk),fontWeight:"700",fontFamily:"'Montserrat',sans-serif",fontSize:"13px"}}>OVERALL RISK: {(data.weaknessIdentification.overallRisk||"").toUpperCase()}</div>
-                  <div style={{color:"#9898a8",fontSize:"11px"}}>{(school.targetProgram||{}).name||profile.intendedMajor} at {school.name}</div>
+                  <div style={{color:"#b0b0bc",fontSize:"11px"}}>{(school.targetProgram||{}).name||profile.intendedMajor} at {school.name}</div>
                 </div>
               </div>
               {[{d:data.weaknessIdentification.primaryWeakness,lbl:"PRIMARY WEAKNESS"},{d:data.weaknessIdentification.secondaryWeakness,lbl:"SECONDARY WEAKNESS"}].map((w,i)=>{
-                const sc={High:"#c0302a",Medium:"#e8c96a",Low:"#5aba6a"}[(w.d||{}).severity]||"#705858";
+                const sc={High:"#c0302a",Medium:"#e8c96a",Low:"#5aba6a"}[(w.d||{}).severity]||"#8a7272";
                 return (
                   <DCard key={i}>
                     <CLabel>{w.lbl}</CLabel>
                     <div style={{display:"flex",gap:"12px",alignItems:"flex-start"}}>
                       <div style={{background:sc+"18",border:"1px solid "+sc+"40",borderRadius:"8px",padding:"10px 12px",textAlign:"center",minWidth:"72px",flexShrink:0}}>
                         <div style={{color:sc,fontSize:"11px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700"}}>{(w.d||{}).severity}</div>
-                        <div style={{color:"#9898a8",fontSize:"9px",marginTop:"2px"}}>SEVERITY</div>
+                        <div style={{color:"#b0b0bc",fontSize:"9px",marginTop:"2px"}}>SEVERITY</div>
                       </div>
                       <div style={{flex:1}}>
                         <div style={{color:"#f0f0f0",fontSize:"14px",fontWeight:"600",marginBottom:"4px"}}>{(w.d||{}).factor}</div>
                         <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700",marginBottom:"4px",fontFamily:"'Montserrat',sans-serif"}}>{(w.d||{}).specificData}</div>
-                        <p style={{color:"#9898a8",fontSize:"12px",lineHeight:"1.7",margin:0}}>{(w.d||{}).impact}</p>
+                        <p style={{color:"#b0b0bc",fontSize:"12px",lineHeight:"1.7",margin:0}}>{(w.d||{}).impact}</p>
                       </div>
                     </div>
                   </DCard>
@@ -1310,7 +1310,7 @@ function AnalysisPage({school, category, profile, onBack}) {
               <DCard>
                 <CLabel color="#c9a84c">HIDDEN RISK</CLabel>
                 <div style={{color:"#f0f0f0",fontSize:"14px",fontWeight:"600",marginBottom:"4px"}}>{(data.weaknessIdentification.hiddenRisk||{}).factor}</div>
-                <p style={{color:"#9898a8",fontSize:"12px",lineHeight:"1.7",margin:0}}>{(data.weaknessIdentification.hiddenRisk||{}).explanation}</p>
+                <p style={{color:"#b0b0bc",fontSize:"12px",lineHeight:"1.7",margin:0}}>{(data.weaknessIdentification.hiddenRisk||{}).explanation}</p>
               </DCard>
               <DCard>
                 <CLabel color="#5aba6a">YOUR COMPETITIVE STRENGTHS</CLabel>
@@ -1327,15 +1327,15 @@ function AnalysisPage({school, category, profile, onBack}) {
           {tab==="optimize" && data.optimizationAdvice && (
             <div>
               <h2 style={{fontFamily:"'Anton',sans-serif",fontSize:"28px",fontWeight:"400",letterSpacing:"0.05em",color:"#f0f0f0",margin:"0 0 4px"}}>Optimization Advice</h2>
-              <p style={{color:"#9898a8",fontSize:"13px",margin:"0 0 16px"}}>Tailored for <strong style={{color:yearBadgeCol}}>{hsYearInfo.label}</strong> - {hsYearInfo.tag}</p>
+              <p style={{color:"#b0b0bc",fontSize:"13px",margin:"0 0 16px"}}>Tailored for <strong style={{color:yearBadgeCol}}>{hsYearInfo.label}</strong> - {hsYearInfo.tag}</p>
               <div style={{background:"rgba(139,26,26,0.12)",border:"1px solid rgba(231,215,102,0.30)",borderRadius:"14px",padding:"20px",marginBottom:"16px"}}>
                 <CLabel color="#e8c96a">HIGHEST ROI ACTION<InfoTip text="The single change with the biggest positive impact on your chances."/></CLabel>
                 <div style={{color:"#f0f0f0",fontSize:"16px",fontWeight:"700",fontFamily:"'DM Serif Display',serif",marginBottom:"10px"}}>{(data.optimizationAdvice.highestROIAction||{}).action}</div>
                 <div style={{marginBottom:"10px"}}>
                   <Tag c="#e8c96a">Impact: {(data.optimizationAdvice.highestROIAction||{}).expectedImpact}</Tag>
-                  <Tag c="#705858">Time: {(data.optimizationAdvice.highestROIAction||{}).timeRequired}</Tag>
+                  <Tag c="#8a7272">Time: {(data.optimizationAdvice.highestROIAction||{}).timeRequired}</Tag>
                 </div>
-                <p style={{color:"#9898a8",fontSize:"12px",lineHeight:"1.7",margin:0}}>{(data.optimizationAdvice.highestROIAction||{}).howTo}</p>
+                <p style={{color:"#b0b0bc",fontSize:"12px",lineHeight:"1.7",margin:0}}>{(data.optimizationAdvice.highestROIAction||{}).howTo}</p>
               </div>
               <DCard>
                 <CLabel>SAT STRATEGY<InfoTip text="SAT (0–1600) and ACT (1–36) standardized tests used by US universities."/></CLabel>
@@ -1346,32 +1346,32 @@ function AnalysisPage({school, category, profile, onBack}) {
                   </div>
                 )}
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"10px",marginBottom:"12px"}}>
-                  <SBox label="Current" value={(data.optimizationAdvice.satStrategy||{}).currentScore} color="#705858"/>
-                  <SBox label="Target" value={(data.optimizationAdvice.satStrategy||{}).targetScore} color={isSenior?"#9898a8":cfg.color}/>
-                  <SBox label="Gap" value={isSenior?"N/A":(data.optimizationAdvice.satStrategy||{}).pointsNeeded} color={isSenior?"#9898a8":"#c0302a"}/>
+                  <SBox label="Current" value={(data.optimizationAdvice.satStrategy||{}).currentScore} color="#8a7272"/>
+                  <SBox label="Target" value={(data.optimizationAdvice.satStrategy||{}).targetScore} color={isSenior?"#b0b0bc":cfg.color}/>
+                  <SBox label="Gap" value={isSenior?"N/A":(data.optimizationAdvice.satStrategy||{}).pointsNeeded} color={isSenior?"#b0b0bc":"#c0302a"}/>
                 </div>
                 {!isSenior && ((data.optimizationAdvice.satStrategy||{}).resources||[]).map((r,i)=>(
                   <div key={i} style={{display:"flex",gap:"8px",marginBottom:"5px"}}>
                     <span style={{color:cfg.color,flexShrink:0}}>&#8594;</span>
-                    <span style={{color:"#9898a8",fontSize:"12px"}}>{r}</span>
+                    <span style={{color:"#b0b0bc",fontSize:"12px"}}>{r}</span>
                   </div>
                 ))}
-                <div style={{background:"rgba(255,255,255,0.03)",borderRadius:"8px",padding:"10px 12px",marginTop:"10px"}}>
+                <div style={{background:"rgba(255,255,255,0.06)",borderRadius:"8px",padding:"10px 12px",marginTop:"10px"}}>
                   <span style={{color:"#f0f0f0",fontSize:"12px",fontWeight:"600"}}>Test-Optional: </span>
-                  <span style={{color:"#705858",fontSize:"12px"}}>{(data.optimizationAdvice.satStrategy||{}).testOptionalAdvice}</span>
+                  <span style={{color:"#8a7272",fontSize:"12px"}}>{(data.optimizationAdvice.satStrategy||{}).testOptionalAdvice}</span>
                 </div>
               </DCard>
               <DCard>
                 <CLabel>ESSAY STRATEGY<InfoTip text="The 'Why Us' essay explains why you specifically want this school. The main Common App essay is your personal story."/></CLabel>
                 {((data.optimizationAdvice.essayStrategy||{}).topicSuggestions||[]).map((t,i)=>(
-                  <div key={i} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(155,127,212,0.12)",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px"}}>
+                  <div key={i} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(155,127,212,0.12)",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px"}}>
                     <span style={{color:cfg.color,fontFamily:"'Montserrat',sans-serif",fontSize:"12px",marginRight:"8px"}}>#{i+1}</span>
                     <span style={{color:"#d0d0d8",fontSize:"13px"}}>{t}</span>
                   </div>
                 ))}
                 <div style={{display:"flex",flexWrap:"wrap",gap:"4px",margin:"8px 0"}}>
-                  <Tag c="#705858">Why Us: ~{((data.optimizationAdvice.essayStrategy||{}).wordsBySection||{}).whyUs}w</Tag>
-                  <Tag c="#705858">Main Essay: ~{((data.optimizationAdvice.essayStrategy||{}).wordsBySection||{}).mainEssay}w</Tag>
+                  <Tag c="#8a7272">Why Us: ~{((data.optimizationAdvice.essayStrategy||{}).wordsBySection||{}).whyUs}w</Tag>
+                  <Tag c="#8a7272">Main Essay: ~{((data.optimizationAdvice.essayStrategy||{}).wordsBySection||{}).mainEssay}w</Tag>
                 </div>
                 <div style={{background:"rgba(139,26,26,0.08)",border:"1px solid rgba(139,156,244,0.22)",borderRadius:"8px",padding:"10px 12px"}}>
                   <div style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"3px"}}>TIP</div>
@@ -1381,7 +1381,7 @@ function AnalysisPage({school, category, profile, onBack}) {
               <DCard>
                 <CLabel>EXTRACURRICULAR GAP<InfoTip text="US admissions looks heavily at activities outside class."/></CLabel>
                 <div style={{color:"#f0f0f0",fontSize:"14px",fontWeight:"600",marginBottom:"4px"}}>Missing: {(data.optimizationAdvice.ecGapFill||{}).missingElement}</div>
-                <p style={{color:"#705858",fontSize:"13px",marginBottom:"10px"}}><strong style={{color:"#f0f0f0"}}>Action: </strong>{(data.optimizationAdvice.ecGapFill||{}).specificSuggestion}</p>
+                <p style={{color:"#8a7272",fontSize:"13px",marginBottom:"10px"}}><strong style={{color:"#f0f0f0"}}>Action: </strong>{(data.optimizationAdvice.ecGapFill||{}).specificSuggestion}</p>
                 <Tag c={isSenior?"#c9a84c":"#5aba6a"}>Start {(data.optimizationAdvice.ecGapFill||{}).leadTime} before application</Tag>
               </DCard>
             </div>
@@ -1390,7 +1390,7 @@ function AnalysisPage({school, category, profile, onBack}) {
           {tab==="timeline" && data.timelinePlanning && (
             <div>
               <h2 style={{fontFamily:"'Anton',sans-serif",fontSize:"28px",fontWeight:"400",letterSpacing:"0.05em",color:"#f0f0f0",margin:"0 0 4px"}}>Timeline Planning</h2>
-              <p style={{color:"#9898a8",fontSize:"13px",margin:"0 0 4px"}}>Roadmap for {school.name}</p>
+              <p style={{color:"#b0b0bc",fontSize:"13px",margin:"0 0 4px"}}>Roadmap for {school.name}</p>
               <div style={{background:yearBadgeCol+"12",border:"1px solid "+yearBadgeCol+"35",borderRadius:"10px",padding:"12px 16px",marginBottom:"16px",display:"flex",gap:"12px",alignItems:"flex-start"}}>
                 <div style={{width:"8px",height:"8px",borderRadius:"50%",background:yearBadgeCol,flexShrink:0,marginTop:"4px"}}/>
                 <div>
@@ -1421,7 +1421,7 @@ function AnalysisPage({school, category, profile, onBack}) {
                 <div style={{color:cfg.color,fontSize:"38px",fontFamily:"'DM Serif Display',serif",fontStyle:"italic",flexShrink:0}}>{data.timelinePlanning.totalHoursEstimate}</div>
                 <div>
                   <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"600"}}>Total hours for this application</div>
-                  <div style={{color:"#9898a8",fontSize:"11px",marginTop:"2px"}}>Research, essays, forms, test prep</div>
+                  <div style={{color:"#b0b0bc",fontSize:"11px",marginTop:"2px"}}>Research, essays, forms, test prep</div>
                 </div>
               </div>
               <DCard>
@@ -1433,11 +1433,11 @@ function AnalysisPage({school, category, profile, onBack}) {
                       <div style={{position:"absolute",left:"-5px",top:"5px",width:"9px",height:"9px",borderRadius:"50%",background:pCol(m.priority),boxShadow:"0 0 8px "+pCol(m.priority)+"60"}}/>
                       <div style={{display:"flex",justifyContent:"space-between",gap:"8px",flexWrap:"wrap"}}>
                         <div>
-                          <div style={{color:"#705858",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"2px"}}>{m.date}</div>
+                          <div style={{color:"#8a7272",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"2px"}}>{m.date}</div>
                           <div style={{color:"#d0d0d8",fontSize:"13px",fontWeight:"500"}}>{m.task}</div>
                         </div>
                         <div style={{display:"flex",gap:"5px",flexShrink:0}}>
-                          <Tag c="#9898a8">{m.hoursRequired}h</Tag>
+                          <Tag c="#b0b0bc">{m.hoursRequired}h</Tag>
                           <Tag c={pCol(m.priority)}>{m.priority}</Tag>
                         </div>
                       </div>
@@ -1455,15 +1455,15 @@ function AnalysisPage({school, category, profile, onBack}) {
           {tab==="postgrad" && isPostGrad && data.postGradAnalysis && (()=>{
             const pg  = data.postGradAnalysis;
             const col = pgPath ? pgPath.color : "#f15177";
-            const strengthCol = {Strong:"#5aba6a",Moderate:"#e8c96a",Weak:"#c0302a"}[pg.feederStrength]||"#705858";
+            const strengthCol = {Strong:"#5aba6a",Moderate:"#e8c96a",Weak:"#c0302a"}[pg.feederStrength]||"#8a7272";
             return (
               <div>
                 <h2 style={{fontFamily:"'Anton',sans-serif",fontSize:"28px",fontWeight:"400",letterSpacing:"0.05em",color:"#f0f0f0",margin:"0 0 4px"}}>{pgPath?pgPath.label:"Post-Graduate"} Pathway</h2>
-                <p style={{color:"#9898a8",fontSize:"13px",margin:"0 0 16px"}}>How <strong style={{color:"#c9a84c"}}>{school.name}</strong> positions you for <strong style={{color:pgPath?pgPath.color:"#c9a84c"}}>{pgPath?pgPath.abbr:"grad school"}</strong></p>
+                <p style={{color:"#b0b0bc",fontSize:"13px",margin:"0 0 16px"}}>How <strong style={{color:"#c9a84c"}}>{school.name}</strong> positions you for <strong style={{color:pgPath?pgPath.color:"#c9a84c"}}>{pgPath?pgPath.abbr:"grad school"}</strong></p>
                 <div style={{display:"flex",gap:"16px",alignItems:"flex-start",background:"linear-gradient(135deg,"+col+"14,"+col+"06)",border:"1px solid "+col+"40",borderRadius:"14px",padding:"16px 20px",marginBottom:"16px"}}>
                   <div style={{textAlign:"center",flexShrink:0}}>
                     <div style={{color:strengthCol,fontSize:"20px",fontWeight:"900",fontFamily:"'DM Serif Display',serif"}}>{pg.feederStrength||"?"}</div>
-                    <div style={{color:"#9898a8",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",marginTop:"3px"}}>FEEDER STRENGTH</div>
+                    <div style={{color:"#b0b0bc",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",marginTop:"3px"}}>FEEDER STRENGTH</div>
                   </div>
                   <div style={{flex:1,minWidth:"180px"}}>
                     <div style={{color:col,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"4px"}}>{(pg.pathLabel||"POST-GRAD").toUpperCase()} PATHWAY</div>
@@ -1471,14 +1471,14 @@ function AnalysisPage({school, category, profile, onBack}) {
                   </div>
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"10px",marginBottom:"16px"}}>
-                  <DCard><div style={{color:"#9898a8",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",marginBottom:"4px"}}>ADMIT RATE</div><div style={{color:"#f0f0f0",fontSize:"18px",fontWeight:"800",lineHeight:"1.2"}}>{pg.postGradAcceptRate||"N/A"}</div></DCard>
-                  <DCard><div style={{color:"#9898a8",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",marginBottom:"4px"}}>GPA TARGET</div><div style={{color:col,fontSize:"22px",fontWeight:"800"}}>{pg.gpaRequirement||"N/A"}</div></DCard>
-                  <DCard><div style={{color:"#9898a8",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",marginBottom:"4px"}}>{pgPath?pgPath.testLabel:"TEST"} TARGET</div><div style={{color:col,fontSize:"16px",fontWeight:"800",lineHeight:"1.3"}}>{pg.testScoreTarget||"N/A"}</div></DCard>
+                  <DCard><div style={{color:"#b0b0bc",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",marginBottom:"4px"}}>ADMIT RATE</div><div style={{color:"#f0f0f0",fontSize:"18px",fontWeight:"800",lineHeight:"1.2"}}>{pg.postGradAcceptRate||"N/A"}</div></DCard>
+                  <DCard><div style={{color:"#b0b0bc",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",marginBottom:"4px"}}>GPA TARGET</div><div style={{color:col,fontSize:"22px",fontWeight:"800"}}>{pg.gpaRequirement||"N/A"}</div></DCard>
+                  <DCard><div style={{color:"#b0b0bc",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",marginBottom:"4px"}}>{pgPath?pgPath.testLabel:"TEST"} TARGET</div><div style={{color:col,fontSize:"16px",fontWeight:"800",lineHeight:"1.3"}}>{pg.testScoreTarget||"N/A"}</div></DCard>
                 </div>
                 <DCard>
                   <CLabel color={col}>ACTIONS TO STRENGTHEN YOUR {pgPath?pgPath.abbr:"POST-GRAD"} CANDIDACY</CLabel>
                   {(pg.undergradActions||[]).map((a,i)=>(
-                    <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",marginBottom:"10px",padding:"10px 12px",background:"rgba(255,255,255,0.03)",borderRadius:"8px"}}>
+                    <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",marginBottom:"10px",padding:"10px 12px",background:"rgba(255,255,255,0.06)",borderRadius:"8px"}}>
                       <div style={{background:col+"22",border:"1px solid "+col+"44",color:col,borderRadius:"50%",width:"22px",height:"22px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"11px",fontWeight:"700",flexShrink:0}}>{i+1}</div>
                       <span style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.5"}}>{a}</span>
                     </div>
@@ -1499,8 +1499,8 @@ function AnalysisPage({school, category, profile, onBack}) {
             return (
               <div>
                 <h2 style={{fontFamily:"'Anton',sans-serif",fontSize:"28px",fontWeight:"400",letterSpacing:"0.05em",color:"#f0f0f0",margin:"0 0 4px"}}>Career &amp; Academic Targets</h2>
-                <p style={{color:"#9898a8",fontSize:"13px",margin:"0 0 20px"}}>Where {school.name} students go — employers who recruit here and grad schools they attend.</p>
-                {ta.targetSummary && (<div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(107,159,228,0.18)",borderRadius:"12px",padding:"14px 18px",marginBottom:"20px"}}><p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{ta.targetSummary}</p></div>)}
+                <p style={{color:"#b0b0bc",fontSize:"13px",margin:"0 0 20px"}}>Where {school.name} students go — employers who recruit here and grad schools they attend.</p>
+                {ta.targetSummary && (<div style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(107,159,228,0.18)",borderRadius:"12px",padding:"14px 18px",marginBottom:"20px"}}><p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.65",margin:0}}>{ta.targetSummary}</p></div>)}
                 {(ta.employerTargets||[]).length > 0 && (
                   <div style={{background:"rgba(139,26,26,0.12)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:"12px",padding:"16px 18px",marginBottom:"16px"}}>
                     <div style={{color:"#c9a84c",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700",letterSpacing:"0.10em",marginBottom:"14px"}}>EMPLOYER TARGETS</div>
@@ -1511,9 +1511,9 @@ function AnalysisPage({school, category, profile, onBack}) {
                             <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap",marginBottom:"3px"}}>
                               <span style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700"}}>{e.name}</span>
                               <span style={{background:"rgba(192,48,42,0.35)",border:"1px solid rgba(201,168,76,0.3)",borderRadius:"10px",padding:"2px 8px",color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>{e.type}</span>
-                              <span style={{background:"rgba(255,255,255,0.04)",borderRadius:"10px",padding:"2px 8px",color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>{e.recruitingType}</span>
+                              <span style={{background:"rgba(255,255,255,0.07)",borderRadius:"10px",padding:"2px 8px",color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>{e.recruitingType}</span>
                             </div>
-                            {e.note && <div style={{color:"#9898a8",fontSize:"12px",lineHeight:"1.5"}}>{e.note}</div>}
+                            {e.note && <div style={{color:"#b0b0bc",fontSize:"12px",lineHeight:"1.5"}}>{e.note}</div>}
                           </div>
                         </div>
                       ))}
@@ -1525,14 +1525,14 @@ function AnalysisPage({school, category, profile, onBack}) {
                     <div style={{color:"#c9a84c",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700",letterSpacing:"0.10em",marginBottom:"14px"}}>GRAD SCHOOL PIPELINE</div>
                     <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
                       {(ta.gradSchoolTargets||[]).map((g,i)=>(
-                        <div key={i} style={{display:"flex",gap:"12px",alignItems:"flex-start",background:"rgba(255,255,255,0.03)",borderRadius:"8px",padding:"10px 12px"}}>
+                        <div key={i} style={{display:"flex",gap:"12px",alignItems:"flex-start",background:"rgba(255,255,255,0.06)",borderRadius:"8px",padding:"10px 12px"}}>
                           <div style={{flex:1}}>
                             <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap",marginBottom:"3px"}}>
                               <span style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700"}}>{g.name}</span>
                               <span style={{background:"rgba(201,168,76,0.07)",border:"1px solid rgba(96,165,250,0.3)",borderRadius:"10px",padding:"2px 8px",color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>{g.type}</span>
-                              {g.placementRate && <span style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>{g.placementRate}</span>}
+                              {g.placementRate && <span style={{color:"#b0b0bc",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>{g.placementRate}</span>}
                             </div>
-                            {g.note && <div style={{color:"#9898a8",fontSize:"12px",lineHeight:"1.5"}}>{g.note}</div>}
+                            {g.note && <div style={{color:"#b0b0bc",fontSize:"12px",lineHeight:"1.5"}}>{g.note}</div>}
                           </div>
                         </div>
                       ))}
@@ -1544,7 +1544,7 @@ function AnalysisPage({school, category, profile, onBack}) {
           })()}
         </div>
       ) : (
-        <div style={{textAlign:"center",padding:"80px 24px",color:"#9898a8",fontFamily:"'Montserrat',sans-serif"}}>Analysis failed. Please go back and try again.</div>
+        <div style={{textAlign:"center",padding:"80px 24px",color:"#b0b0bc",fontFamily:"'Montserrat',sans-serif"}}>Analysis failed. Please go back and try again.</div>
       )}
       <style dangerouslySetInnerHTML={{__html:"@keyframes nbspin{to{transform:rotate(360deg);}} @keyframes nbpulse{0%,100%{opacity:.5}50%{opacity:1}}"}}/>
     </div>
@@ -1616,7 +1616,7 @@ function ComparePage({schoolA, schoolB, catA, catB, profile, onBack}) {
             <div style={{color:cA,fontSize:"9px",fontFamily:"'Montserrat',sans-serif"}}>{schoolAbbr(schoolA.name)}</div>
             <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"600",fontFamily:"'DM Serif Display',serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{schoolA.name}</div>
           </div>
-          <span style={{color:"#9898a8",fontSize:"18px",flexShrink:0}}>vs</span>
+          <span style={{color:"#b0b0bc",fontSize:"18px",flexShrink:0}}>vs</span>
           <div style={{flex:1,minWidth:0,textAlign:"right"}}>
             <div style={{color:cB,fontSize:"9px",fontFamily:"'Montserrat',sans-serif"}}>{schoolAbbr(schoolB.name)}</div>
             <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"600",fontFamily:"'DM Serif Display',serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{schoolB.name}</div>
@@ -1627,7 +1627,7 @@ function ComparePage({schoolA, schoolB, catA, catB, profile, onBack}) {
       {busy ? (
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",height:"70vh",gap:"20px"}}>
           <div style={{width:"48px",height:"48px",border:"3px solid rgba(107,159,228,0.10)",borderTop:"3px solid #c0302a",borderRadius:"50%",animation:"nbspin 0.8s linear infinite"}}/>
-          <div style={{color:"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"12px"}}>RUNNING COMPARISON ANALYSIS...</div>
+          <div style={{color:"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"12px"}}>RUNNING COMPARISON ANALYSIS...</div>
         </div>
       ) : data ? (
         <div style={{maxWidth:"880px",margin:"0 auto",padding:"28px 20px"}}>
@@ -1644,7 +1644,7 @@ function ComparePage({schoolA, schoolB, catA, catB, profile, onBack}) {
           </div>
           <div style={{display:"flex",gap:"6px",marginBottom:"8px",overflowX:"auto"}}>
             {tabs.map(t=>(
-              <button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"9px 18px",borderRadius:"10px",cursor:"pointer",border:"1px solid "+(tab===t.id?"#f15177":"rgba(201,168,76,0.07)"),background:tab===t.id?"rgba(139,26,26,0.10)":"transparent",color:tab===t.id?"#f15177":"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",whiteSpace:"nowrap",transition:"all 0.18s"}}>
+              <button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"9px 18px",borderRadius:"10px",cursor:"pointer",border:"1px solid "+(tab===t.id?"#f15177":"rgba(201,168,76,0.07)"),background:tab===t.id?"rgba(139,26,26,0.10)":"transparent",color:tab===t.id?"#f15177":"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",whiteSpace:"nowrap",transition:"all 0.18s"}}>
                 {t.label}
               </button>
             ))}
@@ -1658,13 +1658,13 @@ function ComparePage({schoolA, schoolB, catA, catB, profile, onBack}) {
               <CBar label="Median Salary at 6 Months" valA={data.roiComparison.schoolA.medianSalary6mo} valB={data.roiComparison.schoolB.medianSalary6mo} nameA={schoolAbbr(schoolA.name)} nameB={schoolAbbr(schoolB.name)} cA={cA} cB={cB} higher={true}/>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",margin:"16px 0"}}>
                 {[{s:schoolA,d:data.roiComparison.schoolA,c:cA,lbl:schoolAbbr(schoolA.name)},{s:schoolB,d:data.roiComparison.schoolB,c:cB,lbl:schoolAbbr(schoolB.name)}].map(x=>(
-                  <div key={x.lbl} style={{background:"rgba(255,255,255,0.03)",border:"1px solid "+x.c+"30",borderRadius:"12px",padding:"16px"}}>
+                  <div key={x.lbl} style={{background:"rgba(255,255,255,0.06)",border:"1px solid "+x.c+"30",borderRadius:"12px",padding:"16px"}}>
                     <div style={{color:x.c,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"8px"}}>{x.lbl}</div>
                     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px",marginBottom:"8px"}}>
-                      <div style={{textAlign:"center"}}><div style={{color:x.c,fontSize:"20px",fontWeight:"800"}}>{x.d.roiScore}<span style={{fontSize:"11px"}}>/10</span></div><div style={{color:"#9898a8",fontSize:"9px",fontFamily:"'Montserrat',sans-serif"}}>ROI SCORE</div></div>
-                      <div style={{textAlign:"center"}}><div style={{color:"#f0f0f0",fontSize:"14px",fontWeight:"700"}}>{x.d.breakEvenYears}</div><div style={{color:"#9898a8",fontSize:"9px",fontFamily:"'Montserrat',sans-serif"}}>BREAK-EVEN</div></div>
+                      <div style={{textAlign:"center"}}><div style={{color:x.c,fontSize:"20px",fontWeight:"800"}}>{x.d.roiScore}<span style={{fontSize:"11px"}}>/10</span></div><div style={{color:"#b0b0bc",fontSize:"9px",fontFamily:"'Montserrat',sans-serif"}}>ROI SCORE</div></div>
+                      <div style={{textAlign:"center"}}><div style={{color:"#f0f0f0",fontSize:"14px",fontWeight:"700"}}>{x.d.breakEvenYears}</div><div style={{color:"#b0b0bc",fontSize:"9px",fontFamily:"'Montserrat',sans-serif"}}>BREAK-EVEN</div></div>
                     </div>
-                    <p style={{color:"#9898a8",fontSize:"11px",lineHeight:"1.5",margin:0}}>{x.d.roiNote}</p>
+                    <p style={{color:"#b0b0bc",fontSize:"11px",lineHeight:"1.5",margin:0}}>{x.d.roiNote}</p>
                   </div>
                 ))}
               </div>
@@ -1682,15 +1682,15 @@ function ComparePage({schoolA, schoolB, catA, catB, profile, onBack}) {
                   {[{s:schoolA,d:sA,c:cA,lbl:schoolAbbr(schoolA.name)},{s:schoolB,d:sB,c:cB,lbl:schoolAbbr(schoolB.name)}].map(x => {
                     const sc={Strong:"#5aba6a",Moderate:"#e8c96a",Weak:"#c0302a"}[x.d.internStrength]||"#888";
                     return (
-                      <div key={x.lbl} style={{background:"rgba(255,255,255,0.03)",border:"1px solid "+x.c+"30",borderRadius:"12px",padding:"14px"}}>
+                      <div key={x.lbl} style={{background:"rgba(255,255,255,0.06)",border:"1px solid "+x.c+"30",borderRadius:"12px",padding:"14px"}}>
                         <div style={{color:x.c,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700",marginBottom:"10px"}}>{x.lbl}</div>
                         <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"10px"}}>
                           <div style={{background:sc+"18",border:"1px solid "+sc+"40",borderRadius:"6px",padding:"4px 10px"}}><span style={{color:sc,fontSize:"11px",fontWeight:"700"}}>{x.d.internStrength}</span></div>
-                          <span style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>STRENGTH</span>
+                          <span style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>STRENGTH</span>
                         </div>
                         {(x.d.topInternEmployers||[]).length > 0 && (
                           <div style={{marginBottom:"10px"}}>
-                            <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"5px"}}>TOP EMPLOYERS</div>
+                            <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"5px"}}>TOP EMPLOYERS</div>
                             <div style={{display:"flex",flexWrap:"wrap",gap:"5px"}}>{(x.d.topInternEmployers||[]).map((e,j)=><Tag key={j} c={x.c}>{e}</Tag>)}</div>
                           </div>
                         )}
@@ -1722,9 +1722,9 @@ function ComparePage({schoolA, schoolB, catA, catB, profile, onBack}) {
               <CBar label="Outcome Score" valA={data.competitivenessOutcome.schoolA.outcomeScore} valB={data.competitivenessOutcome.schoolB.outcomeScore} nameA={schoolAbbr(schoolA.name)} nameB={schoolAbbr(schoolB.name)} cA={cA} cB={cB} higher={true}/>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",margin:"16px 0"}}>
                 {[{s:schoolA,d:data.competitivenessOutcome.schoolA,c:cA,lbl:schoolAbbr(schoolA.name)},{s:schoolB,d:data.competitivenessOutcome.schoolB,c:cB,lbl:schoolAbbr(schoolB.name)}].map(x=>(
-                  <div key={x.lbl} style={{background:"rgba(255,255,255,0.03)",border:"1px solid "+x.c+"30",borderRadius:"12px",padding:"16px"}}>
+                  <div key={x.lbl} style={{background:"rgba(255,255,255,0.06)",border:"1px solid "+x.c+"30",borderRadius:"12px",padding:"16px"}}>
                     <div style={{color:x.c,fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginBottom:"8px"}}>{x.lbl}</div>
-                    <RRow label="Difficulty" value={x.d.admitDifficulty} vc={{VeryHigh:"#c0302a","Very High":"#c0302a",High:"#c9a84c",Moderate:"#e8c96a",Low:"#5aba6a"}[x.d.admitDifficulty]||"#705858"}/>
+                    <RRow label="Difficulty" value={x.d.admitDifficulty} vc={{VeryHigh:"#c0302a","Very High":"#c0302a",High:"#c9a84c",Moderate:"#e8c96a",Low:"#5aba6a"}[x.d.admitDifficulty]||"#8a7272"}/>
                     <RRow label="Your admit prob" value={x.d.expectedAdmitProb} vc={x.c}/>
                     <RRow label="Ranking in major" value={x.d.rankingInMajor}/>
                     <RRow label="Alumni network" value={x.d.alumniNetwork}/>
@@ -1748,13 +1748,13 @@ function ComparePage({schoolA, schoolB, catA, catB, profile, onBack}) {
               <p style={{color:"#d0d0d8",fontSize:"13px",lineHeight:"1.7",marginBottom:"10px"}}>{data.overallVerdict.summary}</p>
               <div style={{background:"rgba(255,159,67,0.10)",border:"1px solid rgba(255,159,67,0.22)",borderRadius:"8px",padding:"10px 12px"}}>
                 <span style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>CAVEAT: </span>
-                <span style={{color:"#9898a8",fontSize:"12px"}}>{data.overallVerdict.caveat}</span>
+                <span style={{color:"#b0b0bc",fontSize:"12px"}}>{data.overallVerdict.caveat}</span>
               </div>
             </div>
           )}
         </div>
       ) : (
-        <div style={{textAlign:"center",padding:"80px 24px",color:"#9898a8",fontFamily:"'Montserrat',sans-serif"}}>Comparison failed. Please go back and try again.</div>
+        <div style={{textAlign:"center",padding:"80px 24px",color:"#b0b0bc",fontFamily:"'Montserrat',sans-serif"}}>Comparison failed. Please go back and try again.</div>
       )}
       <style dangerouslySetInnerHTML={{__html:"@keyframes nbspin{to{transform:rotate(360deg);}} @keyframes nbpulse{0%,100%{opacity:.5}50%{opacity:1}}"}}/>
     </div>
@@ -1780,20 +1780,20 @@ function SchoolCard({school, category, profile, onAnalyze, compareNames, onToggl
           {school.targetProgram && (
             <div style={{marginBottom:"4px"}}>
               <span style={{color:"#c9a84c",fontSize:"12px",fontFamily:"'Montserrat',sans-serif",fontWeight:"600"}}>{school.targetProgram.name}</span>
-              <span style={{color:"#9898a8",fontSize:"12px",fontFamily:"'Montserrat',sans-serif"}}>- {school.targetProgram.admRate} admit</span>
+              <span style={{color:"#b0b0bc",fontSize:"12px",fontFamily:"'Montserrat',sans-serif"}}>- {school.targetProgram.admRate} admit</span>
             </div>
           )}
           <div style={{display:"flex",gap:"12px",flexWrap:"wrap",marginLeft:"24px"}}>
-            <span style={{color:"#705858",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>{school.location}</span>
-            <span style={{color:"#705858",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>Overall: {school.acceptRate}</span>
-            <span style={{color:"#705858",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>Intl: {school.intlFriendly}</span>
+            <span style={{color:"#8a7272",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>{school.location}</span>
+            <span style={{color:"#8a7272",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>Overall: {school.acceptRate}</span>
+            <span style={{color:"#8a7272",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>Intl: {school.intlFriendly}</span>
           </div>
         </div>
         <div style={{display:"flex",gap:"5px",alignItems:"center",flexShrink:0,flexWrap:"wrap",justifyContent:"flex-end"}}>
-          <button onClick={()=>onToggleCompare(school,category)} style={{background:inCompare?"rgba(192,48,42,0.35)":"rgba(255,255,255,0.04)",border:"1px solid "+(inCompare?"rgba(201,168,76,0.55)":"rgba(139,26,26,0.12)"),color:inCompare?"#f15177":"#9898a8",borderRadius:"7px",padding:"5px 9px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"'Montserrat',sans-serif",whiteSpace:"nowrap"}}>
+          <button onClick={()=>onToggleCompare(school,category)} style={{background:inCompare?"rgba(192,48,42,0.35)":"rgba(255,255,255,0.07)",border:"1px solid "+(inCompare?"rgba(201,168,76,0.55)":"rgba(139,26,26,0.12)"),color:inCompare?"#f15177":"#b0b0bc",borderRadius:"7px",padding:"5px 9px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"'Montserrat',sans-serif",whiteSpace:"nowrap"}}>
             {inCompare ? "COMPARING" : "+ COMPARE"}
           </button>
-          <button onClick={()=>onAnalyze(school,category)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(107,159,228,0.22)",color:"#705858",borderRadius:"7px",padding:"5px 9px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"'Montserrat',sans-serif",whiteSpace:"nowrap"}}>
+          <button onClick={()=>onAnalyze(school,category)} style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(107,159,228,0.22)",color:"#8a7272",borderRadius:"7px",padding:"5px 9px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"'Montserrat',sans-serif",whiteSpace:"nowrap"}}>
             ANALYZE
           </button>
           <a href={getLink(school.name, school.applyUrl)} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()} style={{background:cfg.color,color:"#080808",borderRadius:"7px",padding:"5px 12px",fontSize:"11px",fontWeight:"700",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",whiteSpace:"nowrap"}}>
@@ -1812,24 +1812,24 @@ function SchoolCard({school, category, profile, onAnalyze, compareNames, onToggl
               <div style={{display:"flex",gap:"16px",alignItems:"center",flexWrap:"wrap"}}>
                 <div>
                   <div style={{color:"#f0f0f0",fontSize:"14px",fontWeight:"700"}}>{school.targetProgram.name}</div>
-                  <div style={{color:"#9898a8",fontSize:"11px",marginTop:"2px"}}>{school.targetProgram.degree||""}</div>
+                  <div style={{color:"#b0b0bc",fontSize:"11px",marginTop:"2px"}}>{school.targetProgram.degree||""}</div>
                 </div>
                 <div style={{textAlign:"center"}}>
                   <div style={{color:"#c0302a",fontSize:"20px",fontWeight:"800"}}>{school.targetProgram.admRate}</div>
-                  <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>PROGRAM ADMIT RATE</div>
+                  <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif"}}>PROGRAM ADMIT RATE</div>
                 </div>
-                {school.targetProgram.notes && <div style={{color:"#9898a8",fontSize:"12px",flex:1,lineHeight:"1.5"}}>{school.targetProgram.notes}</div>}
+                {school.targetProgram.notes && <div style={{color:"#b0b0bc",fontSize:"12px",flex:1,lineHeight:"1.5"}}>{school.targetProgram.notes}</div>}
               </div>
             </div>
           )}
-          <div style={{padding:"10px 14px",background:"rgba(255,255,255,0.03)",borderRadius:"8px",marginBottom:"10px"}}>
-            <span style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>{school.tuition} | {school.conversion}</span>
+          <div style={{padding:"10px 14px",background:"rgba(255,255,255,0.06)",borderRadius:"8px",marginBottom:"10px"}}>
+            <span style={{color:"#b0b0bc",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>{school.tuition} | {school.conversion}</span>
           </div>
           <div style={{display:"flex",gap:"8px"}}>
-            <button onClick={()=>onToggleCompare(school,category)} style={{flex:1,background:inCompare?"rgba(139,26,26,0.12)":"rgba(255,255,255,0.03)",border:"1px solid "+(inCompare?"rgba(241,81,119,0.4)":cfg.border),color:inCompare?"#f15177":cfg.color,borderRadius:"10px",padding:"10px",fontSize:"12px",fontWeight:"700",cursor:"pointer",fontFamily:"'Montserrat',sans-serif"}}>
+            <button onClick={()=>onToggleCompare(school,category)} style={{flex:1,background:inCompare?"rgba(139,26,26,0.12)":"rgba(255,255,255,0.06)",border:"1px solid "+(inCompare?"rgba(241,81,119,0.4)":cfg.border),color:inCompare?"#f15177":cfg.color,borderRadius:"10px",padding:"10px",fontSize:"12px",fontWeight:"700",cursor:"pointer",fontFamily:"'Montserrat',sans-serif"}}>
               {inCompare ? "In Compare" : "+ Add to Compare"}
             </button>
-            <button onClick={()=>onAnalyze(school,category)} style={{flex:1,background:"rgba(255,255,255,0.03)",border:"1px solid "+cfg.border,color:cfg.color,borderRadius:"10px",padding:"10px",fontSize:"12px",fontWeight:"700",cursor:"pointer",fontFamily:"'Montserrat',sans-serif"}}>
+            <button onClick={()=>onAnalyze(school,category)} style={{flex:1,background:"rgba(255,255,255,0.06)",border:"1px solid "+cfg.border,color:cfg.color,borderRadius:"10px",padding:"10px",fontSize:"12px",fontWeight:"700",cursor:"pointer",fontFamily:"'Montserrat',sans-serif"}}>
               Deep Analysis
             </button>
           </div>
@@ -1857,7 +1857,7 @@ const globalStyles = `
   .school-card-anim:nth-child(4) { animation-delay: 0.26s; }
   * { box-sizing:border-box; overflow-wrap:break-word; word-break:break-word; }
   p { margin:0 0 8px; max-width:100%; }
-  select, input, textarea { color:#f0f0f0 !important; background:#0a0a0a; }
+  select, input, textarea { color:#f0f0f0 !important; background:#0d0d0d; }
   select option { background:#141414; color:#f0f0f0; }
   input::placeholder, textarea::placeholder { color:#444444 !important; }
   input:focus, textarea:focus, select:focus { border-color:rgba(192,48,42,0.80) !important; outline:none; }
@@ -2132,7 +2132,7 @@ function App() {
           <img src={LOGO_URI} alt="FYPU" style={{height:"36px",width:"auto",mixBlendMode:"screen",opacity:0.9}}/>
           <span style={{color:"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",letterSpacing:"0.18em"}}>FYPU</span>
         </div>
-        <button onClick={()=>setHowItWorksOpen(true)} style={{background:"none",border:"none",color:"#9898a8",cursor:"pointer",fontSize:"11px",fontWeight:"600",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.10em",padding:"6px 0"}}>HOW IT WORKS</button>
+        <button onClick={()=>setHowItWorksOpen(true)} style={{background:"none",border:"none",color:"#b0b0bc",cursor:"pointer",fontSize:"11px",fontWeight:"600",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.10em",padding:"6px 0"}}>HOW IT WORKS</button>
       </div>
 
       {howItWorksOpen && (
@@ -2143,17 +2143,17 @@ function App() {
             <div style={{color:"#f0f0f0",fontFamily:"'DM Serif Display',serif",fontSize:"26px",fontWeight:"700",marginBottom:"24px"}}>How It Works</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",marginBottom:"24px"}}>
               {[{step:"01",title:"Tell Us About You",desc:"Answer a few quick questions about your grades, major, and background. Takes under 60 seconds.",icon:"📋"},{step:"02",title:"Get Your List",desc:"Get 12 personalized schools across reach, target, and safety tiers instantly.",icon:"🎓"},{step:"03",title:"Deep Dive",desc:"Click Analyze for risk analysis and timeline. Use Compare for side-by-side breakdowns.",icon:"🔍"}].map(s=>(
-                <div key={s.step} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(201,168,76,0.12)",borderRadius:"14px",padding:"18px",textAlign:"center"}}>
+                <div key={s.step} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(201,168,76,0.12)",borderRadius:"14px",padding:"18px",textAlign:"center"}}>
                   <div style={{fontSize:"24px",marginBottom:"8px"}}>{s.icon}</div>
                   <div style={{color:"#c9a84c",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.15em",marginBottom:"6px"}}>STEP {s.step}</div>
                   <div style={{color:"#f0f0f0",fontSize:"13px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>{s.title}</div>
-                  <div style={{color:"#9898a8",fontSize:"11px",lineHeight:"1.6"}}>{s.desc}</div>
+                  <div style={{color:"#b0b0bc",fontSize:"11px",lineHeight:"1.6"}}>{s.desc}</div>
                 </div>
               ))}
             </div>
             <div style={{background:"rgba(139,26,26,0.08)",border:"1px solid rgba(201,168,76,0.15)",borderRadius:"12px",padding:"16px 18px"}}>
               <div style={{color:"#c9a84c",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",fontWeight:"700",letterSpacing:"0.12em",marginBottom:"8px"}}>ABOUT THE DATA</div>
-              <div style={{color:"#9898a8",fontSize:"12px",lineHeight:"1.7"}}>FYPU draws on data from <strong style={{color:"#d0d0d8"}}>Common Data Sets</strong>, <strong style={{color:"#d0d0d8"}}>university admissions pages</strong>, <strong style={{color:"#d0d0d8"}}>College Board</strong>, and <strong style={{color:"#d0d0d8"}}>IPEDS</strong>. Think of it as your first conversation with a college advisor — confirm specifics directly with universities.</div>
+              <div style={{color:"#b0b0bc",fontSize:"12px",lineHeight:"1.7"}}>FYPU draws on data from <strong style={{color:"#d0d0d8"}}>Common Data Sets</strong>, <strong style={{color:"#d0d0d8"}}>university admissions pages</strong>, <strong style={{color:"#d0d0d8"}}>College Board</strong>, and <strong style={{color:"#d0d0d8"}}>IPEDS</strong>. Think of it as your first conversation with a college advisor — confirm specifics directly with universities.</div>
             </div>
           </div>
         </div>
@@ -2173,7 +2173,7 @@ function App() {
         {/* Demo pill */}
         <button onClick={()=>setDemoOpen(true)} style={{background:"linear-gradient(135deg,#0d0d0d,#111)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:"100px",padding:"8px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:"8px",boxShadow:"0 4px 20px rgba(0,0,0,0.5)",transition:"border-color 0.2s"}} onMouseEnter={e=>e.currentTarget.style.borderColor="rgba(201,168,76,0.5)"} onMouseLeave={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"}>
           <div style={{width:"20px",height:"20px",borderRadius:"50%",background:"linear-gradient(135deg,#c0302a,#c9a84c)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><span style={{color:"#fff",fontSize:"9px",marginLeft:"1px"}}>▶</span></div>
-          <span style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.05em",whiteSpace:"nowrap"}}>Watch demo</span>
+          <span style={{color:"#b0b0bc",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.05em",whiteSpace:"nowrap"}}>Watch demo</span>
         </button>
 
         {/* Music player */}
@@ -2185,10 +2185,10 @@ function App() {
                   <div style={{width:"28px",height:"28px",borderRadius:"8px",background:"linear-gradient(135deg,#c9a84c,#e8c96a)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"13px",flexShrink:0}}>🎵</div>
                   <div>
                     <div style={{color:"#c9a84c",fontSize:"10px",fontWeight:"700",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.12em"}}>FYPU PLAYLIST</div>
-                    <div style={{color:"#9898a8",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",fontStyle:"italic"}}>for the big decisions</div>
+                    <div style={{color:"#b0b0bc",fontSize:"9px",fontFamily:"'Montserrat',sans-serif",fontStyle:"italic"}}>for the big decisions</div>
                   </div>
                 </div>
-                <button onClick={()=>setMusicOpen(false)} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",color:"#9898a8",width:"22px",height:"22px",borderRadius:"50%",cursor:"pointer",fontSize:"11px",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>x</button>
+                <button onClick={()=>setMusicOpen(false)} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",color:"#b0b0bc",width:"22px",height:"22px",borderRadius:"50%",cursor:"pointer",fontSize:"11px",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>x</button>
               </div>
               <iframe src="https://open.spotify.com/embed/playlist/3cLzuKClIdVVUl44kNARF5?utm_source=generator&theme=0" width="300" height="460" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style={{display:"block"}}/>
             </div>
@@ -2197,7 +2197,7 @@ function App() {
               <div style={{width:"34px",height:"34px",borderRadius:"10px",background:"linear-gradient(135deg,#c9a84c,#e8c96a)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",flexShrink:0}}>🎵</div>
               <div style={{textAlign:"left"}}>
                 <div style={{color:"#c9a84c",fontSize:"11px",fontWeight:"700",whiteSpace:"nowrap"}}>FYPU Playlist</div>
-                <div style={{color:"#9898a8",fontSize:"10px",whiteSpace:"nowrap",fontStyle:"italic"}}>for the big decisions ✨</div>
+                <div style={{color:"#b0b0bc",fontSize:"10px",whiteSpace:"nowrap",fontStyle:"italic"}}>for the big decisions ✨</div>
               </div>
             </button>
           )}
@@ -2212,7 +2212,7 @@ function App() {
       <div style={{minHeight:"100vh",background:"#080808",backgroundImage:"radial-gradient(ellipse at 8% 5%,rgba(139,26,26,0.08) 0%,transparent 40%),radial-gradient(ellipse at 92% 95%,rgba(201,168,76,0.04) 0%,transparent 60%)",fontFamily:"sans-serif",color:"#d0d0d8"}}>
         {sharedChrome}
         <div style={{background:"rgba(8,8,8,0.95)",borderBottom:"1px solid rgba(255,255,255,0.06)",padding:"8px 24px",display:"flex",alignItems:"center",justifyContent:"flex-end",gap:"8px"}}>
-          <button onClick={()=>{setPage("form");setFormStep(3);}} style={{background:"none",border:"1px solid rgba(255,255,255,0.12)",color:"#9898a8",borderRadius:"8px",padding:"6px 14px",cursor:"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.06em"}}>← Edit</button>
+          <button onClick={()=>{setPage("form");setFormStep(3);}} style={{background:"none",border:"1px solid rgba(255,255,255,0.12)",color:"#b0b0bc",borderRadius:"8px",padding:"6px 14px",cursor:"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.06em"}}>← Edit</button>
           <button onClick={()=>{setResults(null);setCompareList([]);setCompareTarget(null);setAnalysisTarget(null);generate();}} disabled={loading} style={{background:loading?"rgba(139,26,26,0.20)":"rgba(192,48,42,0.85)",border:"1px solid rgba(201,168,76,0.30)",color:loading?"#888":"#f0f0f0",borderRadius:"8px",padding:"6px 16px",cursor:loading?"not-allowed":"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",fontWeight:"600",letterSpacing:"0.06em"}}>
             {loading ? "Regenerating..." : "↻ Regenerate"}
           </button>
@@ -2226,15 +2226,15 @@ function App() {
                 <div key={i} style={{display:"flex",alignItems:"center",gap:"6px",background:"rgba(139,26,26,0.10)",border:"1px solid rgba(241,81,119,0.28)",borderRadius:"8px",padding:"5px 10px"}}>
                   <span style={{color:CAT[item.category].color,fontSize:"11px"}}>{CAT[item.category].icon}</span>
                   <span style={{color:"#f0f0f0",fontSize:"12px",fontFamily:"'Montserrat',sans-serif"}}>{item.school.name.split(" ").slice(0,3).join(" ")}</span>
-                  <button onClick={()=>toggleCompare(item.school,item.category)} style={{background:"none",border:"none",color:"#9898a8",cursor:"pointer",fontSize:"14px",padding:"0 2px",lineHeight:1}}>x</button>
+                  <button onClick={()=>toggleCompare(item.school,item.category)} style={{background:"none",border:"none",color:"#b0b0bc",cursor:"pointer",fontSize:"14px",padding:"0 2px",lineHeight:1}}>x</button>
                 </div>
               ))}
-              {compareList.length===1 && <div style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",alignSelf:"center"}}>Select one more school</div>}
+              {compareList.length===1 && <div style={{color:"#b0b0bc",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",alignSelf:"center"}}>Select one more school</div>}
             </div>
             {compareList.length===2 && (
               <button onClick={()=>setCompareTarget(compareList)} style={{background:"linear-gradient(135deg,#8b1a1a,#c0302a)",color:"#f0f0f0",border:"1px solid rgba(201,168,76,0.30)",borderRadius:"8px",padding:"8px 18px",fontSize:"12px",fontWeight:"700",cursor:"pointer",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.08em",flexShrink:0}}>COMPARE NOW</button>
             )}
-            <button onClick={()=>setCompareList([])} style={{background:"none",border:"none",color:"#9898a8",cursor:"pointer",fontSize:"18px",flexShrink:0}}>x</button>
+            <button onClick={()=>setCompareList([])} style={{background:"none",border:"none",color:"#b0b0bc",cursor:"pointer",fontSize:"18px",flexShrink:0}}>x</button>
           </div>
         )}
 
@@ -2243,46 +2243,46 @@ function App() {
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:"12px",marginBottom:"10px"}}>
               <p style={{color:"#c9a84c",fontSize:"11px",letterSpacing:"0.12em",fontFamily:"'Montserrat',sans-serif",margin:0}}>PROFILE ASSESSMENT</p>
               <div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
-                <span style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"6px",padding:"3px 9px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",color:"#705858"}}>{province}</span>
-                <span style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"6px",padding:"3px 9px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",color:"#705858"}}>{cumAvg}</span>
-                {satScore && <span style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"6px",padding:"3px 9px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",color:"#705858"}}>SAT {satScore}</span>}
-                <span style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"6px",padding:"3px 9px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",color:"#705858"}}>{(HS_YEARS.find(y=>y.value===hsYear)||{}).label||hsYear}</span>
+                <span style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"6px",padding:"3px 9px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",color:"#8a7272"}}>{province}</span>
+                <span style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"6px",padding:"3px 9px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",color:"#8a7272"}}>{cumAvg}</span>
+                {satScore && <span style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"6px",padding:"3px 9px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",color:"#8a7272"}}>SAT {satScore}</span>}
+                <span style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"6px",padding:"3px 9px",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",color:"#8a7272"}}>{(HS_YEARS.find(y=>y.value===hsYear)||{}).label||hsYear}</span>
               </div>
             </div>
             <p style={{color:"#f0f0f0",fontSize:"13px",marginBottom:"5px"}}><strong style={{color:"#f0f0f0"}}>GPA Equivalent:</strong> {results.gpaEquivalent}</p>
-            <p style={{color:"#705858",fontSize:"13px",lineHeight:"1.6",margin:0}}>{results.profileSummary}</p>
+            <p style={{color:"#8a7272",fontSize:"13px",lineHeight:"1.6",margin:0}}>{results.profileSummary}</p>
           </div>
 
           <div style={{background:"rgba(139,26,26,0.08)",border:"1px dashed rgba(107,159,228,0.32)",borderRadius:"10px",padding:"9px 16px",marginBottom:"16px",display:"flex",alignItems:"center",gap:"10px"}}>
             <span style={{color:"#c9a84c",fontSize:"13px",flexShrink:0}}>&#8644;</span>
-            <span style={{color:"#9898a8",fontSize:"12px",fontFamily:"'Montserrat',sans-serif"}}>Click <strong style={{color:"#c9a84c"}}>+ COMPARE</strong> on any two schools for side-by-side ROI, salary and internship analysis</span>
+            <span style={{color:"#b0b0bc",fontSize:"12px",fontFamily:"'Montserrat',sans-serif"}}>Click <strong style={{color:"#c9a84c"}}>+ COMPARE</strong> on any two schools for side-by-side ROI, salary and internship analysis</span>
           </div>
 
           <div style={{display:"flex",gap:"8px",marginBottom:"12px"}}>
             {["reach","target","safety"].map(t=>{
               const c = CAT[t];
               return (
-                <button key={t} onClick={()=>setActiveTab(t)} style={{flex:1,padding:"11px 8px",border:"1px solid "+(activeTab===t?c.color:"rgba(201,168,76,0.07)"),borderRadius:"12px",background:activeTab===t?c.bg:"transparent",color:activeTab===t?c.color:"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",cursor:"pointer",transition:"all 0.2s"}}>
+                <button key={t} onClick={()=>setActiveTab(t)} style={{flex:1,padding:"11px 8px",border:"1px solid "+(activeTab===t?c.color:"rgba(201,168,76,0.07)"),borderRadius:"12px",background:activeTab===t?c.bg:"transparent",color:activeTab===t?c.color:"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",cursor:"pointer",transition:"all 0.2s"}}>
                   {c.icon} {c.label}
                   <span style={{display:"block",fontSize:"10px",fontWeight:"400",marginTop:"2px",opacity:0.7}}>4 schools</span>
                 </button>
               );
             })}
           </div>
-          <div style={{color:"#9898a8",fontSize:"12px",fontStyle:"italic",marginBottom:"14px"}}>{CAT[activeTab].desc}</div>
+          <div style={{color:"#b0b0bc",fontSize:"12px",fontStyle:"italic",marginBottom:"14px"}}>{CAT[activeTab].desc}</div>
 
           {(results[activeTab]||[]).length === 0 ? (
             results._loading ? (
               [1,2,3,4].map(i=>(
-                <div key={i} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(155,127,212,0.12)",borderRadius:"14px",padding:"18px 20px",marginBottom:"10px",animation:"nbpulse 1.4s ease-in-out infinite"}}>
+                <div key={i} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(155,127,212,0.12)",borderRadius:"14px",padding:"18px 20px",marginBottom:"10px",animation:"nbpulse 1.4s ease-in-out infinite"}}>
                   <div style={{display:"flex",gap:"10px",alignItems:"center"}}>
                     <div style={{width:"60px",height:"10px",background:"rgba(139,26,26,0.10)",borderRadius:"4px"}}/>
-                    <div style={{flex:1,height:"16px",background:"rgba(255,255,255,0.04)",borderRadius:"4px"}}/>
-                    <div style={{width:"80px",height:"10px",background:"rgba(255,255,255,0.04)",borderRadius:"4px"}}/>
+                    <div style={{flex:1,height:"16px",background:"rgba(255,255,255,0.07)",borderRadius:"4px"}}/>
+                    <div style={{width:"80px",height:"10px",background:"rgba(255,255,255,0.07)",borderRadius:"4px"}}/>
                   </div>
                   <div style={{marginTop:"12px",display:"flex",gap:"8px"}}>
-                    <div style={{width:"90px",height:"9px",background:"rgba(255,255,255,0.04)",borderRadius:"4px"}}/>
-                    <div style={{width:"120px",height:"9px",background:"rgba(255,255,255,0.04)",borderRadius:"4px"}}/>
+                    <div style={{width:"90px",height:"9px",background:"rgba(255,255,255,0.07)",borderRadius:"4px"}}/>
+                    <div style={{width:"120px",height:"9px",background:"rgba(255,255,255,0.07)",borderRadius:"4px"}}/>
                   </div>
                 </div>
               ))
@@ -2298,7 +2298,7 @@ function App() {
               compareNames={compareList.map(x=>x.school.name)}
               onToggleCompare={toggleCompare}/>
           ))}
-          <div style={{marginTop:"20px",padding:"12px 16px",background:"rgba(255,255,255,0.03)",borderRadius:"10px",color:"#9898a8",fontSize:"11px",lineHeight:"1.6",fontFamily:"'Montserrat',sans-serif"}}>
+          <div style={{marginTop:"20px",padding:"12px 16px",background:"rgba(255,255,255,0.06)",borderRadius:"10px",color:"#b0b0bc",fontSize:"11px",lineHeight:"1.6",fontFamily:"'Montserrat',sans-serif"}}>
             FYPU gives you a personalized starting point based on your profile. Acceptance rates and program details are research-based estimates — confirm specifics directly with universities before applying.
           </div>
         </div>
@@ -2312,8 +2312,8 @@ function App() {
       <div style={{minHeight:"100vh",background:"#080808",backgroundImage:"radial-gradient(ellipse at 8% 5%,rgba(139,26,26,0.08) 0%,transparent 40%),radial-gradient(ellipse at 92% 95%,rgba(201,168,76,0.04) 0%,transparent 60%)",fontFamily:"sans-serif",color:"#d0d0d8"}}>
         {sharedChrome}
         <div style={{maxWidth:"600px",margin:"0 auto",padding:"0 20px",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:"calc(100vh - 56px)",textAlign:"center",paddingBottom:"120px"}}>
-          <div style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.22em",marginBottom:"24px"}}>AI-POWERED UNIVERSITY ADVISOR</div>
-          <h1 style={{fontFamily:"'Bodoni Moda',serif",fontSize:"clamp(36px,5.5vw,64px)",fontWeight:"900",lineHeight:"1.08",letterSpacing:"-0.01em",color:"#f0f0f0",marginBottom:"8px"}}>Find Your Perfect</h1>
+          <div style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.22em",marginBottom:"24px"}}>AI-POWERED UNIVERSITY ADVISOR</div>
+          <h1 style={{fontFamily:"'Bodoni Moda',serif",fontSize:"clamp(28px,4vw,52px)",fontWeight:"900",lineHeight:"1.08",letterSpacing:"-0.01em",color:"#f0f0f0",marginBottom:"8px",whiteSpace:"nowrap"}}>Find Your Perfect</h1>
           <div style={{fontFamily:"'Great Vibes',cursive",fontSize:"clamp(48px,8vw,88px)",fontWeight:"400",background:"linear-gradient(135deg,#c0302a 0%,#c9a84c 30%,#f0e090 50%,#c9a84c 70%,#c0302a 100%)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",lineHeight:"1.3",paddingTop:"10px",marginBottom:"36px",animation:"heroShimmer 4s linear infinite"}}>University</div>
 
           <p style={{color:"#d0d0d8",fontSize:"clamp(15px,2.2vw,18px)",maxWidth:"540px",lineHeight:"1.75",marginBottom:"10px",fontFamily:"'DM Serif Display',serif",fontStyle:"italic",fontWeight:"400"}}>
@@ -2327,13 +2327,13 @@ function App() {
             <button onClick={()=>{ const isLocal = window.location.hostname==="localhost" || window.location.protocol==="file:"; window.location.href = isLocal ? "./dreamlist.html" : "/dreamlist"; }} style={{width:"100%",padding:"18px 24px",borderRadius:"16px",cursor:"pointer",border:"1px solid rgba(201,168,76,0.45)",background:"rgba(201,168,76,0.07)",color:"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"13px",fontWeight:"700",letterSpacing:"0.08em",textAlign:"center",transition:"all 0.2s",lineHeight:"1.4"}} onMouseEnter={e=>{e.currentTarget.style.background="rgba(201,168,76,0.13)";e.currentTarget.style.borderColor="rgba(201,168,76,0.75)";}} onMouseLeave={e=>{e.currentTarget.style.background="rgba(201,168,76,0.07)";e.currentTarget.style.borderColor="rgba(201,168,76,0.45)";}}>
               <div style={{fontSize:"22px",marginBottom:"6px"}}>🎯</div>
               I have my schools — tell me where I stand
-              <div style={{color:"#705858",fontSize:"10px",fontWeight:"400",marginTop:"4px",letterSpacing:"0.04em"}}>See your real odds at every school on your list</div>
+              <div style={{color:"#8a7272",fontSize:"10px",fontWeight:"400",marginTop:"4px",letterSpacing:"0.04em"}}>See your real odds at every school on your list</div>
             </button>
 
             <button onClick={()=>setPage("form")} style={{width:"100%",padding:"18px 24px",borderRadius:"16px",cursor:"pointer",border:"1px solid rgba(192,48,42,0.5)",background:"rgba(139,26,26,0.12)",color:"#f0f0f0",fontFamily:"'Montserrat',sans-serif",fontSize:"13px",fontWeight:"700",letterSpacing:"0.08em",textAlign:"center",transition:"all 0.2s",lineHeight:"1.4"}} onMouseEnter={e=>{e.currentTarget.style.background="rgba(139,26,26,0.22)";e.currentTarget.style.borderColor="rgba(192,48,42,0.8)";}} onMouseLeave={e=>{e.currentTarget.style.background="rgba(139,26,26,0.12)";e.currentTarget.style.borderColor="rgba(192,48,42,0.5)";}}>
               <div style={{fontSize:"22px",marginBottom:"6px"}}>✨</div>
               I don't know where to start — help me
-              <div style={{color:"#705858",fontSize:"10px",fontWeight:"400",marginTop:"4px",letterSpacing:"0.04em"}}>Build your personalized list from scratch</div>
+              <div style={{color:"#8a7272",fontSize:"10px",fontWeight:"400",marginTop:"4px",letterSpacing:"0.04em"}}>Build your personalized list from scratch</div>
             </button>
           </div>
         </div>
@@ -2352,8 +2352,8 @@ function App() {
         {/* Progress bar */}
         <div style={{marginBottom:"36px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
-            <span style={{color:"#9898a8",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.14em"}}>{STEPS[formStep].hint}</span>
-            <button onClick={()=>setPage("landing")} style={{background:"none",border:"none",color:"#705858",cursor:"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>← Back</button>
+            <span style={{color:"#b0b0bc",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.14em"}}>{STEPS[formStep].hint}</span>
+            <button onClick={()=>setPage("landing")} style={{background:"none",border:"none",color:"#8a7272",cursor:"pointer",fontSize:"11px",fontFamily:"'Montserrat',sans-serif"}}>← Back</button>
           </div>
           <div style={{height:"2px",background:"rgba(255,255,255,0.06)",borderRadius:"2px",overflow:"hidden"}}>
             <div style={{height:"100%",width:((formStep+1)/4*100)+"%",background:"linear-gradient(90deg,#c0302a,#c9a84c)",borderRadius:"2px",transition:"width 0.4s cubic-bezier(0.22,1,0.36,1)"}}/>
@@ -2369,12 +2369,12 @@ function App() {
         {formStep===0 && (
           <div style={{animation:"fypuFadeUp 0.35s cubic-bezier(0.22,1,0.36,1) both"}}>
             <div style={{marginBottom:"24px"}}>
-              <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>WHERE ARE YOU FROM?</label>
+              <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>WHERE ARE YOU FROM?</label>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"8px"}}>
                 {[{key:"canada",label:"🇨🇦",sub:"Canada"},{key:"us",label:"🇺🇸",sub:"United States"},{key:"other",label:"🌎",sub:"Other Country"}].map(o=>{
                   const sel = studentOrigin===o.key;
                   return (
-                    <button key={o.key} onClick={()=>{setStudentOrigin(o.key);setProvince("");}} style={{padding:"16px 8px",borderRadius:"14px",cursor:"pointer",border:"1px solid "+(sel?"rgba(201,168,76,0.65)":"rgba(255,255,255,0.07)"),background:sel?"rgba(201,168,76,0.12)":"rgba(255,255,255,0.03)",color:sel?"#c9a84c":"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",textAlign:"center",transition:"all 0.18s",lineHeight:"1.5"}}>
+                    <button key={o.key} onClick={()=>{setStudentOrigin(o.key);setProvince("");}} style={{padding:"16px 8px",borderRadius:"14px",cursor:"pointer",border:"1px solid "+(sel?"rgba(201,168,76,0.65)":"rgba(255,255,255,0.07)"),background:sel?"rgba(201,168,76,0.12)":"rgba(255,255,255,0.06)",color:sel?"#c9a84c":"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",textAlign:"center",transition:"all 0.18s",lineHeight:"1.5"}}>
                       <div style={{fontSize:"26px",marginBottom:"6px"}}>{o.label}</div>
                       {o.sub}
                     </button>
@@ -2384,7 +2384,7 @@ function App() {
             </div>
             {studentOrigin && (
               <div style={{animation:"fypuFadeUp 0.3s cubic-bezier(0.22,1,0.36,1) both"}}>
-                <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>{studentOrigin==="us"?"YOUR STATE":studentOrigin==="canada"?"YOUR PROVINCE":"YOUR COUNTRY / REGION"}</label>
+                <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>{studentOrigin==="us"?"YOUR STATE":studentOrigin==="canada"?"YOUR PROVINCE":"YOUR COUNTRY / REGION"}</label>
                 <select value={province} onChange={e=>setProvince(e.target.value)} style={Object.assign({},inp,{cursor:"pointer",appearance:"none"})}>
                   <option value="" disabled>{studentOrigin==="us"?"Select your state":studentOrigin==="canada"?"Select your province":"Select your country"}</option>
                   {studentOrigin==="canada" && PROVINCES.map(p=><option key={p} value={p}>{p}</option>)}
@@ -2400,21 +2400,21 @@ function App() {
         {formStep===1 && (
           <div style={{animation:"fypuFadeUp 0.35s cubic-bezier(0.22,1,0.36,1) both"}}>
             <div style={{marginBottom:"28px"}}>
-              <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>INTENDED MAJOR</label>
+              <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>INTENDED MAJOR</label>
               <MajorSelect value={intendedMajor} onChange={v=>{setIntendedMajor(v);setPgPathKey(null);}}/>
             </div>
             {intendedMajor && (()=>{
               const suggestions = getGradSuggestions(intendedMajor);
               return (
                 <div style={{marginBottom:"28px",animation:"fypuFadeUp 0.3s cubic-bezier(0.22,1,0.36,1) both"}}>
-                  <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>POST-GRAD PLANS <span style={{color:"#705858",fontWeight:"400"}}>(optional)</span></label>
+                  <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>POST-GRAD PLANS <span style={{color:"#8a7272",fontWeight:"400"}}>(optional)</span></label>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
-                    <button onClick={()=>setPgPathKey(null)} style={{padding:"12px",borderRadius:"12px",cursor:"pointer",textAlign:"left",border:"1px solid "+(pgPathKey===null?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.07)"),background:pgPathKey===null?"rgba(255,255,255,0.05)":"rgba(255,255,255,0.02)",color:pgPathKey===null?"#f0f0f0":"#9898a8",transition:"all 0.15s"}}>
+                    <button onClick={()=>setPgPathKey(null)} style={{padding:"12px",borderRadius:"12px",cursor:"pointer",textAlign:"left",border:"1px solid "+(pgPathKey===null?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.07)"),background:pgPathKey===null?"rgba(255,255,255,0.05)":"rgba(255,255,255,0.05)",color:pgPathKey===null?"#f0f0f0":"#b0b0bc",transition:"all 0.15s"}}>
                       <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",marginBottom:"2px"}}>Bachelor's Only</div>
                       <div style={{fontSize:"10px",opacity:0.6}}>Career after undergrad</div>
                     </button>
                     {suggestions.slice(0,3).map(pg=>(
-                      <button key={pg.key} onClick={()=>setPgPathKey(pg.key)} style={{padding:"12px",borderRadius:"12px",cursor:"pointer",textAlign:"left",border:"1px solid "+(pgPathKey===pg.key?pg.color:"rgba(255,255,255,0.07)"),background:pgPathKey===pg.key?pg.color+"12":"rgba(255,255,255,0.02)",color:pgPathKey===pg.key?pg.color:"#9898a8",transition:"all 0.15s"}}>
+                      <button key={pg.key} onClick={()=>setPgPathKey(pg.key)} style={{padding:"12px",borderRadius:"12px",cursor:"pointer",textAlign:"left",border:"1px solid "+(pgPathKey===pg.key?pg.color:"rgba(255,255,255,0.07)"),background:pgPathKey===pg.key?pg.color+"12":"rgba(255,255,255,0.05)",color:pgPathKey===pg.key?pg.color:"#b0b0bc",transition:"all 0.15s"}}>
                         <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700",marginBottom:"2px"}}>{pg.label}</div>
                         <div style={{fontSize:"10px",opacity:0.7}}>{pg.abbr}</div>
                       </button>
@@ -2424,13 +2424,13 @@ function App() {
               );
             })()}
             <div>
-              <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>CURRENT YEAR OF HIGH SCHOOL</label>
+              <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>CURRENT YEAR OF HIGH SCHOOL</label>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
                 {HS_YEARS.map(y=>{
                   const sel = hsYear===y.value;
                   const col = y.value==="grade12"?"#c9a84c":y.value==="grade11"?"#e8c96a":"#5aba6a";
                   return (
-                    <button key={y.value} onClick={()=>setHsYear(y.value)} style={{padding:"14px 16px",borderRadius:"14px",cursor:"pointer",border:"1px solid "+(sel?col+"90":"rgba(255,255,255,0.07)"),background:sel?col+"14":"rgba(255,255,255,0.03)",color:sel?col:"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"700",textAlign:"left",transition:"all 0.18s",lineHeight:"1.4"}}>
+                    <button key={y.value} onClick={()=>setHsYear(y.value)} style={{padding:"14px 16px",borderRadius:"14px",cursor:"pointer",border:"1px solid "+(sel?col+"90":"rgba(255,255,255,0.07)"),background:sel?col+"14":"rgba(255,255,255,0.06)",color:sel?col:"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"700",textAlign:"left",transition:"all 0.18s",lineHeight:"1.4"}}>
                       {y.label}
                       <span style={{display:"block",fontSize:"10px",fontWeight:"400",marginTop:"2px",opacity:0.65}}>{y.tag}</span>
                     </button>
@@ -2451,27 +2451,27 @@ function App() {
         {formStep===2 && (
           <div style={{animation:"fypuFadeUp 0.35s cubic-bezier(0.22,1,0.36,1) both"}}>
             <div style={{marginBottom:"24px"}}>
-              <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>
+              <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>
                 {studentOrigin==="us"?"GPA":"CUMULATIVE AVERAGE"}
-                {province && <span style={{color:"#705858",fontWeight:"400"}}> — {(GRADE_SYSTEMS[province]||{}).scale||""}</span>}
+                {province && <span style={{color:"#8a7272",fontWeight:"400"}}> — {(GRADE_SYSTEMS[province]||{}).scale||""}</span>}
               </label>
               <input value={cumAvg} onChange={e=>setCumAvg(e.target.value)} placeholder={province?((GRADE_SYSTEMS[province]||{}).example||"Enter your average"):"Enter your average"} style={inp} autoFocus/>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"14px",marginBottom:"24px"}}>
               <div>
-                <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>SAT <span style={{color:"#705858",fontWeight:"400"}}>(optional)</span></label>
+                <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>SAT <span style={{color:"#8a7272",fontWeight:"400"}}>(optional)</span></label>
                 <input value={satScore} onChange={e=>setSatScore(e.target.value)} placeholder="e.g. 1480" style={inp}/>
               </div>
               <div>
-                <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>ACT <span style={{color:"#705858",fontWeight:"400"}}>(optional)</span></label>
+                <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>ACT <span style={{color:"#8a7272",fontWeight:"400"}}>(optional)</span></label>
                 <input value={actScore} onChange={e=>setActScore(e.target.value)} placeholder="e.g. 33" style={inp}/>
               </div>
             </div>
             <div style={{marginBottom:"10px"}}>
-              <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>ACADEMIC PROGRAMS <span style={{color:"#705858",fontWeight:"400"}}>(optional)</span></label>
+              <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"10px"}}>ACADEMIC PROGRAMS <span style={{color:"#8a7272",fontWeight:"400"}}>(optional)</span></label>
               <div style={{display:"flex",gap:"10px",marginBottom:"10px"}}>
                 {[{key:"ib",label:"IB Programme",sub:"International Baccalaureate"},{key:"ap",label:"AP Courses",sub:"Advanced Placement"}].map(pg=>(
-                  <button key={pg.key} onClick={()=>setPrograms(p=>Object.assign({},p,{[pg.key]:!p[pg.key]}))} style={{flex:1,padding:"12px",borderRadius:"12px",cursor:"pointer",border:"1px solid "+(programs[pg.key]?"rgba(201,168,76,0.6)":"rgba(255,255,255,0.07)"),background:programs[pg.key]?"rgba(201,168,76,0.10)":"rgba(255,255,255,0.02)",color:programs[pg.key]?"#c9a84c":"#9898a8",textAlign:"left",transition:"all 0.18s"}}>
+                  <button key={pg.key} onClick={()=>setPrograms(p=>Object.assign({},p,{[pg.key]:!p[pg.key]}))} style={{flex:1,padding:"12px",borderRadius:"12px",cursor:"pointer",border:"1px solid "+(programs[pg.key]?"rgba(201,168,76,0.6)":"rgba(255,255,255,0.07)"),background:programs[pg.key]?"rgba(201,168,76,0.10)":"rgba(255,255,255,0.05)",color:programs[pg.key]?"#c9a84c":"#b0b0bc",textAlign:"left",transition:"all 0.18s"}}>
                     <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"700"}}>{pg.label}</div>
                     <div style={{fontSize:"10px",opacity:0.65,marginTop:"2px"}}>{pg.sub}</div>
                   </button>
@@ -2487,19 +2487,19 @@ function App() {
         {formStep===3 && (
           <div style={{animation:"fypuFadeUp 0.35s cubic-bezier(0.22,1,0.36,1) both"}}>
             <div style={{marginBottom:"24px"}}>
-              <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>EXTRACURRICULARS <span style={{color:"#705858",fontWeight:"400"}}>(optional but important)</span></label>
+              <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>EXTRACURRICULARS <span style={{color:"#8a7272",fontWeight:"400"}}>(optional but important)</span></label>
               <textarea value={extras} onChange={e=>setExtras(e.target.value)} placeholder="e.g. Captain of debate team, varsity soccer, robotics club president, volunteer at hospital..." rows={4} style={Object.assign({},inp,{resize:"vertical"})} autoFocus/>
-              <div style={{color:"#705858",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginTop:"6px"}}>The more detail, the better your list. Top schools weight this heavily.</div>
+              <div style={{color:"#8a7272",fontSize:"10px",fontFamily:"'Montserrat',sans-serif",marginTop:"6px"}}>The more detail, the better your list. Top schools weight this heavily.</div>
             </div>
             <div style={{marginBottom:"24px"}}>
-              <label style={{display:"block",color:"#9898a8",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>AWARDS & ACCOMPLISHMENTS <span style={{color:"#705858",fontWeight:"400"}}>(optional)</span></label>
+              <label style={{display:"block",color:"#b0b0bc",fontSize:"10px",letterSpacing:"0.14em",fontFamily:"'Montserrat',sans-serif",marginBottom:"6px"}}>AWARDS & ACCOMPLISHMENTS <span style={{color:"#8a7272",fontWeight:"400"}}>(optional)</span></label>
               <textarea value={awards} onChange={e=>setAwards(e.target.value)} placeholder="e.g. 1st place Canadian Math Kangaroo, Schulich Leader nominee, DECA provincials finalist..." rows={3} style={Object.assign({},inp,{resize:"vertical",borderColor:"rgba(201,168,76,0.3)"})}/>
             </div>
             <div style={{display:"flex",gap:"8px",marginBottom:"4px"}}>
               <button onClick={saveProfile} style={{flex:1,padding:"10px",borderRadius:"10px",cursor:"pointer",border:"1px solid rgba(201,168,76,0.35)",background:profileSaved?"rgba(90,186,106,0.12)":"rgba(201,168,76,0.06)",color:profileSaved?"#5aba6a":"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"10px",fontWeight:"700",letterSpacing:"0.08em",transition:"all 0.2s"}}>
                 {profileSaved ? "✓ SAVED" : "💾 SAVE PROFILE"}
               </button>
-              <button onClick={clearProfile} style={{padding:"10px 14px",borderRadius:"10px",cursor:"pointer",border:"1px solid rgba(255,255,255,0.07)",background:"transparent",color:"#705858",fontFamily:"'Montserrat',sans-serif",fontSize:"10px",fontWeight:"700"}}>CLEAR</button>
+              <button onClick={clearProfile} style={{padding:"10px 14px",borderRadius:"10px",cursor:"pointer",border:"1px solid rgba(255,255,255,0.07)",background:"transparent",color:"#8a7272",fontFamily:"'Montserrat',sans-serif",fontSize:"10px",fontWeight:"700"}}>CLEAR</button>
             </div>
           </div>
         )}
@@ -2510,7 +2510,7 @@ function App() {
         {/* Nav buttons */}
         <div style={{display:"flex",gap:"10px",marginTop:"32px"}}>
           {formStep > 0 && (
-            <button onClick={()=>setFormStep(s=>s-1)} style={{padding:"14px 20px",borderRadius:"12px",cursor:"pointer",border:"1px solid rgba(255,255,255,0.08)",background:"transparent",color:"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"700"}}>← Back</button>
+            <button onClick={()=>setFormStep(s=>s-1)} style={{padding:"14px 20px",borderRadius:"12px",cursor:"pointer",border:"1px solid rgba(255,255,255,0.08)",background:"transparent",color:"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"700"}}>← Back</button>
           )}
           <button onClick={handleNext} disabled={loading || !canAdvance()} style={{flex:1,background:loading?"rgba(201,168,76,0.3)":canAdvance()?"linear-gradient(135deg,#c0302a,#8b1a1a)":"rgba(255,255,255,0.05)",color:canAdvance()&&!loading?"#f0f0f0":"#555",border:"none",borderRadius:"12px",padding:"14px",fontSize:"13px",fontWeight:"700",letterSpacing:"0.08em",cursor:loading||!canAdvance()?"not-allowed":"pointer",fontFamily:"'Montserrat',sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:"8px",transition:"all 0.2s"}}>
             {loading ? (<><span style={{display:"inline-block",animation:"nbspin 1s linear infinite"}}>o</span> Finding your schools...</>) : formStep===3 ? "Generate My List ✨" : "Continue →"}
@@ -2556,7 +2556,7 @@ function Footer() {
     <div style={{borderTop:"1px solid rgba(255,255,255,0.06)",marginTop:"60px",padding:"48px 20px 32px",background:"rgba(0,0,0,0.3)"}}>
       <div style={{maxWidth:"860px",margin:"0 auto"}}>
         <div style={{textAlign:"center",marginBottom:"40px"}}>
-          <div style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.15em",marginBottom:"20px"}}>CONNECT WITH US</div>
+          <div style={{color:"#b0b0bc",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.15em",marginBottom:"20px"}}>CONNECT WITH US</div>
           <div style={{display:"flex",justifyContent:"center",gap:"12px",flexWrap:"wrap"}}>
             {[{label:"Instagram",icon:"📸",url:"https://www.instagram.com/fypuhere"},{label:"TikTok",icon:"🎵",url:"https://www.tiktok.com/@fypuhere"},{label:"Connect with Founder",icon:"✉️",url:"mailto:Hellokayleec@gmail.com"}].map(s=>(
               <a key={s.label} href={s.url} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:"8px",padding:"10px 20px",borderRadius:"12px",border:"1px solid rgba(201,168,76,0.2)",background:"rgba(201,168,76,0.05)",color:"#c9a84c",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"600",textDecoration:"none"}}>
@@ -2565,25 +2565,25 @@ function Footer() {
             ))}
           </div>
         </div>
-        <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"28px",marginBottom:"32px"}}>
-          <div style={{color:"#9898a8",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.15em",marginBottom:"16px"}}>SHARE YOUR FEEDBACK</div>
+        <div style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"16px",padding:"28px",marginBottom:"32px"}}>
+          <div style={{color:"#b0b0bc",fontSize:"11px",fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.15em",marginBottom:"16px"}}>SHARE YOUR FEEDBACK</div>
           {submitted ? (
             <div style={{textAlign:"center",padding:"20px"}}>
               <div style={{fontSize:"28px",marginBottom:"8px"}}>🎓</div>
               <div style={{color:"#5aba6a",fontFamily:"'Montserrat',sans-serif",fontSize:"13px",fontWeight:"700",marginBottom:"4px"}}>Thank you!</div>
-              <div style={{color:"#9898a8",fontSize:"12px"}}>Your feedback helps us improve FYPU for students everywhere.</div>
+              <div style={{color:"#b0b0bc",fontSize:"12px"}}>Your feedback helps us improve FYPU for students everywhere.</div>
             </div>
           ) : (
             <div>
               <div style={{display:"flex",gap:"8px",marginBottom:"14px",flexWrap:"wrap"}}>
                 {[{key:"general",label:"💡 General"},{key:"bug",label:"👋 Connect"},{key:"feature",label:"✨ Feature Request"},{key:"accuracy",label:"🎯 Accuracy"}].map(t=>(
-                  <button key={t.key} onClick={()=>setFeedbackType(t.key)} style={{padding:"6px 14px",borderRadius:"8px",cursor:"pointer",border:"1px solid "+(feedbackType===t.key?"rgba(201,168,76,0.5)":"rgba(255,255,255,0.08)"),background:feedbackType===t.key?"rgba(201,168,76,0.1)":"transparent",color:feedbackType===t.key?"#c9a84c":"#9898a8",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"600"}}>
+                  <button key={t.key} onClick={()=>setFeedbackType(t.key)} style={{padding:"6px 14px",borderRadius:"8px",cursor:"pointer",border:"1px solid "+(feedbackType===t.key?"rgba(201,168,76,0.5)":"rgba(255,255,255,0.08)"),background:feedbackType===t.key?"rgba(201,168,76,0.1)":"transparent",color:feedbackType===t.key?"#c9a84c":"#b0b0bc",fontFamily:"'Montserrat',sans-serif",fontSize:"11px",fontWeight:"600"}}>
                     {t.label}
                   </button>
                 ))}
               </div>
-              <textarea value={feedback} onChange={e=>setFeedback(e.target.value)} placeholder="Tell us what you think, what's missing, or what could be better..." rows={4} style={{width:"100%",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"10px",padding:"12px 14px",color:"#f0f0f0",fontSize:"13px",fontFamily:"'Montserrat',sans-serif",resize:"vertical",outline:"none",boxSizing:"border-box",marginBottom:"10px"}}/>
-              <input value={replyEmail} onChange={e=>setReplyEmail(e.target.value)} placeholder="Your email (optional — only if you want a reply)" type="email" style={{width:"100%",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:"10px",padding:"11px 14px",color:"#f0f0f0",fontSize:"13px",fontFamily:"'Montserrat',sans-serif",outline:"none",boxSizing:"border-box",marginBottom:"12px"}}/>
+              <textarea value={feedback} onChange={e=>setFeedback(e.target.value)} placeholder="Tell us what you think, what's missing, or what could be better..." rows={4} style={{width:"100%",background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"10px",padding:"12px 14px",color:"#f0f0f0",fontSize:"13px",fontFamily:"'Montserrat',sans-serif",resize:"vertical",outline:"none",boxSizing:"border-box",marginBottom:"10px"}}/>
+              <input value={replyEmail} onChange={e=>setReplyEmail(e.target.value)} placeholder="Your email (optional — only if you want a reply)" type="email" style={{width:"100%",background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:"10px",padding:"11px 14px",color:"#f0f0f0",fontSize:"13px",fontFamily:"'Montserrat',sans-serif",outline:"none",boxSizing:"border-box",marginBottom:"12px"}}/>
               <button onClick={submitFeedback} disabled={submitting||!feedback.trim()} style={{padding:"10px 24px",borderRadius:"10px",cursor:feedback.trim()?"pointer":"not-allowed",border:"none",background:feedback.trim()?"linear-gradient(135deg,#c9a84c,#e8c96a)":"rgba(255,255,255,0.05)",color:feedback.trim()?"#080808":"#555",fontFamily:"'Montserrat',sans-serif",fontSize:"12px",fontWeight:"700",letterSpacing:"0.08em"}}>
                 {submitting?"SENDING...":"SEND FEEDBACK"}
               </button>
