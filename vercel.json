@@ -8,6 +8,9 @@
     { "src": "demo_finals.mp4", "use": "@vercel/static" },
     { "src": "api/claude.js", "use": "@vercel/node" }
   ],
+  "functions": {
+    "api/claude.js": { "maxDuration": 60 }
+  },
   "routes": [
     { "src": "/api/claude", "dest": "/api/claude.js" },
     { "src": "/logo.webp", "dest": "/logo.webp" },
