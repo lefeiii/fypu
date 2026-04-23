@@ -287,25 +287,25 @@
         if (filledOffers.length < 2) { setError("Please enter at least 2 offers to compare."); return; }
         setError(""); setLoading(true); setResults(null); setProgress(0);
 
-        const offerSummaries = filledOffers.map((o,i) =>
-          `Offer ${i+1}: ${o.school}, ${o.major}, tuition: ${o.tuition||"unknown"}, aid notes: ${o.notes||"none"}`
-        ).join(". ");
+        const offerSummaries = filledOffers.map(function(o,i) {
+          return "Offer " + (i+1) + ": " + o.school + ", " + o.major + ", tuition: " + (o.tuition||"unknown") + ", aid notes: " + (o.notes||"none");
+        }).join(". ");
+
+        var schemaEntry = '{"school":"school name","program":"program name","location":"City, State","annualCost":"$XX,XXX","totalCost":"$XXX,XXX",' +
+          '"roi":{"salary1yr":"$XX,XXX","salary5yr":"$XX,XXX","breakEven":"X years","employmentRate":"XX%","inFieldRate":"XX%","analysis":"2 sentences on ROI for this major at this school given the tuition"},' +
+          '"jobs":{"topEmployers":[{"name":"Company","type":"Tech|Finance|Consulting|Healthcare|Gov|Other","recruiting":"On-Campus|Target|General"},{"name":"Company2","type":"Finance","recruiting":"Target"},{"name":"Company3","type":"Consulting","recruiting":"General"},{"name":"Company4","type":"Tech","recruiting":"On-Campus"},{"name":"Company5","type":"Other","recruiting":"General"}],"networkStrength":"2 sentences on alumni network and recruiting strength for this major"},' +
+          '"grad":{"topPrograms":[{"name":"Program Name","type":"MBA|Law|Med|PhD|MS","note":"brief note"},{"name":"Program2","type":"MS","note":"note"},{"name":"Program3","type":"PhD","note":"note"}],"analysis":"2 sentences on grad school pipeline strength"},' +
+          '"verdict":{"valueScore":8,"prestigeScore":7,"honest":"1-2 sentence brutally honest take on this offer given the tuition and program","bestFor":"type of student this offer is best for"}}';
+
+        var schemaArr = filledOffers.map(function() { return schemaEntry; }).join(",");
 
         const prompt =
           "You are a brutally honest university career and financial advisor. " +
           "A student has received these college admission offers: " + offerSummaries + ". " +
           (careerGoal ? "Their career goal: " + careerGoal + ". " : "") +
           "For EACH offer, provide detailed analysis. Be specific with real data. Use actual company names, real salary figures, real grad programs. " +
-          "CRITICAL: Return ONLY valid JSON, no markdown, no apostrophes in string values:\n" +
-          '{"offers":[' +
-          filledOffers.map((_,i) => `{` +
-            `"school":"school name","program":"program name","location":"City, State","annualCost":"$XX,XXX","totalCost":"$XXX,XXX",` +
-            `"roi":{"salary1yr":"$XX,XXX","salary5yr":"$XX,XXX","breakEven":"X years","employmentRate":"XX%","inFieldRate":"XX%","analysis":"2 sentences on ROI for this major at this school given the tuition"},` +
-            `"jobs":{"topEmployers":[{"name":"Company","type":"Tech|Finance|Consulting|Healthcare|Gov|Other","recruiting":"On-Campus|Target|General"},{"name":"Company2","type":"Finance","recruiting":"Target"},{"name":"Company3","type":"Consulting","recruiting":"General"},{"name":"Company4","type":"Tech","recruiting":"On-Campus"},{"name":"Company5","type":"Other","recruiting":"General"}],"networkStrength":"2 sentences on alumni network and recruiting strength for this major"},` +
-            `"grad":{"topPrograms":[{"name":"Program Name","type":"MBA|Law|Med|PhD|MS","note":"brief note"},{"name":"Program2","type":"MS","note":"note"},{"name":"Program3","type":"PhD","note":"note"}],"analysis":"2 sentences on grad school pipeline strength"},` +
-            `"verdict":{"valueScore":8,"prestigeScore":7,"honest":"1-2 sentence brutally honest take on this offer given the tuition and program","bestFor":"type of student this offer is best for"}}`
-          ).join(",") +
-          '],"overallVerdict":"3 sentence recommendation comparing all offers, naming which to pick and why, considering tuition, career outcomes, and the student career goal"}';
+          "CRITICAL: Return ONLY valid JSON, no markdown, no apostrophes in string values. " +
+          '{"offers":[' + schemaArr + '],"overallVerdict":"3 sentence recommendation comparing all offers, naming which to pick and why, considering tuition, career outcomes, and the student career goal"}';
 
         let interval = null;
         let succeeded = false;
