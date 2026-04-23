@@ -2335,6 +2335,12 @@ function App() {
               I don't know where to start — help me
               <div style={{color:"#8a7272",fontSize:"10px",fontWeight:"400",marginTop:"4px",letterSpacing:"0.04em"}}>Build your personalized list from scratch</div>
             </button>
+
+            <button onClick={()=>{ const isLocal = window.location.hostname==="localhost" || window.location.protocol==="file:"; window.location.href = isLocal ? "./offers.html" : "/offers"; }} style={{width:"100%",padding:"18px 24px",borderRadius:"16px",cursor:"pointer",border:"1px solid rgba(90,186,106,0.45)",background:"rgba(90,186,106,0.07)",color:"#5aba6a",fontFamily:"'Montserrat',sans-serif",fontSize:"13px",fontWeight:"700",letterSpacing:"0.08em",textAlign:"center",transition:"all 0.2s",lineHeight:"1.4"}} onMouseEnter={e=>{e.currentTarget.style.background="rgba(90,186,106,0.13)";e.currentTarget.style.borderColor="rgba(90,186,106,0.75)";}} onMouseLeave={e=>{e.currentTarget.style.background="rgba(90,186,106,0.07)";e.currentTarget.style.borderColor="rgba(90,186,106,0.45)";}}>
+              <div style={{fontSize:"22px",marginBottom:"6px"}}>🎓</div>
+              I got my offers — help me decide
+              <div style={{color:"#8a7272",fontSize:"10px",fontWeight:"400",marginTop:"4px",letterSpacing:"0.04em"}}>Compare ROI, job prospects & grad paths across your offers</div>
+            </button>
           </div>
         </div>
         <style dangerouslySetInnerHTML={{__html:globalStyles}}/>
