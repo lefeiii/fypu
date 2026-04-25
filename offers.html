@@ -29,7 +29,7 @@ var useState = React.useState;
 var LOGO_URI = "./logo.webp";
 var IS_LOCAL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:";
 var HOME_URL = IS_LOCAL ? "./index.html" : "/";
-var API_URL  = IS_LOCAL ? "https://api.anthropic.com/v1/messages" : "/api/claude";
+var API_URL = IS_LOCAL ? "https://api.anthropic.com/v1/messages" : "/api/claude";
 
 var MAJORS = ["Computer Science","Software Engineering","Data Science","Electrical Engineering","Mechanical Engineering","Civil Engineering","Chemical Engineering","Biomedical Engineering","Biology","Biochemistry","Neuroscience","Pre-Med / Health Sciences","Nursing","Public Health","Psychology","Business Administration","Finance","Accounting","Economics","Marketing","Management","Entrepreneurship","International Business","Political Science","International Relations","Law (Pre-Law)","English Literature","History","Philosophy","Communications","Journalism","Mathematics","Statistics","Physics","Chemistry","Environmental Science","Architecture","Graphic Design","Fine Arts","Music","Education","Social Work","Other"];
 
@@ -332,112 +332,68 @@ function App() {
   var filledOffers = offers.filter(function(o){ return o.school.trim() && o.major; });
 
   function analyze() {
-    if (filledOffers.length < 2) { setError("Please enter at least 2 offers to compare."); return; }
+    if (filledOffers.length < 2) { setError("Please enter at least 2 offers."); return; }
     setError(""); setLoading(true); setResults(null); setProgress(0);
 
-    var offerSummaries = filledOffers.map(function(o,i) {
+    var offerList = filledOffers.map(function(o,i) {
       var gp = GRAD_PATHS.filter(function(g){ return g.key===o.gradPath; })[0];
-      var gpLabel = gp ? gp.label : "Career after undergrad";
-      return "Offer "+(i+1)+": "+o.school+", "+o.major+", tuition: "+(o.tuition||"unknown")+", aid: "+(o.notes||"none")+", post-grad: "+gpLabel;
+      return (i+1)+". "+o.school+", "+o.major+", tuition:"+(o.tuition||"unknown")+(o.notes?", "+o.notes:"")+", post-grad:"+(gp?gp.label:"career");
     }).join("; ");
 
-    // Schema for main analysis (ROI, jobs, grad, postgrad, verdict)
-    var mainSchema = filledOffers.map(function(o) {
+    var offerSchemas = filledOffers.map(function(o) {
       var gp = GRAD_PATHS.filter(function(g){ return g.key===o.gradPath; })[0];
-      var gpLabel = gp ? gp.label : "Career after undergrad";
-      return '{"school":"'+o.school+'","program":"'+o.major+'","location":"City, State/Province, Country","annualCost":"$XX,XXX","totalCost":"$XXX,XXX","gradPath":"'+(o.gradPath||"none")+'","gradPathLabel":"'+gpLabel+'",' +
-        '"roi":{"salary1yr":"$XX,XXX","salary5yr":"$XX,XXX","currency":"USD or CAD","breakEven":"X yrs","employmentRate":"XX%","inFieldRate":"XX%","analysis":"2 sentence ROI analysis"},' +
-        '"jobs":{"topEmployers":[{"name":"Employer","type":"Tech|Finance|Consulting|Other","recruiting":"On-Campus|Target|General"},{"name":"E2","type":"t","recruiting":"r"},{"name":"E3","type":"t","recruiting":"r"},{"name":"E4","type":"t","recruiting":"r"},{"name":"E5","type":"t","recruiting":"r"}],"networkStrength":"2 sentences"},' +
-        '"grad":{"topPrograms":[{"name":"Program","type":"MBA|Law|Med|PhD|MS","note":"note"},{"name":"P2","type":"t","note":"n"},{"name":"P3","type":"t","note":"n"}],"analysis":"2 sentences"},' +
-        '"postgrad":{"salaryEarly":"$XX,XXX","salaryMid":"$XX,XXX","salaryNote":"CAD/USD","careerOverview":"2 sentences","careerOutcomes":[{"role":"title","salary":"$Xk","note":"n"},{"role":"r2","salary":"s","note":"n"},{"role":"r3","salary":"s","note":"n"}],"schoolStrength":"2 sentences","gradAcceptRate":"XX%","gradGPA":"X.X+","gradAdmissionsNote":"2 sentences","feederPrograms":[{"name":"Program","type":"type","note":"n"},{"name":"p2","type":"t","note":"n"},{"name":"p3","type":"t","note":"n"}]},' +
-        '"verdict":{"valueScore":8,"prestigeScore":7,"honest":"2 sentence honest assessment","bestFor":"ideal student type"}}';
+      var gpLabel = gp ? gp.label : "Career";
+      var isGrad = o.gradPath && o.gradPath !== "none";
+      return '{"school":"'+o.school+'","program":"'+o.major+'","location":"","annualCost":"","totalCost":"","gradPath":"'+(o.gradPath||"none")+'","gradPathLabel":"'+gpLabel+'",' +
+        '"roi":{"salary1yr":"","salary5yr":"","currency":"USD/CAD","breakEven":"","employmentRate":"","inFieldRate":"","analysis":""},' +
+        '"jobs":{"topEmployers":[{"name":"","type":"","recruiting":""},{"name":"","type":"","recruiting":""},{"name":"","type":"","recruiting":""}],"networkStrength":""},' +
+        '"grad":{"topPrograms":[{"name":"","type":"","note":""},{"name":"","type":"","note":""}],"analysis":""},' +
+        '"postgrad":{"salaryEarly":"","salaryMid":"","salaryNote":"","careerOverview":"","careerOutcomes":[{"role":"","salary":"","note":""},{"role":"","salary":"","note":""}],"schoolStrength":"","gradAcceptRate":"","gradGPA":"","gradAdmissionsNote":"","feederPrograms":[{"name":"","type":"","note":""},{"name":"","type":"","note":""}]},' +
+        '"campus":{"undergradSize":"","avgClassSize":"","greekLife":"","campusSafetyRating":"","diversityRating":"","forumInsights":[{"quote":"","source":"","topic":""},{"quote":"","source":"","topic":""}],"socialOverview":""},' +
+        '"verdict":{"valueScore":0,"prestigeScore":0,"honest":"","bestFor":""}}';
     }).join(",");
 
-    // Schema for campus life (separate call)
-    var campusSchema = filledOffers.map(function(o) {
-      return '{"school":"'+o.school+'","campus":{"undergradSize":"XX,XXX","avgClassSize":"~XX","greekLife":"Strong|Moderate|Minimal|None","campusSafetyRating":"X/5","diversityRating":"X/5","forumInsights":[{"quote":"student quote","source":"Reddit r/school","topic":"Social|Safety|Greek|Housing"},{"quote":"q2","source":"s2","topic":"t2"},{"quote":"q3","source":"s3","topic":"t3"}],"socialOverview":"3 sentences on campus vibe and social scene"}}';
-    }).join(",");
-
-    var mainPrompt = "Brutally honest university financial advisor with deep knowledge of US and Canadian universities. " +
-      "Use NACE data for US salaries, Statistics Canada for Canadian. Name real employers. " +
-      "Offers: " + offerSummaries + ". " +
-      (careerGoal ? "Career goal: " + careerGoal + ". " : "") +
-      "No apostrophes in strings. Return ONLY JSON: " +
-      '{"offers":[' + mainSchema + '],"overallVerdict":"3 sentence recommendation on which offer to pick and why"}';
-
-    var campusPrompt = "University campus life expert. Use real student review data from Reddit and College Confidential. " +
-      "Offers: " + offerSummaries + ". " +
-      "No apostrophes. Return ONLY JSON: " +
-      '{"campusData":[' + campusSchema + ']}';
-
-    var headers = {"Content-Type":"application/json"};
-    if (IS_LOCAL) headers["anthropic-dangerous-direct-browser-access"] = "true";
-    var body1 = JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3500,messages:[{role:"user",content:mainPrompt}]});
-    var body2 = JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,messages:[{role:"user",content:campusPrompt}]});
+    var prompt = 'University advisor. Offers: '+offerList+'. '+(careerGoal?'Goal: '+careerGoal+'. ':'')+"Fill ALL fields with real data. Use USD for US schools, CAD for Canadian. No apostrophes. JSON only: " + '{"offers":[' + offerSchemas + '],"overallVerdict":""}';
 
     var interval = null;
     var p = 0;
     interval = setInterval(function() {
-      p = Math.min(p + Math.random()*4, 88);
+      p = Math.min(p + Math.random()*5, 88);
       setProgress(Math.round(p));
-    }, 500);
+    }, 600);
 
-    function parseJSON(raw) {
+    var callHeaders = {"Content-Type":"application/json"};
+    if (IS_LOCAL) callHeaders["anthropic-dangerous-direct-browser-access"] = "true";
+
+    fetch(API_URL, {
+      method:"POST", headers:callHeaders,
+      body:JSON.stringify({model:"claude-sonnet-4-20250514", max_tokens:4000, messages:[{role:"user",content:prompt}]})
+    })
+    .then(function(res) {
+      if (!res.ok) throw new Error("Server error "+res.status+". Please try again.");
+      return res.json();
+    })
+    .then(function(json) {
+      clearInterval(interval);
+      if (json.error) throw new Error(json.error.message||"API error");
+      var raw = (json.content||[]).map(function(b){ return b.text||""; }).join("").trim();
       var cleaned = raw.replace(/```json|```/g,"").replace(/[‘’]/g,"'").replace(/[“”]/g,'"').trim();
-      if (cleaned.slice(0,20).match(/^(An error|Error|Sorry|I cannot|I am unable)/i)) {
-        throw new Error("API returned an error. Please try again.");
-      }
+      if (cleaned.slice(0,20).match(/^(An error|Error|Sorry)/i)) throw new Error("API error. Please try again.");
       var first = cleaned.indexOf("{"), last = cleaned.lastIndexOf("}");
       if (first===-1||last===-1) throw new Error("Invalid response. Please try again.");
-      try { return JSON.parse(cleaned.slice(first,last+1)); }
-      catch(e) { throw new Error("Could not parse response. Please try again."); }
-    }
-
-    function callAPI(body) {
-      return fetch(API_URL, {method:"POST",headers:headers,body:body})
-        .then(function(res){
-          if (!res.ok) throw new Error("Server error "+res.status+". Please try again.");
-          return res.json();
-        })
-        .then(function(json) {
-          if (json.error) throw new Error(json.error.message||"API error");
-          var raw = (json.content||[]).map(function(b){ return b.text||""; }).join("").trim();
-          return parseJSON(raw);
-        });
-    }
-
-    // Run both calls, retry main if it fails once
-    function runMain(attempt) {
-      return callAPI(body1).catch(function(e) {
-        if (attempt < 2) {
-          return new Promise(function(resolve){ setTimeout(function(){ resolve(runMain(2)); }, 1000); });
-        }
-        throw e;
-      });
-    }
-
-    Promise.all([runMain(1), callAPI(body2).catch(function(){ return null; })])
-      .then(function(results) {
-        clearInterval(interval);
-        var mainData = results[0];
-        var campusData = results[1];
-        if (!mainData.offers||mainData.offers.length===0) throw new Error("No offer data returned.");
-        // Merge campus data into offers
-        if (campusData && campusData.campusData) {
-          campusData.campusData.forEach(function(cd, i) {
-            if (mainData.offers[i]) mainData.offers[i].campus = cd.campus;
-          });
-        }
-        mainData.offers[0].overallVerdict = mainData.overallVerdict;
-        setProgress(100);
-        setTimeout(function(){ setResults(mainData.offers); setLoading(false); }, 300);
-      })
-      .catch(function(e) {
-        clearInterval(interval);
-        setError("Analysis failed: "+e.message);
-        setLoading(false);
-        setProgress(0);
-      });
+      var parsed;
+      try { parsed = JSON.parse(cleaned.slice(first,last+1)); } catch(e) { throw new Error("Could not parse response. Please try again."); }
+      if (!parsed.offers||parsed.offers.length===0) throw new Error("No data returned. Please try again.");
+      parsed.offers[0].overallVerdict = parsed.overallVerdict;
+      setProgress(100);
+      setTimeout(function(){ setResults(parsed.offers); setLoading(false); }, 300);
+    })
+    .catch(function(e) {
+      clearInterval(interval);
+      setError("Analysis failed: "+e.message);
+      setLoading(false);
+      setProgress(0);
+    });
   }
 
   return (
