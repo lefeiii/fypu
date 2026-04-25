@@ -1,13 +1,5 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "index.html", "use": "@vercel/static" },
-    { "src": "dreamlist.html", "use": "@vercel/static" },
-    { "src": "offers.html", "use": "@vercel/static" },
-    { "src": "logo.webp", "use": "@vercel/static" },
-    { "src": "demo_finals.mp4", "use": "@vercel/static" },
-    { "src": "api/claude.js", "use": "@vercel/node" }
-  ],
   "functions": {
     "api/claude.js": { "maxDuration": 60 }
   },
