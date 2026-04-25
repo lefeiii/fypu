@@ -1,98 +1,52 @@
 /**
- * Vercel Edge Function — Anthropic API Proxy
- * 
- * This file lives at /api/claude.js and acts as a secure server-side
- * proxy so the Anthropic API key is NEVER exposed to the browser.
- * 
- * All requests from the frontend go to /api/claude → this function
- * → Anthropic API → response back to frontend.
+ * Vercel Serverless Function — Anthropic API Proxy
+ * Runtime: Node.js (NOT edge — edge ignores maxDuration and has 25s hard limit)
+ * maxDuration: 60 is set in vercel.json
  */
 
-export const config = {
-  runtime: 'edge',
-}
-
-// Simple in-memory rate limiter (resets per edge instance)
-// For production, use Vercel KV or Upstash Redis for persistent rate limiting
+const RATE_LIMIT_WINDOW_MS = 60_000
+const MAX_REQUESTS_PER_WINDOW = 10
 const rateLimitMap = new Map()
-const RATE_LIMIT_WINDOW_MS = 60_000  // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 10   // 10 AI calls per minute per IP
 
 function isRateLimited(ip) {
   const now = Date.now()
   const entry = rateLimitMap.get(ip)
-  
   if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
     rateLimitMap.set(ip, { count: 1, windowStart: now })
     return false
   }
-  
-  if (entry.count >= MAX_REQUESTS_PER_WINDOW) {
-    return true
-  }
-  
+  if (entry.count >= MAX_REQUESTS_PER_WINDOW) return true
   entry.count++
   return false
 }
 
-export default async function handler(req) {
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response(null, {
-      status: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      }
-    })
-  }
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
-  if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' }
-    })
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end()
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  // Rate limiting by IP
-  const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
+  const ip = req.headers['x-forwarded-for'] ?? 'unknown'
   if (isRateLimited(ip)) {
-    return new Response(JSON.stringify({ 
-      error: 'Too many requests. Please wait a moment before trying again.' 
-    }), {
-      status: 429,
-      headers: { 'Content-Type': 'application/json' }
-    })
+    return res.status(429).json({ error: 'Too many requests. Please wait a moment.' })
   }
 
-  // Get API key from environment variable (set in Vercel dashboard)
   const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'API key not configured' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    })
-  }
+  if (!apiKey) return res.status(500).json({ error: 'API key not configured' })
 
   try {
-    const body = await req.json()
-
-    // Validate the request body has required fields
+    const body = req.body
     if (!body.model || !body.messages || !Array.isArray(body.messages)) {
-      return new Response(JSON.stringify({ error: 'Invalid request body' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      })
+      return res.status(400).json({ error: 'Invalid request body' })
     }
 
-    // Hard cap on max_tokens to prevent runaway costs
     const safeBody = {
       ...body,
-      max_tokens: Math.min(body.max_tokens ?? 1000, 4000),
+      max_tokens: Math.min(body.max_tokens ?? 1000, 8000),
     }
 
-    // Forward to Anthropic
     const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -104,20 +58,10 @@ export default async function handler(req) {
     })
 
     const data = await anthropicRes.json()
-
-    return new Response(JSON.stringify(data), {
-      status: anthropicRes.status,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      }
-    })
+    return res.status(anthropicRes.status).json(data)
 
   } catch (err) {
     console.error('Proxy error:', err)
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    })
+    return res.status(500).json({ error: 'Internal server error' })
   }
 }
